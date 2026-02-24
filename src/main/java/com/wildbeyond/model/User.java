@@ -3,6 +3,7 @@ package com.wildbeyond.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,20 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    /**
+     * Whether this account is active and can log in.
+     * Default true — set to false to soft-ban a user without deleting them.
+     */
+    @Builder.Default
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled = true;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     // ── Relationships ────────────────────────────────────────────────────────
 

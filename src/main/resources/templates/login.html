@@ -1,10 +1,57 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Wild Beyond</title>
 </head>
 <body>
-    <h1>Login Page</h1>
-    <p>This is a static placeholder for the login page.</p>
+
+    <h1>Wild Beyond — Login</h1>
+
+    <!--
+        CRITICAL: action="/auth/login" method="post"
+        Spring Security intercepts this POST at loginProcessingUrl("/auth/login").
+        The controller does NOT handle this POST — Security does.
+
+        CRITICAL: input name="email"
+        SecurityConfig sets usernameParameter("email") so Spring Security
+        reads this field as the username passed to CustomUserDetailsService.
+
+        CRITICAL: th:action preserves the CSRF token automatically.
+        Thymeleaf injects a hidden _csrf field — do NOT use a plain action="".
+    -->
+    <form th:action="@{/auth/login}" method="post">
+
+        <!-- Error feedback (shown when ?error param is present) -->
+        <div th:if="${errorMessage}">
+            <p style="color:red;" th:text="${errorMessage}"></p>
+        </div>
+
+        <!-- Logout feedback (shown when ?logout param is present) -->
+        <div th:if="${logoutMessage}">
+            <p style="color:green;" th:text="${logoutMessage}"></p>
+        </div>
+
+        <div>
+            <label for="email">Email</label>
+            <!-- name MUST be "email" to match usernameParameter("email") in SecurityConfig -->
+            <input type="email" id="email" name="email"
+                   placeholder="you@example.com" required autofocus />
+        </div>
+
+        <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password"
+                   placeholder="Password" required />
+        </div>
+
+        <button type="submit">Log In</button>
+
+    </form>
+
+    <p>Don't have an account? <a th:href="@{/auth/register}">Register here</a></p>
+
 </body>
 </html>

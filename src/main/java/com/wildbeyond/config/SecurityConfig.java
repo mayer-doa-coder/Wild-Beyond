@@ -1,25 +1,174 @@
 package com.wildbeyond.config;
 
+import com.wildbeyond.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Day-3: Full Security Configuration for Wild-Beyond.
+ *
+ * What this class does:
+ *  1. Removes the default generated Spring Security password entirely.
+ *  2. Replaces the default login page with our own Thymeleaf login page.
+ *  3. Wires our CustomUserDetailsService so login uses EMAIL as identifier.
+ *  4. Registers BCryptPasswordEncoder as the global PasswordEncoder bean.
+ *  5. Defines URL-level access rules per role (ADMIN / SELLER / BUYER).
+ *  6. Configures logout behaviour.
+ *
+ * Role strategy:
+ *   ADMIN  → full platform access, user management, all products & orders
+ *   SELLER → manage own products, view own orders
+ *   BUYER  → browse products, place & view own orders
+ *
+ * URL restriction structure:
+ *   PUBLIC  (no login required):
+ *     GET  /                   — landing page
+ *     GET  /products           — product listing (browse)
+ *     GET  /products/{id}      — product detail
+ *     GET  /auth/login         — login page
+ *     GET  /auth/register      — registration page
+ *     POST /auth/register      — submit registration
+ *
+ *   BUYER + SELLER + ADMIN (any authenticated user):
+ *     GET  /orders             — own order history
+ *     POST /orders             — place a new order
+ *
+ *   SELLER + ADMIN only:
+ *     POST   /products         — create a product
+ *     PUT    /products/{id}    — update a product
+ *     DELETE /products/{id}    — delete a product
+ *
+ *   ADMIN only:
+ *     /admin/**                — admin dashboard & user management
+ *     /users/**                — user CRUD
+ */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity          // allows @PreAuthorize / @Secured on service/controller methods
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomUserDetailsService customUserDetailsService;
+
+    // ── Password Encoder ─────────────────────────────────────────────────────
+
     /**
-     * Temporary open security chain – permits all requests during
-     * entity/repository startup validation.
-     * Will be replaced with role-based rules on Day-3.
+     * BCrypt is the industry standard for hashing passwords at rest.
+     * Default strength = 10 (approx. 100 ms per hash — balanced for security vs UX).
+     * This bean is injected wherever passwords need to be encoded or verified.
      */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // ── Authentication Provider ───────────────────────────────────────────────
+
+    /**
+     * DaoAuthenticationProvider wires together:
+     *   - our CustomUserDetailsService (loads user by email from DB)
+     *   - BCryptPasswordEncoder (verifies the submitted password)
+     *
+     * Spring Security will call loadUserByUsername(email) on every login attempt.
+     */
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    // ── Authentication Manager ────────────────────────────────────────────────
+
+    /**
+     * Exposes the AuthenticationManager as a bean so it can be injected into
+     * AuthService (needed for programmatic login during registration flow).
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    // ── Security Filter Chain ─────────────────────────────────────────────────
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-            .csrf(csrf -> csrf.disable());
+            // ── URL Access Rules ─────────────────────────────────────────────
+            .authorizeHttpRequests(auth -> auth
+
+                // Static resources — always public
+                .requestMatchers(
+                    "/css/**", "/js/**", "/images/**", "/webjars/**"
+                ).permitAll()
+
+                // Public pages — no login required
+                .requestMatchers(
+                    "/",
+                    "/auth/login",
+                    "/auth/register"
+                ).permitAll()
+
+                // Product browsing — public (GET only)
+                .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
+
+                // Seller & Admin — product management (write operations)
+                .requestMatchers(HttpMethod.POST,   "/products").hasAnyRole("SELLER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT,    "/products/**").hasAnyRole("SELLER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/products/**").hasAnyRole("SELLER", "ADMIN")
+
+                // Admin only — full user management and admin dashboard
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/users/**").hasRole("ADMIN")
+
+                // All other requests require authentication
+                .anyRequest().authenticated()
+            )
+
+            // ── Form Login ────────────────────────────────────────────────────
+            // Spring Security default login page is DISABLED.
+            // We serve our own Thymeleaf login page.
+            // The "username" parameter on the form MUST be named "email"
+            // so that Spring Security passes the email value to
+            // CustomUserDetailsService.loadUserByUsername().
+            .formLogin(form -> form
+                .loginPage("/auth/login")                 // GET — show login form
+                .loginProcessingUrl("/auth/login")        // POST — Spring processes credentials
+                .usernameParameter("email")               // form field name (not "username")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/products", true)     // redirect after successful login
+                .failureUrl("/auth/login?error=true")     // redirect on bad credentials
+                .permitAll()
+            )
+
+            // ── Logout ────────────────────────────────────────────────────────
+            .logout(logout -> logout
+                .logoutUrl("/auth/logout")                // POST /auth/logout — Spring handles this
+                .logoutSuccessUrl("/auth/login?logout=true")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            )
+
+            // ── CSRF ──────────────────────────────────────────────────────────
+            // CSRF protection is ENABLED (Spring Security default).
+            // Thymeleaf automatically injects the _csrf token into all forms,
+            // so no manual token handling is needed in templates.
+            // Do NOT disable CSRF for a form-based web application.
+            ;
+
         return http.build();
     }
 }
