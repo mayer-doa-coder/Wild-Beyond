@@ -50,4 +50,19 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
+
+    // ── Audit Lifecycle ──────────────────────────────────────────────────────
+
+    /**
+     * Called by Hibernate before the first INSERT.
+     * Sets orderDate to now if the caller did not supply one explicitly.
+     * The check guards against overwriting a deliberately supplied date
+     * (e.g. historical order imports from an external system).
+     */
+    @PrePersist
+    private void prePersist() {
+        if (this.orderDate == null) {
+            this.orderDate = LocalDateTime.now();
+        }
+    }
 }

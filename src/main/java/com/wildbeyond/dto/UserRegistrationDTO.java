@@ -3,6 +3,7 @@ package com.wildbeyond.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -37,7 +38,9 @@ public class UserRegistrationDTO {
     /**
      * Role requested during registration: "BUYER" or "SELLER".
      * "ADMIN" is never accepted here — admin accounts are assigned by existing admins only.
+     * @Pattern enforces this at the DTO layer before the request reaches the service.
      */
     @NotBlank(message = "Please select a role")
+    @Pattern(regexp = "^(BUYER|SELLER)$", message = "Role must be BUYER or SELLER")
     private String role;
 }
