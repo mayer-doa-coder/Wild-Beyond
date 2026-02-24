@@ -3,6 +3,7 @@ package com.wildbeyond.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,24 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    /**
+     * Whether this account is active and can log in.
+     * Default true — set to false to soft-ban a user without deleting them.
+     */
+    @Builder.Default
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled = true;
+
+    /**
+     * Set by @PrePersist — never changes after the row is first inserted.
+     * updatable = false prevents Hibernate from including this column in UPDATE statements.
+     */
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     // ── Relationships ────────────────────────────────────────────────────────
 
@@ -66,5 +85,27 @@ public class User {
     @OneToMany(mappedBy = "buyer", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
+
+    // ── Audit Lifecycle ──────────────────────────────────────────────────────
+
+    /**
+     * Called by Hibernate before the first INSERT.
+     * Sets both timestamps so neither column is ever NULL on a fresh row.
+     */
+    @PrePersist
+    private void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    /**
+     * Called by Hibernate before every UPDATE.
+     * Only updatedAt advances — createdAt is immutable (updatable = false).
+     */
+    @PreUpdate
+    private void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
 
