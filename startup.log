@@ -1,0 +1,103 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.wildbeyond:Wild-Beyond >---------------------
+[INFO] Building Wild-Beyond 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:4.0.3:run (default-cli) > test-compile @ Wild-Beyond >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ Wild-Beyond ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 3 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ Wild-Beyond ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ Wild-Beyond ---
+[INFO] skip non existing resourceDirectory D:\Wild-Beyond\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ Wild-Beyond ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:4.0.3:run (default-cli) < test-compile @ Wild-Beyond <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.0.3:run (default-cli) @ Wild-Beyond ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.3)
+
+2026-02-24T18:31:14.305+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] com.wildbeyond.WildBeyondApplication     : Starting WildBeyondApplication using Java 25.0.1 with PID 11988 (D:\Wild-Beyond\target\classes started by ttawh in D:\Wild-Beyond)
+2026-02-24T18:31:14.307+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] com.wildbeyond.WildBeyondApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-24T18:31:14.342+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-02-24T18:31:14.342+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-02-24T18:31:14.754+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-24T18:31:14.792+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 5 JPA repository interfaces.
+2026-02-24T18:31:15.146+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-24T18:31:15.154+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-24T18:31:15.155+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-24T18:31:15.183+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 841 ms
+2026-02-24T18:31:15.295+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-24T18:31:15.322+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.4.Final
+2026-02-24T18:31:15.575+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-24T18:31:15.592+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-02-24T18:31:15.683+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3d2a0699
+2026-02-24T18:31:15.685+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-02-24T18:31:15.731+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5433/wild_beyond]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.12
+	Default catalog/schema: wild_beyond/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-24T18:31:16.326+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-24T18:31:16.387+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-24T18:31:16.435+06:00  WARN 11988 --- [Wild-Beyond] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-24T18:31:16.472+06:00  WARN 11988 --- [Wild-Beyond] [  restartedMain] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: df2afc7d-d112-4e70-94d2-9d02378de9af
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-02-24T18:31:16.475+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-02-24T18:31:16.723+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-24T18:31:16.876+06:00  WARN 11988 --- [Wild-Beyond] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-02-24T18:31:16.876+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-24T18:31:16.878+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-02-24T18:31:16.880+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-02-24T18:31:16.889+06:00  INFO 11988 --- [Wild-Beyond] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-02-24T18:31:16.897+06:00 ERROR 11988 --- [Wild-Beyond] [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.145 s
+[INFO] Finished at: 2026-02-24T18:31:16+06:00
+[INFO] ------------------------------------------------------------------------

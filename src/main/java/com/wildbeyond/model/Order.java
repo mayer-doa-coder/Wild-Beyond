@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -19,15 +21,33 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String status;
+    @Column(name = "order_date", nullable = false, updatable = false)
+    private LocalDateTime orderDate;
 
-    private BigDecimal totalAmount;
+    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalPrice;
 
-    private String shippingAddress;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private OrderStatus status;
 
-    private String paymentMethod;
+    // ── Relationships ────────────────────────────────────────────────────────
 
-    private LocalDateTime orderedAt;
+    /**
+     * Order → User (Buyer)  (ManyToOne)
+     * Owning side – holds the FK column buyer_id.
+     * LAZY – do not pull entire User when loading an Order.
+     */
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "buyer_id", nullable = false)
+    private User buyer;
 
-    private LocalDateTime updatedAt;
+    /**
+     * Order → OrderItem  (OneToMany)
+     * Inverse side – OrderItem owns the FK (order_id).
+     * CascadeType.ALL + orphanRemoval: items live and die with the Order.
+     */
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<OrderItem> items = new ArrayList<>();
 }
