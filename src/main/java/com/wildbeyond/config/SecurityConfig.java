@@ -81,9 +81,13 @@ public class SecurityConfig {
      *   - BCryptPasswordEncoder (verifies the submitted password)
      *
      * Spring Security will call loadUserByUsername(email) on every login attempt.
+     *
+     * NOT a @Bean — registered directly into the filter chain via
+     * .authenticationProvider() below. Exposing it as a @Bean while
+     * CustomUserDetailsService is also a @Service bean causes Spring Security 7
+     * to detect two authentication paths and emit a duplicate-provider warning.
      */
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    private DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
@@ -106,6 +110,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // Wire our DaoAuthenticationProvider explicitly — avoids Spring Security 7
+            // warning about UserDetailsService bean + AuthenticationProvider bean coexisting.
+            .authenticationProvider(authenticationProvider())
+
             // ── URL Access Rules ─────────────────────────────────────────────
             .authorizeHttpRequests(auth -> auth
 
