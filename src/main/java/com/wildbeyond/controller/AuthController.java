@@ -1,11 +1,14 @@
 package com.wildbeyond.controller;
 
 import com.wildbeyond.dto.UserRegistrationDTO;
+import com.wildbeyond.service.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Day-3: AuthController — serves Thymeleaf views for login and registration.
@@ -28,7 +31,10 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
+
+    private final UserService userService;
 
     // ── Login ─────────────────────────────────────────────────────────────────
 
@@ -69,26 +75,30 @@ public class AuthController {
         return "register";   // resolves to templates/register.html
     }
 
-    /*
-     * POST /auth/register is intentionally NOT implemented here yet.
-     * It will be wired to AuthService.register() on Day-4 when the
-     * service layer is implemented.
-     *
-     * Placeholder stub (commented out to avoid accidental empty saves):
-     *
-     * @PostMapping("/register")
-     * public String handleRegister(
-     *         @Valid @ModelAttribute("registerForm") UserRegistrationDTO dto,
-     *         BindingResult bindingResult,
-     *         RedirectAttributes redirectAttributes) {
-     *
-     *     if (bindingResult.hasErrors()) {
-     *         return "register";
-     *     }
-     *     // authService.register(dto);
-     *     redirectAttributes.addFlashAttribute("successMessage",
-     *             "Account created! Please log in.");
-     *     return "redirect:/auth/login";
-     * }
+    /**
+     * Handle registration form submission.
+     * Validates input, delegates to UserService (BCrypt encoding), then redirects to login.
      */
+    @PostMapping("/register")
+    public String handleRegister(
+            @Valid @ModelAttribute("registerForm") UserRegistrationDTO dto,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            return "register";   // re-render form with validation errors
+        }
+
+        try {
+            userService.registerUser(dto);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Account created successfully! Please sign in.");
+            return "redirect:/auth/login";
+        } catch (RuntimeException ex) {
+            // e.g. duplicate email or role not found
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "register";
+        }
+    }
 }

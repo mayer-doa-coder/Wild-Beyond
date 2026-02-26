@@ -35,3 +35,8 @@ build/
 ### Environment variables ###
 .env
 
+### Logs ###
+*.log
+app-out.log
+app-err.log
+
