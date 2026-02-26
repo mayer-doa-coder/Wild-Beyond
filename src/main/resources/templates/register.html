@@ -1,74 +1,121 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register — Wild Beyond</title>
+    <title>Register - Wild Beyond</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column;
+            background: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.55)),
+                        url('/images/lion.jpg') center/cover no-repeat;
+            color: #1a1a1a;
+        }
+        header {
+            background: rgba(15,35,8,.72);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 0 2.5rem; min-height: 68px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+        .nav-brand { font-size: 1.7rem; font-weight: 800; color: #fff; text-decoration: none; letter-spacing: -.01em; }
+        .nav-brand span { color: rgba(160,220,100,.85); }
+        .header-nav a { color: rgba(255,255,255,.8); text-decoration: none; font-size: .88rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; padding: .38rem .85rem; border: 1px solid rgba(255,255,255,.25); border-radius: 2px; transition: background .18s, color .18s; }
+        .header-nav a:hover { background: rgba(255,255,255,.12); color: #fff; }
+        .page-center { flex: 1; display: flex; justify-content: center; align-items: center; padding: .75rem 1rem; }
+        .card {
+            background: rgba(255,255,255,.92);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-top: 5px solid #275c00;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.45), 0 4px 16px rgba(0,0,0,.25);
+            width: 100%; max-width: 420px;
+            padding: 1.6rem 2.25rem;
+        }
+        .brand { text-align: center; margin-bottom: .9rem; }
+        .brand h1 { font-size: 1.5rem; font-weight: 800; color: #1a1a1a; letter-spacing: -.01em; }
+        .brand h1 span { color: #1c4400; }
+        .brand p { font-size: .78rem; color: #777; margin-top: .2rem; text-transform: uppercase; letter-spacing: .06em; }
+        .alert { padding: .55rem .9rem; border-radius: 2px; font-size: .84rem; margin-bottom: .9rem; }
+        .alert-success { background: #f5fce8; border-left: 4px solid #275c00; color: #1c4400; }
+        .alert-error   { background: #fdecea; border-left: 4px solid #c0392b; color: #7b241c; }
+        .field { display: flex; flex-direction: column; margin-bottom: .6rem; }
+        .field label { font-size: .72rem; font-weight: 700; color: #444; margin-bottom: .28rem; text-transform: uppercase; letter-spacing: .06em; }
+        .field input, .field select { padding: .5rem .85rem; border: 1px solid #d0d0d0; border-radius: 2px; font-size: .9rem; color: #1a1a1a; background: #fafafa; transition: border-color .18s, box-shadow .18s; }
+        .field input:focus, .field select:focus { outline: none; border-color: #275c00; box-shadow: 0 0 0 3px rgba(39,92,0,.18); background: #fff; }
+        .field select option { background: #fff; color: #1a1a1a; }
+        .error { color: #c0392b; font-size: .74rem; margin-top: .2rem; display: block; }
+        .hint  { font-size: .74rem; color: #888; margin-top: .18rem; }
+        .btn { width: 100%; padding: .72rem; background: #275c00; color: #fff; border: none; border-radius: 2px; font-size: .85rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; margin-top: .6rem; transition: background .18s; }
+        .btn:hover { background: #1c4400; }
+        .divider { border: none; border-top: 1px solid #e8e8e8; margin: .85rem 0 .7rem; }
+        .footer-link { text-align: center; font-size: .82rem; color: #555; }
+        .footer-link a { color: #1c4400; font-weight: 700; text-decoration: none; }
+        .footer-link a:hover { text-decoration: underline; }
+        footer {
+            background: rgba(15,35,8,.72);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: rgba(255,255,255,.85);
+            text-align: center; padding: 1.4rem 2rem;
+            font-size: .8rem; letter-spacing: .08em; text-transform: uppercase;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+        footer strong { color: #fff; }
+    </style>
 </head>
 <body>
-
-    <h1>Wild Beyond — Create Account</h1>
-
-    <!--
-        th:object="${registerForm}" binds to the UserRegistrationDTO
-        added to the model by AuthController.showRegisterPage().
-
-        th:action uses @{} to let Thymeleaf inject the CSRF token.
-        POST /auth/register will be handled by AuthController on Day-4.
-    -->
+<header>
+    <a class="nav-brand" th:href="@{/products}">Wild <span>Beyond</span></a>
+    <nav class="header-nav"><a th:href="@{/auth/login}">Sign In</a></nav>
+</header>
+<div class="page-center">
+<div class="card">
+    <div class="brand">
+        <h1>Wild <span>Beyond</span></h1>
+        <p>Create your account</p>
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
     <form th:action="@{/auth/register}" th:object="${registerForm}" method="post">
-
-        <div>
+        <div class="field">
             <label for="name">Full Name</label>
-            <input type="text" id="name" th:field="*{name}"
-                   placeholder="Your full name" required />
-            <!-- Validation error display (Day-4) -->
-            <span th:if="${#fields.hasErrors('name')}"
-                  th:errors="*{name}" style="color:red;"></span>
+            <input type="text" id="name" th:field="*{name}" placeholder="Jane Wildhart" required />
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></span>
         </div>
-
-        <div>
-            <label for="email">Email</label>
-            <input type="email" id="email" th:field="*{email}"
-                   placeholder="you@example.com" required />
-            <span th:if="${#fields.hasErrors('email')}"
-                  th:errors="*{email}" style="color:red;"></span>
+        <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" th:field="*{email}" placeholder="you@wildbeyond.com" required />
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></span>
         </div>
-
-        <div>
+        <div class="field">
             <label for="password">Password</label>
-            <!--
-                th:field binds to the DTO field but uses type="password".
-                The @JsonProperty(WRITE_ONLY) on the DTO ensures this
-                field is never accidentally serialized in a response.
-            -->
-            <input type="password" id="password" th:field="*{password}"
-                   placeholder="Minimum 8 characters" required />
-            <span th:if="${#fields.hasErrors('password')}"
-                  th:errors="*{password}" style="color:red;"></span>
+            <input type="password" id="password" th:field="*{password}" placeholder="Minimum 8 characters" required />
+            <span class="hint">Use at least 8 characters with mixed letters and numbers.</span>
+            <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></span>
         </div>
-
-        <!--
-            Role selection: SELLER or BUYER only.
-            ADMIN accounts are created only by existing admins — never via this form.
-        -->
-        <div>
-            <label>I want to:</label>
-            <label>
-                <input type="radio" th:field="*{role}" value="BUYER" /> Buy products
-            </label>
-            <label>
-                <input type="radio" th:field="*{role}" value="SELLER" /> Sell products
-            </label>
-            <span th:if="${#fields.hasErrors('role')}"
-                  th:errors="*{role}" style="color:red;"></span>
+        <div class="field">
+            <label for="role">I want to</label>
+            <select id="role" th:field="*{role}" required>
+                <option value="">&mdash; Choose your role &mdash;</option>
+                <option value="BUYER">Buyer &mdash; explore and purchase wildlife goods</option>
+                <option value="SELLER">Seller &mdash; list and sell my wild products</option>
+                <option value="ADMIN">Admin &mdash; platform administration</option>
+            </select>
+            <span th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="error"></span>
         </div>
-
-        <button type="submit">Create Account</button>
-
+        <button type="submit" class="btn">Create Account</button>
     </form>
-
-    <p>Already have an account? <a th:href="@{/auth/login}">Log in here</a></p>
-
+    <hr class="divider">
+    <p class="footer-link">Already have an account? <a th:href="@{/auth/login}">Sign in &rarr;</a></p>
+</div>
+</div>
+<footer><strong>Wild Beyond</strong> &nbsp;&mdash;&nbsp; The Wild Marketplace &nbsp;&mdash;&nbsp; &copy; 2026</footer>
 </body>
 </html>

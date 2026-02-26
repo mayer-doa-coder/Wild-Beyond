@@ -53,6 +53,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                         new UsernameNotFoundException("No account found for email: " + email));
 
         // Map each Role name → "ROLE_ADMIN" / "ROLE_SELLER" / "ROLE_BUYER"
+        // Role.getName() returns a plain String ("ADMIN", "SELLER", "BUYER").
         Set<SimpleGrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toSet());
