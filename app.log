@@ -112,3 +112,297 @@
 2026-02-27T00:28:54.720+06:00  INFO 19624 --- [Wild-Beyond] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2026-02-27T00:28:54.720+06:00  INFO 19624 --- [Wild-Beyond] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2026-02-27T00:28:54.723+06:00  INFO 19624 --- [Wild-Beyond] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-02-27T01:15:36.480+06:00  INFO 19624 --- [Wild-Beyond] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (1 addition, 0 deletions, 0 modifications)
+2026-02-27T01:15:36.996+06:00  INFO 19624 --- [Wild-Beyond] [Thread-13] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-27T01:15:37.573+06:00  INFO 19624 --- [Wild-Beyond] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-27T01:15:37.868+06:00  INFO 19624 --- [Wild-Beyond] [Thread-13] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:15:37.973+06:00  INFO 19624 --- [Wild-Beyond] [Thread-13] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown initiated...
+2026-02-27T01:15:38.005+06:00  INFO 19624 --- [Wild-Beyond] [Thread-13] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown completed.
+2026-02-27T01:15:40.785+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Starting WildBeyondApplication using Java 17.0.18 with PID 19624 (E:\Wild-Beyond\target\classes started by 88017 in E:\Wild-Beyond)
+2026-02-27T01:15:40.785+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-27T01:15:41.405+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-27T01:15:41.432+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 22 ms. Found 5 JPA repository interfaces.
+2026-02-27T01:15:41.655+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-27T01:15:41.660+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-27T01:15:41.660+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-27T01:15:41.689+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 896 ms
+2026-02-27T01:15:42.901+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-27T01:15:42.931+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-27T01:15:42.932+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Starting...
+2026-02-27T01:15:43.075+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-5 - Added connection org.postgresql.jdbc.PgConnection@2ed717c9
+2026-02-27T01:15:43.076+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Start completed.
+2026-02-27T01:15:43.166+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/wild_beyond]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.12
+	Default catalog/schema: wild_beyond/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-27T01:15:43.340+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-27T01:15:43.539+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:15:43.834+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-02-27T01:15:44.281+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-27T01:15:44.286+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Started WildBeyondApplication in 3.689 seconds (process running for 5613.797)
+2026-02-27T01:15:44.288+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-02-27T01:16:04.921+06:00  INFO 19624 --- [Wild-Beyond] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-02-27T01:16:04.923+06:00  INFO 19624 --- [Wild-Beyond] [Thread-17] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-27T01:16:05.203+06:00  INFO 19624 --- [Wild-Beyond] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-27T01:16:05.206+06:00  INFO 19624 --- [Wild-Beyond] [Thread-17] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:16:05.207+06:00  INFO 19624 --- [Wild-Beyond] [Thread-17] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown initiated...
+2026-02-27T01:16:05.211+06:00  INFO 19624 --- [Wild-Beyond] [Thread-17] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown completed.
+2026-02-27T01:16:05.310+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Starting WildBeyondApplication using Java 17.0.18 with PID 19624 (E:\Wild-Beyond\target\classes started by 88017 in E:\Wild-Beyond)
+2026-02-27T01:16:05.311+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-27T01:16:05.554+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-27T01:16:05.572+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 15 ms. Found 5 JPA repository interfaces.
+2026-02-27T01:16:05.730+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-27T01:16:05.731+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-27T01:16:05.731+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-27T01:16:05.753+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 440 ms
+2026-02-27T01:16:05.835+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-27T01:16:05.866+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-27T01:16:05.868+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Starting...
+2026-02-27T01:16:05.915+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-6 - Added connection org.postgresql.jdbc.PgConnection@39723119
+2026-02-27T01:16:05.916+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Start completed.
+2026-02-27T01:16:05.939+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/wild_beyond]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.12
+	Default catalog/schema: wild_beyond/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-27T01:16:06.104+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-27T01:16:06.226+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:16:06.495+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-02-27T01:16:06.940+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-27T01:16:06.944+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Started WildBeyondApplication in 1.665 seconds (process running for 5636.456)
+2026-02-27T01:16:06.945+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-02-27T01:16:18.480+06:00  INFO 19624 --- [Wild-Beyond] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-02-27T01:16:18.492+06:00  INFO 19624 --- [Wild-Beyond] [Thread-21] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-27T01:16:19.124+06:00  INFO 19624 --- [Wild-Beyond] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-27T01:16:19.126+06:00  INFO 19624 --- [Wild-Beyond] [Thread-21] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:16:19.127+06:00  INFO 19624 --- [Wild-Beyond] [Thread-21] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown initiated...
+2026-02-27T01:16:19.131+06:00  INFO 19624 --- [Wild-Beyond] [Thread-21] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown completed.
+2026-02-27T01:16:19.233+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Starting WildBeyondApplication using Java 17.0.18 with PID 19624 (E:\Wild-Beyond\target\classes started by 88017 in E:\Wild-Beyond)
+2026-02-27T01:16:19.234+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-27T01:16:19.494+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-27T01:16:19.514+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 19 ms. Found 5 JPA repository interfaces.
+2026-02-27T01:16:19.712+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-27T01:16:19.713+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-27T01:16:19.713+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-27T01:16:19.736+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 500 ms
+2026-02-27T01:16:19.853+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-27T01:16:19.889+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-27T01:16:19.890+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Starting...
+2026-02-27T01:16:19.964+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-7 - Added connection org.postgresql.jdbc.PgConnection@7d541676
+2026-02-27T01:16:19.965+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Start completed.
+2026-02-27T01:16:19.998+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/wild_beyond]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.12
+	Default catalog/schema: wild_beyond/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-27T01:16:20.131+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-27T01:16:20.272+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:16:20.766+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-02-27T01:16:21.491+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-27T01:16:21.495+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Started WildBeyondApplication in 2.294 seconds (process running for 5651.007)
+2026-02-27T01:16:21.497+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-02-27T01:16:43.397+06:00  INFO 19624 --- [Wild-Beyond] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-02-27T01:16:43.424+06:00  INFO 19624 --- [Wild-Beyond] [Thread-25] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-27T01:16:43.913+06:00  INFO 19624 --- [Wild-Beyond] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-27T01:16:43.928+06:00  INFO 19624 --- [Wild-Beyond] [Thread-25] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:16:43.938+06:00  INFO 19624 --- [Wild-Beyond] [Thread-25] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Shutdown initiated...
+2026-02-27T01:16:43.955+06:00  INFO 19624 --- [Wild-Beyond] [Thread-25] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Shutdown completed.
+2026-02-27T01:16:44.341+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Starting WildBeyondApplication using Java 17.0.18 with PID 19624 (E:\Wild-Beyond\target\classes started by 88017 in E:\Wild-Beyond)
+2026-02-27T01:16:44.342+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-27T01:16:44.748+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-27T01:16:44.825+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 69 ms. Found 5 JPA repository interfaces.
+2026-02-27T01:16:45.233+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-27T01:16:45.236+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-27T01:16:45.237+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-27T01:16:45.288+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 940 ms
+2026-02-27T01:16:45.469+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-27T01:16:45.525+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-27T01:16:45.534+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Starting...
+2026-02-27T01:16:45.751+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-8 - Added connection org.postgresql.jdbc.PgConnection@4e36dc05
+2026-02-27T01:16:45.752+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Start completed.
+2026-02-27T01:16:45.858+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/wild_beyond]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.12
+	Default catalog/schema: wild_beyond/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-27T01:16:46.028+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-27T01:16:46.151+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:16:46.484+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-02-27T01:16:47.043+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-27T01:16:47.049+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Started WildBeyondApplication in 2.77 seconds (process running for 5676.561)
+2026-02-27T01:16:47.051+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-02-27T01:17:54.620+06:00  INFO 19624 --- [Wild-Beyond] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (1 addition, 0 deletions, 0 modifications)
+2026-02-27T01:17:54.676+06:00  INFO 19624 --- [Wild-Beyond] [Thread-29] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-27T01:17:54.866+06:00  INFO 19624 --- [Wild-Beyond] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-27T01:17:54.881+06:00  INFO 19624 --- [Wild-Beyond] [Thread-29] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:17:54.895+06:00  INFO 19624 --- [Wild-Beyond] [Thread-29] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Shutdown initiated...
+2026-02-27T01:17:54.905+06:00  INFO 19624 --- [Wild-Beyond] [Thread-29] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Shutdown completed.
+2026-02-27T01:17:55.136+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Starting WildBeyondApplication using Java 17.0.18 with PID 19624 (E:\Wild-Beyond\target\classes started by 88017 in E:\Wild-Beyond)
+2026-02-27T01:17:55.136+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-27T01:17:55.326+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-27T01:17:55.351+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 22 ms. Found 5 JPA repository interfaces.
+2026-02-27T01:17:55.525+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-27T01:17:55.526+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-27T01:17:55.527+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-27T01:17:55.554+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 417 ms
+2026-02-27T01:17:55.644+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-27T01:17:55.679+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-27T01:17:55.681+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Starting...
+2026-02-27T01:17:55.760+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-9 - Added connection org.postgresql.jdbc.PgConnection@67401e0d
+2026-02-27T01:17:55.761+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Start completed.
+2026-02-27T01:17:55.798+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/wild_beyond]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.12
+	Default catalog/schema: wild_beyond/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-27T01:17:55.921+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-27T01:17:56.074+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:17:56.294+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-02-27T01:17:56.755+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-27T01:17:56.758+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Started WildBeyondApplication in 1.644 seconds (process running for 5746.27)
+2026-02-27T01:17:57.807+06:00 DEBUG 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.SQL                        : 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+2026-02-27T01:17:57.979+06:00 DEBUG 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.SQL                        : 
+    insert 
+    into
+        roles
+        (name) 
+    values
+        (?)
+2026-02-27T01:17:58.050+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.config.DataSeeder         : DataSeeder: inserted role 'BUYER'
+2026-02-27T01:17:58.052+06:00 DEBUG 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.SQL                        : 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+2026-02-27T01:17:58.057+06:00 DEBUG 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.SQL                        : 
+    insert 
+    into
+        roles
+        (name) 
+    values
+        (?)
+2026-02-27T01:17:58.063+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.config.DataSeeder         : DataSeeder: inserted role 'SELLER'
+2026-02-27T01:17:58.065+06:00 DEBUG 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.SQL                        : 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+2026-02-27T01:17:58.076+06:00 DEBUG 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.SQL                        : 
+    insert 
+    into
+        roles
+        (name) 
+    values
+        (?)
+2026-02-27T01:17:58.091+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.config.DataSeeder         : DataSeeder: inserted role 'ADMIN'
+2026-02-27T01:17:58.093+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-02-27T01:19:08.393+06:00  INFO 19624 --- [Wild-Beyond] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 30 class path changes (0 additions, 0 deletions, 30 modifications)
+2026-02-27T01:19:08.417+06:00  INFO 19624 --- [Wild-Beyond] [Thread-33] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-27T01:19:08.591+06:00  INFO 19624 --- [Wild-Beyond] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-27T01:19:08.601+06:00  INFO 19624 --- [Wild-Beyond] [Thread-33] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:19:08.606+06:00  INFO 19624 --- [Wild-Beyond] [Thread-33] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown initiated...
+2026-02-27T01:19:08.613+06:00  INFO 19624 --- [Wild-Beyond] [Thread-33] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown completed.
+2026-02-27T01:19:08.837+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Starting WildBeyondApplication using Java 17.0.18 with PID 19624 (E:\Wild-Beyond\target\classes started by 88017 in E:\Wild-Beyond)
+2026-02-27T01:19:08.838+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-27T01:19:08.972+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-27T01:19:08.983+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 9 ms. Found 5 JPA repository interfaces.
+2026-02-27T01:19:09.099+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-27T01:19:09.102+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-27T01:19:09.102+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-27T01:19:09.120+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 280 ms
+2026-02-27T01:19:09.178+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-27T01:19:09.200+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-27T01:19:09.201+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Starting...
+2026-02-27T01:19:09.257+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-10 - Added connection org.postgresql.jdbc.PgConnection@7a65460b
+2026-02-27T01:19:09.257+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Start completed.
+2026-02-27T01:19:09.286+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/wild_beyond]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.12
+	Default catalog/schema: wild_beyond/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-27T01:19:09.389+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-27T01:19:09.516+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-27T01:19:09.776+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-02-27T01:19:10.009+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-27T01:19:10.011+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] com.wildbeyond.WildBeyondApplication     : Started WildBeyondApplication in 1.196 seconds (process running for 5819.523)
+2026-02-27T01:19:10.037+06:00 DEBUG 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.SQL                        : 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+2026-02-27T01:19:10.047+06:00 DEBUG 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.SQL                        : 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+2026-02-27T01:19:10.050+06:00 DEBUG 19624 --- [Wild-Beyond] [restartedMain] org.hibernate.SQL                        : 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+2026-02-27T01:19:10.055+06:00  INFO 19624 --- [Wild-Beyond] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
