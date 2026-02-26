@@ -1,139 +1,0 @@
-[INFO] Scanning for projects...
-Downloading from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml
-Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml
-Downloading from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml
-Downloading from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml
-Progress (1): 243 BProgress (2): 243 B | 234 BProgress (3): 243 B | 234 B | 255 B                                   Downloaded from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml (243 B at 214 B/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml (234 B at 206 B/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml (255 B at 224 B/s)
-Downloading from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml
-Downloading from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml
-Downloading from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml
-Progress (1): 249 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml (249 B at 216 B/s)
-Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml
-Progress (1): 398 BProgress (2): 398 B | 243 BProgress (3): 398 B | 243 B | 375 B                                   Downloaded from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml (398 B at 4.6 kB/s)
-Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml
-Downloaded from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml (375 B at 4.4 kB/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml (243 B at 2.7 kB/s)
-Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml
-Progress (1): 242 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml (242 B at 2.7 kB/s)
-Progress (1): 3.1 kBProgress (1): 7.7 kBProgress (1): 12 kB Progress (1): 17 kBProgress (1): 20 kBProgress (1): 21 kBProgress (2): 21 kB | 4.6 kBProgress (2): 21 kB | 9.7 kBProgress (2): 21 kB | 14 kB                            Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml (14 kB at 118 kB/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml (21 kB at 110 kB/s)
-[INFO] 
-[INFO] ---------------------< com.wildbeyond:Wild-Beyond >---------------------
-[INFO] Building Wild-Beyond 0.0.1-SNAPSHOT
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
-[INFO] >>> spring-boot:4.0.3:run (default-cli) > test-compile @ Wild-Beyond >>>
-[INFO] 
-[INFO] --- resources:3.3.1:resources (default-resources) @ Wild-Beyond ---
-[INFO] Copying 1 resource from src\main\resources to target\classes
-[INFO] Copying 7 resources from src\main\resources to target\classes
-[INFO] 
-[INFO] --- compiler:3.14.1:compile (default-compile) @ Wild-Beyond ---
-[INFO] Nothing to compile - all classes are up to date.
-[INFO] 
-[INFO] --- resources:3.3.1:testResources (default-testResources) @ Wild-Beyond ---
-[INFO] skip non existing resourceDirectory E:\Wild-Beyond\src\test\resources
-[INFO] 
-[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ Wild-Beyond ---
-[INFO] Nothing to compile - all classes are up to date.
-[INFO] 
-[INFO] <<< spring-boot:4.0.3:run (default-cli) < test-compile @ Wild-Beyond <<<
-[INFO] 
-[INFO] 
-[INFO] --- spring-boot:4.0.3:run (default-cli) @ Wild-Beyond ---
-[INFO] Attaching agents: []
-
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
-
- :: Spring Boot ::                (v4.0.3)
-
-2026-02-27T01:19:52.850+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] com.wildbeyond.WildBeyondApplication     : Starting WildBeyondApplication using Java 17.0.18 with PID 21712 (E:\Wild-Beyond\target\classes started by 88017 in E:\Wild-Beyond)
-2026-02-27T01:19:52.856+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] com.wildbeyond.WildBeyondApplication     : No active profile set, falling back to 1 default profile: "default"
-2026-02-27T01:19:52.944+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2026-02-27T01:19:52.944+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2026-02-27T01:19:54.155+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-02-27T01:19:54.218+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 51 ms. Found 5 JPA repository interfaces.
-2026-02-27T01:19:55.017+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-02-27T01:19:55.036+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-02-27T01:19:55.036+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
-2026-02-27T01:19:55.087+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2142 ms
-2026-02-27T01:19:55.282+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
-2026-02-27T01:19:55.384+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.4.Final
-2026-02-27T01:19:55.891+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-02-27T01:19:55.936+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-02-27T01:19:56.130+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@77c4d1a4
-2026-02-27T01:19:56.132+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-02-27T01:19:56.229+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
-	Database JDBC URL [jdbc:postgresql://localhost:5432/wild_beyond]
-	Database driver: PostgreSQL JDBC Driver
-	Database dialect: PostgreSQLDialect
-	Database version: 16.12
-	Default catalog/schema: wild_beyond/public
-	Autocommit mode: undefined/unknown
-	Isolation level: READ_COMMITTED [default READ_COMMITTED]
-	JDBC fetch size: none
-	Pool: DataSourceConnectionProvider
-	Minimum pool size: undefined/unknown
-	Maximum pool size: undefined/unknown
-2026-02-27T01:19:57.546+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-02-27T01:19:57.717+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-02-27T01:19:57.809+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-02-27T01:19:58.197+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
-2026-02-27T01:19:58.880+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
-2026-02-27T01:19:58.885+06:00  INFO 21712 --- [Wild-Beyond] [  restartedMain] com.wildbeyond.WildBeyondApplication     : Started WildBeyondApplication in 7.049 seconds (process running for 8.117)
-2026-02-27T01:19:59.282+06:00 DEBUG 21712 --- [Wild-Beyond] [  restartedMain] org.hibernate.SQL                        : 
-    select
-        r1_0.id,
-        r1_0.name 
-    from
-        roles r1_0 
-    where
-        r1_0.name=?
-Hibernate: 
-    select
-        r1_0.id,
-        r1_0.name 
-    from
-        roles r1_0 
-    where
-        r1_0.name=?
-2026-02-27T01:19:59.324+06:00 DEBUG 21712 --- [Wild-Beyond] [  restartedMain] org.hibernate.SQL                        : 
-    select
-        r1_0.id,
-        r1_0.name 
-    from
-        roles r1_0 
-    where
-        r1_0.name=?
-Hibernate: 
-    select
-        r1_0.id,
-        r1_0.name 
-    from
-        roles r1_0 
-    where
-        r1_0.name=?
-2026-02-27T01:19:59.331+06:00 DEBUG 21712 --- [Wild-Beyond] [  restartedMain] org.hibernate.SQL                        : 
-    select
-        r1_0.id,
-        r1_0.name 
-    from
-        roles r1_0 
-    where
-        r1_0.name=?
-Hibernate: 
-    select
-        r1_0.id,
-        r1_0.name 
-    from
-        roles r1_0 
-    where
-        r1_0.name=?
