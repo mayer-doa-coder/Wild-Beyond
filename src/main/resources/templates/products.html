@@ -1,10 +1,269 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
 <head>
-    <title>Products</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products — Wild Beyond</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f0;
+            color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Header (green bar — NatGeo-inspired) ── */
+        header {
+            background: #275c00;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            min-height: 56px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.25);
+        }
+        .nav-brand {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+        }
+        .nav-links {
+            display: flex;
+            gap: 0;
+            align-items: stretch;
+        }
+        .nav-links a,
+        .nav-links button {
+            color: rgba(255,255,255,.88);
+            text-decoration: none;
+            font-size: .85rem;
+            font-weight: 600;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+            padding: 0 1.1rem;
+            display: flex;
+            align-items: center;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: background .18s;
+        }
+        .nav-links a:hover,
+        .nav-links button:hover { background: rgba(255,255,255,.12); }
+        .nav-links .nav-cta {
+            background: #fff;
+            color: #1c4400;
+            margin: .65rem .4rem .65rem 1rem;
+            padding: 0 1rem;
+            border-radius: 2px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            letter-spacing: .04em;
+        }
+        .nav-links .nav-cta:hover { background: #f0fbde; }
+
+        /* ── Hero ── */
+        .hero {
+            background: #fff;
+            border-bottom: 4px solid #275c00;
+            text-align: center;
+            padding: 3.5rem 1.5rem 3rem;
+        }
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #111;
+            letter-spacing: -.02em;
+            margin-bottom: .6rem;
+            line-height: 1.15;
+        }
+        .hero h1 span { color: #1c4400; }
+        .hero p {
+            font-size: 1rem;
+            color: #5a5a5a;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        /* ── Product grid ── */
+        .grid-section {
+            padding: 2rem 2rem 3rem;
+            max-width: 1140px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+        .section-title {
+            font-size: .72rem;
+            font-weight: 700;
+            color: #1c4400;
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            margin-bottom: 1.5rem;
+            padding-bottom: .6rem;
+            border-bottom: 2px solid #275c00;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+        .product-card {
+            background: #fff;
+            border: 1px solid #e4e4e4;
+            border-top: 4px solid #275c00;
+            border-radius: 2px;
+            padding: 1.5rem 1.35rem 1.35rem;
+            transition: box-shadow .22s, transform .22s;
+        }
+        .product-card:hover {
+            box-shadow: 0 8px 28px rgba(0,0,0,.12);
+            transform: translateY(-4px);
+        }
+        .product-card h3      { font-size: 1rem; font-weight: 700; color: #111; margin-bottom: .4rem; letter-spacing: -.01em; }
+        .product-card .price  { font-size: 1.15rem; font-weight: 800; color: #1c4400; margin-bottom: .45rem; }
+        .product-card .seller { font-size: .72rem; color: #999; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 1rem; border-bottom: 1px solid #f0f0f0; padding-bottom: .75rem; }
+        .product-card .desc   { font-size: .85rem; color: #555; line-height: 1.6; margin-bottom: 1.1rem; }
+        .btn-card {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: .55rem;
+            background: #275c00;
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 2px;
+            transition: background .18s;
+        }
+        .btn-card:hover { background: #1c4400; }
+
+        /* ── Placeholder ── */
+        .placeholder-box {
+            text-align: center;
+            padding: 3.5rem 1rem;
+            background: #fff;
+            border: 1px dashed #c8d8c8;
+            border-radius: 2px;
+            color: #999;
+        }
+        .placeholder-box p { font-size: .92rem; line-height: 1.75; }
+        .placeholder-box a  { color: #1c4400; font-weight: 700; text-decoration: none; border-bottom: 1px solid #275c00; }
+
+        /* ── Footer ── */
+        footer {
+            background: #275c00;
+            color: rgba(255,255,255,.9);
+            text-align: center;
+            padding: 1.4rem 2rem;
+            font-size: .75rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            border-top: 3px solid #1c4400;
+        }
+        footer strong { color: #fff; font-weight: 800; }
+    </style>
 </head>
 <body>
-    <h1>Products Page</h1>
-    <p>This is a static placeholder for the products page.</p>
+
+<!-- Header -->
+<header>
+    <a class="nav-brand" th:href="@{/products}">Wild Beyond</a>
+    <div class="nav-links">
+        <a th:href="@{/products}">Browse</a>
+        <a th:href="@{/orders}" sec:authorize="isAuthenticated()">My Orders</a>
+        <a th:href="@{/products/new}" sec:authorize="hasAnyRole('SELLER','ADMIN')" class="nav-cta">+ List Product</a>
+        <a th:href="@{/auth/login}"    sec:authorize="isAnonymous()" class="nav-cta">Login</a>
+        <a th:href="@{/auth/register}" sec:authorize="isAnonymous()">Register</a>
+        <form th:action="@{/auth/logout}" method="post" style="display:flex;" sec:authorize="isAuthenticated()">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+    <h1>The <span>Wild</span> Marketplace</h1>
+    <p>Discover unique products from the wilderness — sourced, crafted, and traded by wild-hearted sellers.</p>
+</div>
+
+<!-- Product Listing -->
+<div class="grid-section">
+    <p class="section-title">All Products</p>
+
+    <div class="placeholder-box">
+        <p>
+            No products have been listed yet.<br>
+            <span sec:authorize="hasAnyRole('SELLER','ADMIN')">
+                Be the first — <a th:href="@{/products/new}">list a product</a>.
+            </span>
+            <span sec:authorize="isAnonymous()">
+                <a th:href="@{/auth/register}">Register as a seller</a> to list products.
+            </span>
+        </p>
+    </div>
+
+    <div class="product-grid" style="margin-top:1.5rem;">
+
+        <div class="product-card">
+            <h3>Wild Forest Honey</h3>
+            <div class="price">$12.99</div>
+            <div class="seller">by WildHarvest Co.</div>
+            <div class="desc">Raw, unfiltered honey from deep forest hives. Rich in antioxidants and natural enzymes.</div>
+            <a href="#" class="btn-card">View Details</a>
+        </div>
+
+        <div class="product-card">
+            <h3>Dried Herbal Bundle</h3>
+            <div class="price">$8.50</div>
+            <div class="seller">by NatureCraft</div>
+            <div class="desc">Hand-picked and dried herbs for teas, aromatherapy, and natural remedies.</div>
+            <a href="#" class="btn-card">View Details</a>
+        </div>
+
+        <div class="product-card">
+            <h3>Carved Timber Figurine</h3>
+            <div class="price">$34.00</div>
+            <div class="seller">by WoodSpirit</div>
+            <div class="desc">Handcrafted wildlife figurines carved from sustainably sourced timber.</div>
+            <a href="#" class="btn-card">View Details</a>
+        </div>
+
+        <div class="product-card">
+            <h3>Wolf Spirit Candle</h3>
+            <div class="price">$18.00</div>
+            <div class="seller">by WildFlame</div>
+            <div class="desc">Soy-wax candle with pine, cedar, and earth scent notes. Burns 45+ hours.</div>
+            <a href="#" class="btn-card">View Details</a>
+        </div>
+
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <strong>Wild Beyond</strong> &nbsp;&mdash;&nbsp; The Wild Marketplace &nbsp;&mdash;&nbsp; &copy; 2026
+</footer>
+
 </body>
 </html>
