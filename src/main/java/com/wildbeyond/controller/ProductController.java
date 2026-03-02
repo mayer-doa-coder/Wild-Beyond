@@ -1,33 +1,42 @@
 package com.wildbeyond.controller;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.util.List;
+
+/**
+ * Serves product-related Thymeleaf views.
+ * Write operations are stubs — will be wired to ProductService in a future iteration.
+ */
+@Controller
 @RequestMapping("/products")
 public class ProductController {
 
     @GetMapping("")
-    public void getAllProducts() {
-        // ...method signature only
+    public String getAllProducts(Model model) {
+        model.addAttribute("products", List.of());
+        return "products";
     }
 
     @GetMapping("/{id}")
-    public void getProductById(@PathVariable Long id) {
-        // ...method signature only
+    public String getProductById(@PathVariable Long id) {
+        return "redirect:/products";
     }
 
     @PostMapping("")
-    public void createProduct(/* @RequestBody ProductDTO productDTO */) {
-        // ...method signature only
+    public String createProduct() {
+        return "redirect:/products";
     }
 
-    @PutMapping("/{id}")
-    public void updateProduct(@PathVariable Long id/*, @RequestBody ProductDTO productDTO */) {
-        // ...method signature only
+    @PostMapping("/{id}/edit")
+    public String updateProduct(@PathVariable Long id) {
+        return "redirect:/products";
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id) {
-        // ...method signature only
+    @PostMapping("/{id}/delete")
+    public String deleteProduct(@PathVariable Long id) {
+        return "redirect:/products";
     }
 }

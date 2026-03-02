@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Wild Beyond</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; background: #f4f6f8; color: #1a1a1a; }
+        header { background: #1b3a0d; padding: 0 2.5rem; min-height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-brand { font-size: 1.5rem; font-weight: 800; color: #fff; text-decoration: none; }
+        .nav-brand span { color: rgba(160,220,100,.85); }
+        .hdr-right { display: flex; align-items: center; gap: 1rem; }
+        .badge { background: #c0392b; color: #fff; font-size: .75rem; font-weight: 700; padding: .25rem .6rem; border-radius: 3px; text-transform: uppercase; }
+        .hdr-right a, .hdr-right button { color: rgba(255,255,255,.8); text-decoration: none; font-size: .85rem; font-weight: 600; background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 2px; padding: .35rem .75rem; cursor: pointer; }
+        .hdr-right a:hover, .hdr-right button:hover { background: rgba(255,255,255,.12); color: #fff; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
+        h1 { font-size: 1.8rem; margin-bottom: 1.5rem; color: #1b3a0d; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+        .card { background: #fff; border-radius: 6px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,.08); border-left: 4px solid #1b3a0d; }
+        .card h3 { font-size: .85rem; color: #666; text-transform: uppercase; margin-bottom: .5rem; }
+        .card .val { font-size: 2rem; font-weight: 700; color: #1b3a0d; }
+        .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1rem; }
+        .links a { display: block; background: #fff; border-radius: 6px; padding: 1.2rem; text-decoration: none; color: #1a1a1a; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,.06); transition: transform .15s, box-shadow .15s; }
+        .links a:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+        .links a small { display: block; color: #888; font-weight: 400; margin-top: .3rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="nav-brand" th:href="@{/}">Wild<span>Beyond</span></a>
+        <div class="hdr-right">
+            <span class="badge">Admin</span>
+            <a th:href="@{/products}">Products</a>
+            <form th:action="@{/auth/logout}" method="post" style="display:inline">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+    </header>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <div class="cards">
+            <div class="card"><h3>Total Users</h3><div class="val">&mdash;</div></div>
+            <div class="card"><h3>Total Products</h3><div class="val">&mdash;</div></div>
+            <div class="card"><h3>Total Orders</h3><div class="val">&mdash;</div></div>
+            <div class="card"><h3>Revenue</h3><div class="val">&mdash;</div></div>
+        </div>
+        <h2 style="margin-bottom:1rem;font-size:1.2rem;color:#333;">Quick Actions</h2>
+        <div class="links">
+            <a th:href="@{/users}">Manage Users <small>View and manage all accounts</small></a>
+            <a th:href="@{/products}">Manage Products <small>View all product listings</small></a>
+            <a th:href="@{/orders}">Manage Orders <small>View all customer orders</small></a>
+        </div>
+    </div>
+</body>
+</html>

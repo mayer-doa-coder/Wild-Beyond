@@ -1,33 +1,27 @@
 package com.wildbeyond.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+/**
+ * Order controller — stub. Redirects to products until order views are built.
+ */
+@Controller
 @RequestMapping("/orders")
 public class OrderController {
 
     @GetMapping("")
-    public void getAllOrders() {
-        // ...method signature only
+    public String getAllOrders() {
+        return "redirect:/products";
     }
 
     @GetMapping("/{id}")
-    public void getOrderById(@PathVariable Long id) {
-        // ...method signature only
+    public String getOrderById(@PathVariable Long id) {
+        return "redirect:/orders";
     }
 
     @PostMapping("")
-    public void createOrder(/* @RequestBody OrderDTO orderDTO */) {
-        // ...method signature only
-    }
-
-    @PutMapping("/{id}")
-    public void updateOrder(@PathVariable Long id/*, @RequestBody OrderDTO orderDTO */) {
-        // ...method signature only
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteOrder(@PathVariable Long id) {
-        // ...method signature only
+    public String createOrder() {
+        return "redirect:/orders";
     }
 }
