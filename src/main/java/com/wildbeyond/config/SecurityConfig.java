@@ -156,7 +156,7 @@ public class SecurityConfig {
                 .loginProcessingUrl("/auth/login")        // POST — Spring processes credentials
                 .usernameParameter("email")               // form field name (not "username")
                 .passwordParameter("password")
-                .defaultSuccessUrl("/products", true)     // redirect after successful login
+                .defaultSuccessUrl("/dashboard", true)    // redirect to role-based dashboard
                 .failureUrl("/auth/login?error=true")     // redirect on bad credentials
                 .permitAll()
             )
