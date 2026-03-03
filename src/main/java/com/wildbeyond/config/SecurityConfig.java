@@ -114,6 +114,12 @@ public class SecurityConfig {
             // warning about UserDetailsService bean + AuthenticationProvider bean coexisting.
             .authenticationProvider(authenticationProvider())
 
+            // ── HTTP Basic Auth (REST API clients) ────────────────────────────
+            // Enables Authorization: Basic <base64> on /api/** requests.
+            // Allows Thunder Client / Postman / curl to authenticate without a browser session.
+            // Form login still handles browser-based authentication normally.
+            .httpBasic(basic -> {})
+
             // ── URL Access Rules ─────────────────────────────────────────────
             .authorizeHttpRequests(auth -> auth
 
@@ -121,6 +127,10 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/css/**", "/js/**", "/images/**", "/webjars/**"
                 ).permitAll()
+
+                // Spring Boot default error endpoint — must be public so error messages
+                // are returned correctly instead of redirecting to login (401).
+                .requestMatchers("/error").permitAll()
 
                 // Public pages — no login required
                 .requestMatchers(
@@ -136,6 +146,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,   "/products").hasAnyRole("SELLER", "ADMIN")
                 .requestMatchers(HttpMethod.PUT,    "/products/**").hasAnyRole("SELLER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasAnyRole("SELLER", "ADMIN")
+
+                // REST API — /api/products (public read, SELLER/ADMIN write)
+                .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
+                .requestMatchers(HttpMethod.POST,   "/api/products").hasAnyRole("SELLER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT,    "/api/products/**").hasAnyRole("SELLER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("SELLER", "ADMIN")
 
                 // Admin only — full user management and admin dashboard
                 .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -171,10 +187,16 @@ public class SecurityConfig {
             )
 
             // ── CSRF ──────────────────────────────────────────────────────────
-            // CSRF protection is ENABLED (Spring Security default).
-            // Thymeleaf automatically injects the _csrf token into all forms,
-            // so no manual token handling is needed in templates.
-            // Do NOT disable CSRF for a form-based web application.
+            // CSRF protection is ENABLED for all Thymeleaf form-based routes.
+            // Thymeleaf automatically injects the _csrf token into all forms.
+            //
+            // REST API endpoints (/api/**) are exempt:
+            //   - They are consumed by API clients (Postman, fetch, etc.) that
+            //     do not carry the session cookie used for CSRF validation.
+            //   - Authorization is still enforced via Spring Security roles.
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/**")
+            )
             ;
 
         return http.build();

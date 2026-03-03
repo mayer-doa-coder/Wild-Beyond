@@ -1,24 +1,29 @@
 package com.wildbeyond.controller;
 
+import com.wildbeyond.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
- * Product views.
+ * Product views (Thymeleaf MVC).
  * GET endpoints are public (browsing). Write operations require SELLER or ADMIN.
  * URL-level rules are in SecurityConfig; @PreAuthorize adds defense-in-depth.
+ *
+ * REST operations live in controller/rest/ProductRestController.
  */
 @Controller
 @RequestMapping("/products")
+@RequiredArgsConstructor
 public class ProductController {
+
+    private final ProductService productService;
 
     @GetMapping("")
     public String getAllProducts(Model model) {
-        model.addAttribute("products", List.of());
+        model.addAttribute("products", productService.findAll());
         return "products";
     }
 
