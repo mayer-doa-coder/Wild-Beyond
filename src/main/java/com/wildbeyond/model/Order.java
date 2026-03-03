@@ -1,5 +1,6 @@
 package com.wildbeyond.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,7 +38,11 @@ public class Order {
      * Order → User (Buyer)  (ManyToOne)
      * Owning side – holds the FK column buyer_id.
      * LAZY – do not pull entire User when loading an Order.
+     *
+     * @JsonIgnore prevents circular serialization: Order → User.orders → [Order...]
+     * Buyer identity is not exposed in REST responses; resolve from /api/users/{id}.
      */
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "buyer_id", nullable = false)
     private User buyer;
@@ -46,8 +51,13 @@ public class Order {
      * Order → OrderItem  (OneToMany)
      * Inverse side – OrderItem owns the FK (order_id).
      * CascadeType.ALL + orphanRemoval: items live and die with the Order.
+     *
+     * EAGER – items are always serialized with the order in REST responses.
+     * LAZY would cause LazyInitializationException after the transaction closes
+     * because open-in-view is disabled (spring.jpa.open-in-view=false).
      */
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true,
+               fetch = FetchType.EAGER)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 

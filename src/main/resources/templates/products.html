@@ -211,7 +211,7 @@
 <div class="grid-section">
     <p class="section-title">All Products</p>
 
-    <div class="placeholder-box">
+    <div class="placeholder-box" th:if="${#lists.isEmpty(products)}">
         <p>
             No products have been listed yet.<br>
             <span sec:authorize="hasAnyRole('SELLER','ADMIN')">
@@ -223,38 +223,15 @@
         </p>
     </div>
 
-    <div class="product-grid" style="margin-top:1.5rem;">
+    <div class="product-grid" style="margin-top:1.5rem;" th:if="${not #lists.isEmpty(products)}">
 
-        <div class="product-card">
-            <h3>Wild Forest Honey</h3>
-            <div class="price">$12.99</div>
-            <div class="seller">by WildHarvest Co.</div>
-            <div class="desc">Raw, unfiltered honey from deep forest hives. Rich in antioxidants and natural enzymes.</div>
-            <a href="#" class="btn-card">View Details</a>
-        </div>
-
-        <div class="product-card">
-            <h3>Dried Herbal Bundle</h3>
-            <div class="price">$8.50</div>
-            <div class="seller">by NatureCraft</div>
-            <div class="desc">Hand-picked and dried herbs for teas, aromatherapy, and natural remedies.</div>
-            <a href="#" class="btn-card">View Details</a>
-        </div>
-
-        <div class="product-card">
-            <h3>Carved Timber Figurine</h3>
-            <div class="price">$34.00</div>
-            <div class="seller">by WoodSpirit</div>
-            <div class="desc">Handcrafted wildlife figurines carved from sustainably sourced timber.</div>
-            <a href="#" class="btn-card">View Details</a>
-        </div>
-
-        <div class="product-card">
-            <h3>Wolf Spirit Candle</h3>
-            <div class="price">$18.00</div>
-            <div class="seller">by WildFlame</div>
-            <div class="desc">Soy-wax candle with pine, cedar, and earth scent notes. Burns 45+ hours.</div>
-            <a href="#" class="btn-card">View Details</a>
+        <div class="product-card" th:each="product : ${products}">
+            <h3 th:text="${product.name}">Product Name</h3>
+            <div class="price" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</div>
+            <div class="desc" th:text="${product.description != null ? product.description : 'No description available.'}">Description</div>
+            <div class="desc" style="font-size:.8rem;color:#888;margin-top:.3rem;"
+                 th:text="'Stock: ' + ${product.stock}">Stock: 0</div>
+            <a th:href="@{/products/{id}(id=${product.id})}" class="btn-card">View Details</a>
         </div>
 
     </div>
