@@ -153,6 +153,23 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,    "/api/products/**").hasAnyRole("SELLER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("SELLER", "ADMIN")
 
+                // REST API — /api/orders
+                //   POST   /api/orders        — BUYER & ADMIN only (sellers sell, buyers buy)
+                //   GET    /api/orders        — ADMIN only (full platform view)
+                //   GET    /api/orders/my     — any authenticated user sees their own orders
+                //   GET    /api/orders/{id}   — any authenticated user
+                //   DELETE /api/orders/{id}   — ADMIN only
+                //
+                // IMPORTANT: Specific paths must come before wildcards.
+                // Spring's AntPathMatcher matches /api/orders/** against /api/orders
+                // (the ** wildcard includes zero segments), so if the wildcard rule
+                // appears first it shadows the exact-path rule below it.
+                .requestMatchers(HttpMethod.POST,   "/api/orders").hasAnyRole("BUYER", "ADMIN")
+                .requestMatchers(HttpMethod.GET,    "/api/orders").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET,    "/api/orders/my").authenticated()
+                .requestMatchers(HttpMethod.GET,    "/api/orders/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasRole("ADMIN")
+
                 // Admin only — full user management and admin dashboard
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/users/**").hasRole("ADMIN")
