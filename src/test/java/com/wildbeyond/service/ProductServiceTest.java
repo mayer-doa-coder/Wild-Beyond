@@ -186,6 +186,7 @@ class ProductServiceTest {
 
     @Test
     void delete_callsRepository_withCorrectId() {
+        when(productRepository.existsById(10L)).thenReturn(true);
         doNothing().when(productRepository).deleteById(10L);
 
         productService.delete(10L);
