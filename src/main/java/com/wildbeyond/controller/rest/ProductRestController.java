@@ -19,8 +19,8 @@ import java.util.List;
  *
  * Public:                 GET  /api/products
  *                         GET  /api/products/{id}
- * SELLER or ADMIN:        POST /api/products
- *                         PUT  /api/products/{id}
+ * SELLER only:            POST /api/products
+ * SELLER + ADMIN:         PUT  /api/products/{id}
  *                         DELETE /api/products/{id}
  *
  * URL-level access rules are defined in SecurityConfig.
@@ -48,9 +48,12 @@ public class ProductRestController {
         return ResponseEntity.ok(productService.findById(id));
     }
 
-    // ── Write (SELLER / ADMIN only) ───────────────────────────────────────────
+    // ── Write ─────────────────────────────────────────────────────────────────
+    // POST  → SELLER only  (sellers list their own products)
+    // PUT   → SELLER + ADMIN  (admin can correct/update any listing)
+    // DELETE → SELLER + ADMIN  (admin can remove harmful content)
 
-    @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
+    @PreAuthorize("hasRole('SELLER')")
     @PostMapping
     public ResponseEntity<Product> create(@Valid @RequestBody ProductDTO dto) {
         Product saved = productService.create(dto);
