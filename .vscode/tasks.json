@@ -44,10 +44,10 @@
         {
             "label": "App: Run",
             "type": "shell",
-            "command": "$env:JAVA_HOME = 'C:\\Program Files\\Java\\jdk-25'; & 'C:\\Users\\ttawh\\.m2\\wrapper\\dists\\apache-maven-3.9.12\\59fe215c0ad6947fea90184bf7add084544567b927287592651fda3782e0e798\\bin\\mvn.cmd' -f 'D:\\Wild-Beyond\\pom.xml' 'spring-boot:run'",
+            "command": "$env:JAVA_HOME = 'C:\\Program Files\\Microsoft\\jdk-17.0.18.8-hotspot'; & 'C:\\Users\\88017\\.m2\\wrapper\\dists\\apache-maven-3.9.12\\59fe215c0ad6947fea90184bf7add084544567b927287592651fda3782e0e798\\bin\\mvn.cmd' -f 'E:\\Wild-Beyond\\pom.xml' 'spring-boot:run'",
             "options": {
                 "shell": {
-                    "executable": "pwsh",
+                    "executable": "powershell",
                     "args": ["-NoLogo", "-NonInteractive", "-Command"]
                 }
             },
@@ -61,10 +61,10 @@
         {
             "label": "App: Build (compile only)",
             "type": "shell",
-            "command": "$env:JAVA_HOME = 'C:\\Program Files\\Java\\jdk-25'; & 'C:\\Users\\ttawh\\.m2\\wrapper\\dists\\apache-maven-3.9.12\\59fe215c0ad6947fea90184bf7add084544567b927287592651fda3782e0e798\\bin\\mvn.cmd' -f 'D:\\Wild-Beyond\\pom.xml' 'compile' '-q'",
+            "command": "$env:JAVA_HOME = 'C:\\Program Files\\Microsoft\\jdk-17.0.18.8-hotspot'; & 'C:\\Users\\88017\\.m2\\wrapper\\dists\\apache-maven-3.9.12\\59fe215c0ad6947fea90184bf7add084544567b927287592651fda3782e0e798\\bin\\mvn.cmd' -f 'E:\\Wild-Beyond\\pom.xml' 'compile' '-q'",
             "options": {
                 "shell": {
-                    "executable": "pwsh",
+                    "executable": "powershell",
                     "args": ["-NoLogo", "-NonInteractive", "-Command"]
                 }
             },
