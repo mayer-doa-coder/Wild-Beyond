@@ -1,0 +1,26 @@
+# Test-only datasource — overrides src/main/resources/application.yml.
+# Uses H2 in-memory database so @SpringBootTest can load the full context
+# without a running PostgreSQL instance.
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop   # build schema fresh for each test run
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+
+  # Disable Liquibase / Flyway if present
+  liquibase:
+    enabled: false
+  flyway:
+    enabled: false
+
+logging:
+  level:
+    root: WARN
+    com.wildbeyond: INFO

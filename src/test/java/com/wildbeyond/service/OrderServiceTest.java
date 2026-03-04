@@ -1,0 +1,219 @@
+package com.wildbeyond.service;
+
+import com.wildbeyond.dto.OrderDTO;
+import com.wildbeyond.dto.OrderItemDTO;
+import com.wildbeyond.exception.ResourceNotFoundException;
+import com.wildbeyond.model.*;
+import com.wildbeyond.repository.OrderRepository;
+import com.wildbeyond.repository.ProductRepository;
+import com.wildbeyond.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+/**
+ * Unit tests for OrderService.
+ *
+ * Uses Mockito only — no Spring context or database required.
+ * The Spring Security context is manually set up per test and torn down after.
+ * Covers: create, findAll, findMyOrders, findById, delete.
+ */
+@ExtendWith(MockitoExtension.class)
+class OrderServiceTest {
+
+    @Mock
+    private OrderRepository orderRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private ProductRepository productRepository;
+
+    @InjectMocks
+    private OrderService orderService;
+
+    private User buyer;
+    private User seller;
+    private Product product;
+    private Order order;
+
+    @BeforeEach
+    void setUp() {
+        seller = new User();
+        seller.setId(2L);
+        seller.setEmail("seller@example.com");
+
+        buyer = new User();
+        buyer.setId(1L);
+        buyer.setEmail("buyer@example.com");
+
+        product = Product.builder()
+                .id(10L)
+                .name("Hiking Boots")
+                .price(BigDecimal.valueOf(100.00))
+                .stock(20)
+                .seller(seller)
+                .build();
+
+        order = new Order();
+        order.setId(5L);
+        order.setBuyer(buyer);
+        order.setStatus(OrderStatus.PENDING);
+        order.setTotalPrice(BigDecimal.valueOf(200.00));
+    }
+
+    @AfterEach
+    void tearDown() {
+        // Clear security context so tests don't bleed into each other
+        SecurityContextHolder.clearContext();
+    }
+
+    // ── Helper ───────────────────────────────────────────────────────────────
+
+    /**
+     * Puts a fake Authentication into the SecurityContextHolder so that
+     * OrderService.currentUser() can resolve the email principal.
+     */
+    private void mockSecurityContext(String email) {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(email);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
+    // ── create ───────────────────────────────────────────────────────────────
+
+    @Test
+    void create_savesOrder_forAuthenticatedBuyer() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(10L);
+        itemDto.setQuantity(2);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> {
+            Order o = inv.getArgument(0);
+            o.setId(5L);
+            return o;
+        });
+
+        Order result = orderService.create(dto);
+
+        assertThat(result.getBuyer()).isEqualTo(buyer);
+        assertThat(result.getStatus()).isEqualTo(OrderStatus.PENDING);
+        // 2 × £100.00 = £200.00
+        assertThat(result.getTotalPrice()).isEqualByComparingTo(BigDecimal.valueOf(200.00));
+        verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    void create_throwsResourceNotFound_whenProductMissing() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(99L);
+        itemDto.setQuantity(1);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        when(productRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.create(dto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Product not found with id: 99");
+
+        verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    void create_throwsResourceNotFound_whenAuthenticatedUserMissing() {
+        mockSecurityContext("ghost@example.com");
+        when(userRepository.findByEmail("ghost@example.com")).thenReturn(Optional.empty());
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(new OrderItemDTO()));
+
+        assertThatThrownBy(() -> orderService.create(dto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("ghost@example.com");
+    }
+
+    // ── findAll ──────────────────────────────────────────────────────────────
+
+    @Test
+    void findAll_returnsAllOrders() {
+        when(orderRepository.findAll()).thenReturn(List.of(order));
+
+        List<Order> result = orderService.findAll();
+
+        assertThat(result).hasSize(1).contains(order);
+    }
+
+    // ── findById ─────────────────────────────────────────────────────────────
+
+    @Test
+    void findById_returnsOrder_whenExists() {
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+
+        Order result = orderService.findById(5L);
+
+        assertThat(result.getId()).isEqualTo(5L);
+        assertThat(result.getStatus()).isEqualTo(OrderStatus.PENDING);
+    }
+
+    @Test
+    void findById_throwsResourceNotFound_whenMissing() {
+        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.findById(99L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Order not found with id: 99");
+    }
+
+    // ── delete ───────────────────────────────────────────────────────────────
+
+    @Test
+    void delete_deletesOrder_whenExists() {
+        when(orderRepository.existsById(5L)).thenReturn(true);
+        doNothing().when(orderRepository).deleteById(5L);
+
+        assertThatNoException().isThrownBy(() -> orderService.delete(5L));
+
+        verify(orderRepository).deleteById(5L);
+    }
+
+    @Test
+    void delete_throwsResourceNotFound_whenOrderMissing() {
+        when(orderRepository.existsById(99L)).thenReturn(false);
+
+        assertThatThrownBy(() -> orderService.delete(99L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Order not found with id: 99");
+
+        verify(orderRepository, never()).deleteById(any());
+    }
+}
