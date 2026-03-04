@@ -142,19 +142,22 @@ public class SecurityConfig {
                 // Product browsing — public (GET only)
                 .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
 
-                // Seller & Admin — product management (write operations)
-                .requestMatchers(HttpMethod.POST,   "/products").hasAnyRole("SELLER", "ADMIN")
+                // Product write rules:
+                //   POST   → SELLER only  (only sellers list products)
+                //   PUT    → SELLER + ADMIN  (admin can correct any listing)
+                //   DELETE → SELLER + ADMIN  (admin can remove harmful content)
+                .requestMatchers(HttpMethod.POST,   "/products").hasRole("SELLER")
                 .requestMatchers(HttpMethod.PUT,    "/products/**").hasAnyRole("SELLER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasAnyRole("SELLER", "ADMIN")
 
-                // REST API — /api/products (public read, SELLER/ADMIN write)
+                // REST API — /api/products
                 .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
-                .requestMatchers(HttpMethod.POST,   "/api/products").hasAnyRole("SELLER", "ADMIN")
+                .requestMatchers(HttpMethod.POST,   "/api/products").hasRole("SELLER")
                 .requestMatchers(HttpMethod.PUT,    "/api/products/**").hasAnyRole("SELLER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("SELLER", "ADMIN")
 
                 // REST API — /api/orders
-                //   POST   /api/orders        — BUYER & ADMIN only (sellers sell, buyers buy)
+                //   POST   /api/orders        — BUYER only (sellers sell, buyers buy)
                 //   GET    /api/orders        — ADMIN only (full platform view)
                 //   GET    /api/orders/my     — any authenticated user sees their own orders
                 //   GET    /api/orders/{id}   — any authenticated user
@@ -164,7 +167,7 @@ public class SecurityConfig {
                 // Spring's AntPathMatcher matches /api/orders/** against /api/orders
                 // (the ** wildcard includes zero segments), so if the wildcard rule
                 // appears first it shadows the exact-path rule below it.
-                .requestMatchers(HttpMethod.POST,   "/api/orders").hasAnyRole("BUYER", "ADMIN")
+                .requestMatchers(HttpMethod.POST,   "/api/orders").hasRole("BUYER")
                 .requestMatchers(HttpMethod.GET,    "/api/orders").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,    "/api/orders/my").authenticated()
                 .requestMatchers(HttpMethod.GET,    "/api/orders/**").authenticated()

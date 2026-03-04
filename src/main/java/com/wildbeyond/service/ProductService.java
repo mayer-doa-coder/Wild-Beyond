@@ -94,10 +94,16 @@ public class ProductService {
     }
 
     /**
-     * Delete a product by id. No-op if the id does not exist.
+     * Delete a product by id.
+     *
+     * @throws ResourceNotFoundException if no Product exists with the given id,
+     *         so the controller returns 404 instead of a silent 204.
      */
     @Transactional
     public void delete(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Product not found with id: " + id);
+        }
         productRepository.deleteById(id);
     }
 }

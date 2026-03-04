@@ -41,11 +41,11 @@ public class OrderRestController {
     /**
      * POST /api/orders
      * Places a new order for the current authenticated buyer.
-     * Only BUYER and ADMIN roles are permitted — sellers sell, buyers buy.
+     * Only BUYER role is permitted — sellers sell, buyers buy.
      * Status is automatically set to PENDING.
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('BUYER', 'ADMIN')")
+    @PreAuthorize("hasRole('BUYER')")
     public ResponseEntity<Order> create(@Valid @RequestBody OrderDTO dto) {
         Order saved = orderService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
