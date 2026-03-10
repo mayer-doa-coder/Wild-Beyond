@@ -148,7 +148,7 @@ class ProductRestControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "SELLER")
     void create_returns201_whenAdminAuthorized() throws Exception {
         when(productService.create(any(ProductDTO.class))).thenReturn(product);
 

@@ -3,9 +3,9 @@ spring:
     name: Wild-Beyond
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5433/wild_beyond}
-    username: ${DB_USERNAME:wildbeyond}
-    password: ${DB_PASSWORD:wildbeyond123}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -25,7 +25,7 @@ server:
 
 logging:
   file:
-    name: E:/Wild-Beyond/app.log
+    name: D:/Wild-Beyond/app.log
   level:
     root: INFO
     org.hibernate.SQL: DEBUG

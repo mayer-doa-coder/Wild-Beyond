@@ -11,6 +11,30 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wildbeyond -d wild_beyond"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # App service — only started when the "app" profile is active.
+  # Usage: docker-compose --profile app up -d
+  # Build the JAR first: App: Package task, then Docker: Build Image task.
+  app:
+    profiles: [app]
+    build: .
+    image: wild-beyond-app:latest
+    container_name: wild_beyond_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/wild_beyond
+      DB_USERNAME: wildbeyond
+      DB_PASSWORD: wildbeyond123
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
 
 volumes:
   postgres_data:

@@ -107,7 +107,7 @@ class OrderRestControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "BUYER")
     void create_returns201_whenAdminPlacesOrder() throws Exception {
         when(orderService.create(any(OrderDTO.class))).thenReturn(order);
 
