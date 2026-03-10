@@ -22,10 +22,15 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 @RequiredArgsConstructor
-@PreAuthorize("isAuthenticated()")
 public class DashboardController {
 
+    @GetMapping("/")
+    public String redirectRoot() {
+        return "redirect:/auth/login";
+    }
+
     @GetMapping("/dashboard")
+    @PreAuthorize("isAuthenticated()")
     public String dashboard(Authentication authentication) {
 
         if (authentication.getAuthorities().stream()

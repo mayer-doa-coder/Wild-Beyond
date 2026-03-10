@@ -25,7 +25,7 @@ server:
 
 logging:
   file:
-    name: D:/Wild-Beyond/app.log
+    name: ${LOG_PATH:./app.log}
   level:
     root: INFO
     org.hibernate.SQL: DEBUG
