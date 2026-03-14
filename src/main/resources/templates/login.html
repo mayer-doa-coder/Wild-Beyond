@@ -1,104 +1,61 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Wild Beyond</title>
+    <title>Login | WildBeyond</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Titillium+Web:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh; overflow: hidden;
-            display: flex; flex-direction: column;
-            background: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.55)),
-                        url('/images/lion.jpg') center/cover no-repeat;
-            color: #1a1a1a;
-        }
-        header {
-            background: rgba(15,35,8,.72);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 0 2.5rem; min-height: 68px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,.08);
-        }
-        .nav-brand { font-size: 1.7rem; font-weight: 800; color: #fff; text-decoration: none; letter-spacing: -.01em; }
-        .nav-brand span { color: rgba(160,220,100,.85); }
-        .header-nav a { color: rgba(255,255,255,.8); text-decoration: none; font-size: .88rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; padding: .38rem .85rem; border: 1px solid rgba(255,255,255,.25); border-radius: 2px; transition: background .18s, color .18s; }
-        .header-nav a:hover { background: rgba(255,255,255,.12); color: #fff; }
-        .page-center { flex: 1; display: flex; justify-content: center; align-items: center; padding: 1rem; }
-        .card {
-            background: rgba(255,255,255,.92);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border-top: 5px solid #275c00;
-            border-radius: 4px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.45), 0 4px 16px rgba(0,0,0,.25);
-            width: 100%; max-width: 420px;
-            padding: 2.75rem 2.5rem;
-        }
-        .brand { text-align: center; margin-bottom: 2rem; }
-        .brand h1 { font-size: 1.7rem; font-weight: 800; color: #1a1a1a; letter-spacing: -.01em; }
-        .brand h1 span { color: #1c4400; }
-        .brand p { font-size: .82rem; color: #777; margin-top: .3rem; text-transform: uppercase; letter-spacing: .06em; }
-        .alert { padding: .7rem 1rem; border-radius: 2px; font-size: .875rem; margin-bottom: 1.25rem; }
-        .alert-error   { background: #fdecea; border-left: 4px solid #c0392b; color: #7b241c; }
-        .alert-success { background: #f5fce8; border-left: 4px solid #275c00; color: #1c4400; }
-        .field { display: flex; flex-direction: column; margin-bottom: 1.1rem; }
-        .field label { font-size: .75rem; font-weight: 700; color: #444; margin-bottom: .4rem; text-transform: uppercase; letter-spacing: .06em; }
-        .field input { padding: .65rem .9rem; border: 1px solid #d0d0d0; border-radius: 2px; font-size: .95rem; color: #1a1a1a; transition: border-color .18s, box-shadow .18s; background: #fafafa; }
-        .field input:focus { outline: none; border-color: #275c00; box-shadow: 0 0 0 3px rgba(39,92,0,.18); background: #fff; }
-        .btn { width: 100%; padding: .85rem; background: #275c00; color: #fff; border: none; border-radius: 2px; font-size: .85rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; margin-top: .75rem; transition: background .18s; }
-        .btn:hover { background: #1c4400; }
-        .divider { border: none; border-top: 1px solid #e8e8e8; margin: 1.5rem 0 1.25rem; }
-        .footer-link { text-align: center; font-size: .84rem; color: #555; }
-        .footer-link a { color: #1c4400; font-weight: 700; text-decoration: none; }
-        .footer-link a:hover { text-decoration: underline; }
-        footer {
-            background: rgba(15,35,8,.72);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: rgba(255,255,255,.85);
-            text-align: center; padding: 1.4rem 2rem;
-            font-size: .8rem; letter-spacing: .08em; text-transform: uppercase;
-            border-top: 1px solid rgba(255,255,255,.08);
-        }
-        footer strong { color: #fff; }
+        * { font-family: 'Titillium Web', sans-serif; }
+        .super-title { font-family: 'Permanent Marker', cursive; }
+        .brand-mark { font-family: 'Permanent Marker', cursive; letter-spacing: .02em; }
     </style>
 </head>
-<body>
-<header>
-    <a class="nav-brand" th:href="@{/products}">Wild <span>Beyond</span></a>
-    <nav class="header-nav"><a th:href="@{/auth/register}">Register</a></nav>
-</header>
-<div class="page-center">
-    <div class="card">
-        <div class="brand">
-            <h1>Wild <span>Beyond</span></h1>
-            <p>Sign in to your account</p>
-        </div>
-        <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
-        <div th:if="${logoutMessage}" class="alert alert-success" th:text="${logoutMessage}"></div>
-        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-        <form th:action="@{/auth/login}" method="post">
-            <div class="field">
-                <label for="email">Email address</label>
-                <input type="email" id="email" name="email" placeholder="you@example.com" autofocus required />
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="flex-1 bg-cover bg-center"
+      style="background-image: linear-gradient(rgba(2,6,23,.55), rgba(2,6,23,.65)), url('/images/lion.jpg');">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20 flex justify-center">
+        <section class="w-full max-w-md bg-white/95 shadow-2xl border border-gray-200 p-8">
+            <div class="text-center mb-7">
+                <h1 class="super-title text-4xl text-gray-900">Sign In</h1>
+                <p class="mt-2 text-sm text-gray-600">Access your WildBeyond account</p>
             </div>
-            <div class="field">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Your password" required />
-            </div>
-            <button type="submit" class="btn">Sign In</button>
-        </form>
-        <hr class="divider">
-        <p class="footer-link">New here? <a th:href="@{/auth/register}">Create an account &rarr;</a></p>
+
+            <div th:if="${errorMessage}" class="mb-4 border-l-4 border-red-600 bg-red-50 px-4 py-2 text-red-800 text-sm" th:text="${errorMessage}"></div>
+            <div th:if="${logoutMessage}" class="mb-4 border-l-4 border-emerald-700 bg-emerald-50 px-4 py-2 text-emerald-800 text-sm" th:text="${logoutMessage}"></div>
+            <div th:if="${successMessage}" class="mb-4 border-l-4 border-emerald-700 bg-emerald-50 px-4 py-2 text-emerald-800 text-sm" th:text="${successMessage}"></div>
+
+            <form th:action="@{/auth/login}" method="post" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-xs font-semibold uppercase tracking-[.12em] text-gray-600 mb-1">Email</label>
+                    <input id="email" name="email" type="email" required placeholder="you@example.com"
+                           class="w-full border border-gray-300 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-700/30 focus:border-emerald-700">
+                </div>
+                <div>
+                    <label for="password" class="block text-xs font-semibold uppercase tracking-[.12em] text-gray-600 mb-1">Password</label>
+                    <input id="password" name="password" type="password" required placeholder="Your password"
+                           class="w-full border border-gray-300 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-700/30 focus:border-emerald-700">
+                </div>
+                <button type="submit" class="w-full bg-emerald-900 text-white py-2.5 font-semibold hover:bg-emerald-800 transition">Sign In</button>
+            </form>
+
+            <p class="mt-6 text-sm text-center text-gray-700">
+                New here?
+                <a th:href="@{/auth/register}" class="text-emerald-800 font-semibold hover:underline">Create an account</a>
+            </p>
+        </section>
     </div>
-</div>
-<footer><strong>Wild Beyond</strong> &nbsp;&mdash;&nbsp; The Wild Marketplace &nbsp;&mdash;&nbsp; &copy; 2026</footer>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 </body>
 </html>

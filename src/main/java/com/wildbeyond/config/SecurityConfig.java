@@ -135,6 +135,8 @@ public class SecurityConfig {
                 // Public pages — no login required
                 .requestMatchers(
                     "/",
+                    "/blog",
+                    "/explore",
                     "/auth/login",
                     "/auth/register"
                 ).permitAll()

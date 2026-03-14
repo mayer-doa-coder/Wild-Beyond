@@ -12,4 +12,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * Used for the seller dashboard and seller-scoped product filtering.
      */
     List<Product> findBySellerId(Long sellerId);
+
+    List<Product> findTop5ByOrderByIdDesc();
 }

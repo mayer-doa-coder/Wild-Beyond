@@ -23,8 +23,8 @@ import java.util.Set;
  * Uses "insert if absent" logic — safe to run repeatedly without duplicates.
  *
  * Admin credentials are read from environment variables:
- *   ADMIN_EMAIL    (default: admin@wildbeyond.com)
- *   ADMIN_PASSWORD (default: Admin@123)
+ *   ADMIN_EMAIL / APP_ADMIN_EMAIL    (default: admin@wildbeyond.com)
+ *   ADMIN_PASSWORD / APP_ADMIN_PASSWORD (default: Admin@123)
  */
 @Slf4j
 @Component
@@ -35,10 +35,10 @@ public class DataSeeder implements ApplicationRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${app.admin.email:admin@wildbeyond.com}")
+    @Value("${ADMIN_EMAIL:${APP_ADMIN_EMAIL:${app.admin.email:admin@wildbeyond.com}}}")
     private String adminEmail;
 
-    @Value("${app.admin.password:Admin@123}")
+    @Value("${ADMIN_PASSWORD:${APP_ADMIN_PASSWORD:${app.admin.password:Admin@123}}}")
     private String adminPassword;
 
     @Override
@@ -56,23 +56,27 @@ public class DataSeeder implements ApplicationRunner {
         }
 
         // ── Seed admin user ───────────────────────────────────────────────────
-        if (userRepository.existsByEmail(adminEmail)) {
-            log.debug("DataSeeder: admin user '{}' already exists — skipped", adminEmail);
-            return;
-        }
-
         Role adminRole = roleRepository.findByName("ADMIN")
                 .orElseThrow(() -> new RuntimeException("ADMIN role not found after seeding"));
 
-        User admin = User.builder()
+        User admin = userRepository.findByEmail(adminEmail)
+            .map(existing -> {
+                existing.setEnabled(true);
+                existing.setPassword(passwordEncoder.encode(adminPassword));
+
+                    existing.setRoles(Set.of(adminRole));
+
+                return existing;
+            })
+            .orElseGet(() -> User.builder()
                 .name("Admin")
                 .email(adminEmail)
                 .password(passwordEncoder.encode(adminPassword))
                 .enabled(true)
                 .roles(Set.of(adminRole))
-                .build();
+                .build());
 
         userRepository.save(admin);
-        log.info("DataSeeder: created default admin user '{}'", adminEmail);
+        log.info("DataSeeder: ensured default admin user '{}'", adminEmail);
     }
 }

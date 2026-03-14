@@ -43,6 +43,7 @@ HELP.md
 # ─── Logs ────────────────────────────────────────────────────────────────
 *.log
 *.log.gz
+test-output.txt
 
 # ─── Postman desktop app data (not project artifacts) ────────────────────
 .postman/

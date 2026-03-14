@@ -1,11 +1,17 @@
 package com.wildbeyond.controller;
 
+import com.wildbeyond.dto.ProductDTO;
+import com.wildbeyond.repository.UserRepository;
 import com.wildbeyond.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Product views (Thymeleaf MVC).
@@ -20,10 +26,14 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
+    private final UserRepository userRepository;
 
     @GetMapping("")
     public String getAllProducts(Model model) {
         model.addAttribute("products", productService.findAll());
+        ProductDTO newProduct = new ProductDTO();
+        newProduct.setSellerId(0L);
+        model.addAttribute("newProduct", newProduct);
         return "products";
     }
 
@@ -34,7 +44,25 @@ public class ProductController {
 
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
     @PostMapping("")
-    public String createProduct() {
+    public String createProduct(
+            @Valid @ModelAttribute("newProduct") ProductDTO dto,
+            BindingResult bindingResult,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("productCreateError", "Please provide valid product details.");
+            return "redirect:/products";
+        }
+
+        var user = userRepository.findByEmail(authentication.getName());
+        if (user.isEmpty()) {
+            redirectAttributes.addFlashAttribute("productCreateError", "Unable to resolve seller account for this session.");
+            return "redirect:/products";
+        }
+
+        dto.setSellerId(user.get().getId());
+        productService.create(dto);
+        redirectAttributes.addFlashAttribute("productCreateSuccess", "Product created successfully.");
         return "redirect:/products";
     }
 
