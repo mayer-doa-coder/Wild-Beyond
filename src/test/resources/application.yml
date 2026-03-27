@@ -24,3 +24,12 @@ logging:
   level:
     root: WARN
     com.wildbeyond: INFO
+
+app:
+  admin:
+    email: admin-test@wildbeyond.local
+    password: test-only-admin-password
+  security:
+    require-https: false
+    rate-limit:
+      enabled: false

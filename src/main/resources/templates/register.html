@@ -107,7 +107,6 @@
                 <option value="">&mdash; Choose your role &mdash;</option>
                 <option value="BUYER">Buyer &mdash; explore and purchase wildlife goods</option>
                 <option value="SELLER">Seller &mdash; list and sell my wild products</option>
-                <option value="ADMIN">Admin &mdash; platform administration</option>
             </select>
             <span th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="error"></span>
         </div>

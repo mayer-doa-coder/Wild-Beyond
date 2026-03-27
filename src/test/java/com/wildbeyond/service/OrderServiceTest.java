@@ -3,6 +3,7 @@ package com.wildbeyond.service;
 import com.wildbeyond.dto.OrderDTO;
 import com.wildbeyond.dto.OrderItemDTO;
 import com.wildbeyond.exception.ResourceNotFoundException;
+import com.wildbeyond.exception.UnauthorizedAccessException;
 import com.wildbeyond.model.*;
 import com.wildbeyond.repository.OrderRepository;
 import com.wildbeyond.repository.ProductRepository;
@@ -21,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,10 +60,12 @@ class OrderServiceTest {
         seller = new User();
         seller.setId(2L);
         seller.setEmail("seller@example.com");
+        seller.setRoles(Set.of(Role.builder().name("SELLER").build()));
 
         buyer = new User();
         buyer.setId(1L);
         buyer.setEmail("buyer@example.com");
+        buyer.setRoles(Set.of(Role.builder().name("BUYER").build()));
 
         product = Product.builder()
                 .id(10L)
@@ -166,6 +170,13 @@ class OrderServiceTest {
 
     @Test
     void findAll_returnsAllOrders() {
+        mockSecurityContext("admin@example.com");
+        User admin = new User();
+        admin.setId(99L);
+        admin.setEmail("admin@example.com");
+        admin.setRoles(Set.of(Role.builder().name("ADMIN").build()));
+
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
         when(orderRepository.findAll()).thenReturn(List.of(order));
 
         List<Order> result = orderService.findAll();
@@ -173,10 +184,24 @@ class OrderServiceTest {
         assertThat(result).hasSize(1).contains(order);
     }
 
+    @Test
+    void findAll_throwsUnauthorized_whenNonAdminRequestsAllOrders() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+
+        assertThatThrownBy(() -> orderService.findAll())
+                .isInstanceOf(UnauthorizedAccessException.class)
+                .hasMessage("You do not own this resource");
+
+        verify(orderRepository, never()).findAll();
+    }
+
     // ── findById ─────────────────────────────────────────────────────────────
 
     @Test
     void findById_returnsOrder_whenExists() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
         when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
 
         Order result = orderService.findById(5L);
@@ -194,11 +219,59 @@ class OrderServiceTest {
                 .hasMessageContaining("Order not found with id: 99");
     }
 
+    @Test
+    void findById_throwsUnauthorized_whenBuyerTriesToAccessAnotherBuyerOrder() {
+        User otherBuyer = new User();
+        otherBuyer.setId(3L);
+        otherBuyer.setEmail("buyer2@example.com");
+        otherBuyer.setRoles(Set.of(Role.builder().name("BUYER").build()));
+
+        Order foreignOrder = new Order();
+        foreignOrder.setId(8L);
+        foreignOrder.setBuyer(otherBuyer);
+
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.findById(8L)).thenReturn(Optional.of(foreignOrder));
+
+        assertThatThrownBy(() -> orderService.findById(8L))
+                .isInstanceOf(UnauthorizedAccessException.class)
+                .hasMessage("You do not own this resource");
+    }
+
+    @Test
+    void findById_allowsAdminToAccessAnyOrder() {
+        User admin = new User();
+        admin.setId(99L);
+        admin.setEmail("admin@example.com");
+        admin.setRoles(Set.of(Role.builder().name("ADMIN").build()));
+
+        User anotherBuyer = new User();
+        anotherBuyer.setId(42L);
+        anotherBuyer.setEmail("otherbuyer@example.com");
+        anotherBuyer.setRoles(Set.of(Role.builder().name("BUYER").build()));
+
+        Order foreignOrder = new Order();
+        foreignOrder.setId(11L);
+        foreignOrder.setBuyer(anotherBuyer);
+        foreignOrder.setStatus(OrderStatus.PENDING);
+
+        mockSecurityContext("admin@example.com");
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(orderRepository.findById(11L)).thenReturn(Optional.of(foreignOrder));
+
+        Order result = orderService.findById(11L);
+
+        assertThat(result.getId()).isEqualTo(11L);
+    }
+
     // ── delete ───────────────────────────────────────────────────────────────
 
     @Test
     void delete_deletesOrder_whenExists() {
-        when(orderRepository.existsById(5L)).thenReturn(true);
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
         doNothing().when(orderRepository).deleteById(5L);
 
         assertThatNoException().isThrownBy(() -> orderService.delete(5L));
@@ -208,11 +281,33 @@ class OrderServiceTest {
 
     @Test
     void delete_throwsResourceNotFound_whenOrderMissing() {
-        when(orderRepository.existsById(99L)).thenReturn(false);
+        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> orderService.delete(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Order not found with id: 99");
+
+        verify(orderRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void delete_throwsUnauthorized_whenBuyerTriesToDeleteAnotherBuyerOrder() {
+        User otherBuyer = new User();
+        otherBuyer.setId(3L);
+        otherBuyer.setEmail("buyer2@example.com");
+        otherBuyer.setRoles(Set.of(Role.builder().name("BUYER").build()));
+
+        Order foreignOrder = new Order();
+        foreignOrder.setId(8L);
+        foreignOrder.setBuyer(otherBuyer);
+
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.findById(8L)).thenReturn(Optional.of(foreignOrder));
+
+        assertThatThrownBy(() -> orderService.delete(8L))
+                .isInstanceOf(UnauthorizedAccessException.class)
+                .hasMessage("You do not own this resource");
 
         verify(orderRepository, never()).deleteById(any());
     }

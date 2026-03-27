@@ -11,6 +11,28 @@
 
 ---
 
+## 0. Configure Environment Variables
+
+Create your local secret file from the template:
+
+```pwsh
+Copy-Item .env.example .env
+```
+
+Then edit `.env` and set strong values for:
+
+- `DB_NAME`
+- `DB_HOST`
+- `DB_PORT`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `SPRING_PROFILES_ACTIVE`
+- `JWT_SECRET`
+- `APP_ADMIN_EMAIL`
+- `APP_ADMIN_PASSWORD`
+
+---
+
 ## 1. Start the Database
 
 **Option A — VS Code Task (recommended):**
@@ -34,33 +56,52 @@ Expected output: `localhost:5432 - accepting connections`
 | Port | `5433` |
 | Database | `wild_beyond` |
 | Username | `wildbeyond` |
-| Password | `wildbeyond123` |
+| Password | value from `.env` (`DB_PASSWORD`) |
 
 ---
 
 ## 2. Run the Application
 
+The app now uses Flyway migrations at startup.
+Schema is versioned in `src/main/resources/db/migration` and Hibernate runs in validate mode.
+
 **Option A — VS Code Task (recommended):**
 `Ctrl+Shift+B` → **App: Run**  *(default build task)*
 
-**Option B — Terminal (PowerShell) — ttawh's machine:**
+**Option B — Terminal (PowerShell):**
 ```pwsh
-$env:JAVA_HOME = 'C:\Program Files\Java\jdk-25'
-& 'C:\Users\ttawh\.m2\wrapper\dists\apache-maven-3.9.12\59fe215c0ad6947fea90184bf7add084544567b927287592651fda3782e0e798\bin\mvn.cmd' `
-    -f 'D:\Wild-Beyond\pom.xml' spring-boot:run
-```
-
-**Option C — Terminal (PowerShell) — 88017's machine:**
-```pwsh
-$env:JAVA_HOME = 'C:\Program Files\Microsoft\jdk-17.0.18.8-hotspot'
-& 'C:\Users\88017\.m2\wrapper\dists\apache-maven-3.9.12\59fe215c0ad6947fea90184bf7add084544567b927287592651fda3782e0e798\bin\mvn.cmd' `
-    -f 'E:\Wild-Beyond\pom.xml' spring-boot:run
+$env:SPRING_PROFILES_ACTIVE = "dev"
+$env:DB_HOST = "localhost"
+$env:DB_PORT = "5433"
+$env:DB_NAME = "<your-db-name>"
+$env:DB_USERNAME = "<your-db-username>"
+$env:DB_PASSWORD = "<your-db-password>"
+$env:JWT_SECRET = "<your-jwt-secret>"
+$env:APP_ADMIN_EMAIL = "<your-admin-email>"
+$env:APP_ADMIN_PASSWORD = "<your-admin-password>"
+./mvnw.cmd spring-boot:run
 ```
 
 Wait for:
 ```
 Tomcat started on port 8080 (http)
 Started WildBeyondApplication in X seconds
+```
+
+You should also see Flyway migration logs on startup (or baseline if schema already exists).
+
+Run with production profile locally (sanity check):
+```pwsh
+$env:SPRING_PROFILES_ACTIVE = "prod"
+$env:DB_HOST = "localhost"
+$env:DB_PORT = "5433"
+$env:DB_NAME = "wild_beyond"
+$env:DB_USERNAME = "wildbeyond"
+$env:DB_PASSWORD = "<your-db-password>"
+$env:JWT_SECRET = "<your-jwt-secret>"
+$env:APP_ADMIN_EMAIL = "<your-admin-email>"
+$env:APP_ADMIN_PASSWORD = "<your-admin-password>"
+./mvnw.cmd spring-boot:run
 ```
 
 ---
@@ -80,8 +121,8 @@ Started WildBeyondApplication in X seconds
 
 ## 4. Seeded Accounts (DataSeeder)
 
-Accounts are created automatically on first startup if they don't already exist.
-Check your `DataSeeder.java` for the exact emails and passwords.
+An admin account is created automatically on first startup if it does not already exist.
+The credentials come from `.env` (`APP_ADMIN_EMAIL` / `APP_ADMIN_PASSWORD`).
 
 Query current users:
 ```pwsh

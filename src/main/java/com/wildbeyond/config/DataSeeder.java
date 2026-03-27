@@ -23,8 +23,8 @@ import java.util.Set;
  * Uses "insert if absent" logic — safe to run repeatedly without duplicates.
  *
  * Admin credentials are read from environment variables:
- *   ADMIN_EMAIL    (default: admin@wildbeyond.com)
- *   ADMIN_PASSWORD (default: Admin@123)
+ *   APP_ADMIN_EMAIL
+ *   APP_ADMIN_PASSWORD
  */
 @Slf4j
 @Component
@@ -35,10 +35,10 @@ public class DataSeeder implements ApplicationRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${app.admin.email:admin@wildbeyond.com}")
+    @Value("${app.admin.email}")
     private String adminEmail;
 
-    @Value("${app.admin.password:Admin@123}")
+    @Value("${app.admin.password}")
     private String adminPassword;
 
     @Override

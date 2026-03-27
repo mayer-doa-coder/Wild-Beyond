@@ -39,6 +39,16 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 403 — authenticated user attempted to access a resource they do not own.
+     */
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<Map<String, String>> handleUnauthorizedAccess(UnauthorizedAccessException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    /**
      * 400 — @Valid /@Validated DTO validation failure.
      *
      * Response example:

@@ -3,6 +3,7 @@ package com.wildbeyond.service;
 import com.wildbeyond.dto.OrderDTO;
 import com.wildbeyond.dto.OrderItemDTO;
 import com.wildbeyond.exception.ResourceNotFoundException;
+import com.wildbeyond.exception.UnauthorizedAccessException;
 import com.wildbeyond.model.*;
 import com.wildbeyond.repository.OrderRepository;
 import com.wildbeyond.repository.ProductRepository;
@@ -48,6 +49,23 @@ public class OrderService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Authenticated user not found: " + email));
+    }
+
+    private boolean isAdmin(User user) {
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .anyMatch("ADMIN"::equals);
+    }
+
+    private void assertCanAccessOrder(User actor, Order order) {
+        if (isAdmin(actor)) {
+            return;
+        }
+
+        Long ownerId = order.getBuyer().getId();
+        if (!actor.getId().equals(ownerId)) {
+            throw new UnauthorizedAccessException("You do not own this resource");
+        }
     }
 
     // ── CRUD ──────────────────────────────────────────────────────────────────
@@ -105,6 +123,11 @@ public class OrderService {
      */
     @Transactional(readOnly = true)
     public List<Order> findAll() {
+        User actor = currentUser();
+        if (!isAdmin(actor)) {
+            throw new UnauthorizedAccessException("You do not own this resource");
+        }
+
         return orderRepository.findAll();
     }
 
@@ -113,7 +136,11 @@ public class OrderService {
      */
     @Transactional(readOnly = true)
     public List<Order> findMyOrders() {
-        return orderRepository.findByBuyerId(currentUser().getId());
+        User actor = currentUser();
+        if (isAdmin(actor)) {
+            return orderRepository.findAll();
+        }
+        return orderRepository.findByBuyerId(actor.getId());
     }
 
     /**
@@ -123,9 +150,13 @@ public class OrderService {
      */
     @Transactional(readOnly = true)
     public Order findById(Long id) {
-        return orderRepository.findById(id)
+        Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Order not found with id: " + id));
+
+        User actor = currentUser();
+        assertCanAccessOrder(actor, order);
+        return order;
     }
 
     /**
@@ -136,9 +167,13 @@ public class OrderService {
      */
     @Transactional
     public void delete(Long id) {
-        if (!orderRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Order not found with id: " + id);
-        }
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Order not found with id: " + id));
+
+        User actor = currentUser();
+        assertCanAccessOrder(actor, order);
+
         orderRepository.deleteById(id);
     }
 }

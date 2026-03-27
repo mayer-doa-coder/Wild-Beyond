@@ -2,10 +2,13 @@ package com.wildbeyond.service;
 
 import com.wildbeyond.dto.ProductDTO;
 import com.wildbeyond.exception.ResourceNotFoundException;
+import com.wildbeyond.exception.UnauthorizedAccessException;
 import com.wildbeyond.model.Product;
+import com.wildbeyond.model.Role;
 import com.wildbeyond.model.User;
 import com.wildbeyond.repository.ProductRepository;
 import com.wildbeyond.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +16,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,6 +57,7 @@ class ProductServiceTest {
         seller.setId(1L);
         seller.setName("Seller One");
         seller.setEmail("seller@example.com");
+        seller.setRoles(Set.of(Role.builder().name("SELLER").build()));
 
         product = Product.builder()
                 .id(10L)
@@ -66,6 +74,20 @@ class ProductServiceTest {
         dto.setDescription("A sturdy tent");
         dto.setPrice(BigDecimal.valueOf(199.99));
         dto.setStock(50);
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private void mockSecurityContext(String email) {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(email);
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
     }
 
     // ── create ──────────────────────────────────────────────────────────────
@@ -152,6 +174,9 @@ class ProductServiceTest {
 
     @Test
     void update_updatesFields_andSaves() {
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+
         ProductDTO updateDto = new ProductDTO();
         updateDto.setSellerId(1L);
         updateDto.setName("Pro Tent");
@@ -182,15 +207,71 @@ class ProductServiceTest {
         verify(productRepository, never()).save(any());
     }
 
+        @Test
+        void update_throwsUnauthorized_whenSellerDoesNotOwnProduct() {
+        User otherSeller = new User();
+        otherSeller.setId(2L);
+        otherSeller.setEmail("other@example.com");
+        otherSeller.setRoles(Set.of(Role.builder().name("SELLER").build()));
+
+        Product otherProduct = Product.builder()
+            .id(11L)
+            .name("Boots")
+            .description("All-weather boots")
+            .price(BigDecimal.valueOf(99.99))
+            .stock(5)
+            .seller(otherSeller)
+            .build();
+
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(productRepository.findById(11L)).thenReturn(Optional.of(otherProduct));
+
+        assertThatThrownBy(() -> productService.update(11L, dto))
+            .isInstanceOf(UnauthorizedAccessException.class)
+            .hasMessage("You do not own this resource");
+
+        verify(productRepository, never()).save(any());
+        }
+
     // ── delete ──────────────────────────────────────────────────────────────
 
     @Test
     void delete_callsRepository_withCorrectId() {
-        when(productRepository.existsById(10L)).thenReturn(true);
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
         doNothing().when(productRepository).deleteById(10L);
 
         productService.delete(10L);
 
         verify(productRepository).deleteById(10L);
+    }
+
+    @Test
+    void delete_throwsUnauthorized_whenSellerDoesNotOwnProduct() {
+        User otherSeller = new User();
+        otherSeller.setId(2L);
+        otherSeller.setEmail("other@example.com");
+        otherSeller.setRoles(Set.of(Role.builder().name("SELLER").build()));
+
+        Product otherProduct = Product.builder()
+                .id(11L)
+                .name("Boots")
+                .description("All-weather boots")
+                .price(BigDecimal.valueOf(99.99))
+                .stock(5)
+                .seller(otherSeller)
+                .build();
+
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(productRepository.findById(11L)).thenReturn(Optional.of(otherProduct));
+
+        assertThatThrownBy(() -> productService.delete(11L))
+                .isInstanceOf(UnauthorizedAccessException.class)
+                .hasMessage("You do not own this resource");
+
+        verify(productRepository, never()).deleteById(any());
     }
 }

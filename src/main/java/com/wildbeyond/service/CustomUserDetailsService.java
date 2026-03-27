@@ -2,6 +2,7 @@ package com.wildbeyond.service;
 
 import com.wildbeyond.model.User;
 import com.wildbeyond.repository.UserRepository;
+import com.wildbeyond.security.LoginAttemptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
+        private final LoginAttemptService loginAttemptService;
 
     /**
      * Load a user by their email address.
@@ -52,6 +54,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("No account found for email: " + email));
 
+        loginAttemptService.refreshLockState(user);
+
         // Map each Role name → "ROLE_ADMIN" / "ROLE_SELLER" / "ROLE_BUYER"
         // Role.getName() returns a plain String ("ADMIN", "SELLER", "BUYER").
         Set<SimpleGrantedAuthority> authorities = user.getRoles().stream()
@@ -63,7 +67,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .password(user.getPassword())    // BCrypt-encoded hash
                 .authorities(authorities)
                 .accountExpired(false)
-                .accountLocked(false)
+                                .accountLocked(user.isAccountLocked())
                 .credentialsExpired(false)
                 .disabled(!user.isEnabled())
                 .build();

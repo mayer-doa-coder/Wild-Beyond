@@ -1,6 +1,8 @@
 package com.wildbeyond.config;
 
 import com.wildbeyond.service.CustomUserDetailsService;
+import com.wildbeyond.security.HttpsEnforcementFilter;
+import com.wildbeyond.security.RateLimitingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +15,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Day-3: Full Security Configuration for Wild-Beyond.
@@ -60,6 +64,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final HttpsEnforcementFilter httpsEnforcementFilter;
+    private final RateLimitingFilter rateLimitingFilter;
 
     // ── Password Encoder ─────────────────────────────────────────────────────
 
@@ -120,6 +126,9 @@ public class SecurityConfig {
             // Form login still handles browser-based authentication normally.
             .httpBasic(basic -> {})
 
+            .addFilterBefore(httpsEnforcementFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
+
             // ── URL Access Rules ─────────────────────────────────────────────
             .authorizeHttpRequests(auth -> auth
 
@@ -136,7 +145,8 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/",
                     "/auth/login",
-                    "/auth/register"
+                    "/auth/register",
+                    "/actuator/health"
                 ).permitAll()
 
                 // Product browsing — public (GET only)
@@ -175,6 +185,7 @@ public class SecurityConfig {
 
                 // Admin only — full user management and admin dashboard
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/seller/**").hasRole("SELLER")
                 .requestMatchers("/users/**").hasRole("ADMIN")
 
                 // All other requests require authentication
@@ -216,8 +227,17 @@ public class SecurityConfig {
             //   - Authorization is still enforced via Spring Security roles.
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/api/**")
-            )
-            ;
+            );
+
+        http.headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; frame-ancestors 'none'; form-action 'self'"))
+                .frameOptions(frame -> frame.deny())
+                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER))
+                .httpStrictTransportSecurity(hsts -> hsts
+                        .includeSubDomains(true)
+                        .maxAgeInSeconds(31536000)
+                )
+        );
 
         return http.build();
     }

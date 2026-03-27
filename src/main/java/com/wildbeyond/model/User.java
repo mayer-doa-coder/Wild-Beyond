@@ -39,6 +39,17 @@ public class User {
     @Column(name = "enabled", nullable = false)
     private boolean enabled = true;
 
+    @Builder.Default
+    @Column(name = "failed_login_attempts", nullable = false)
+    private int failedLoginAttempts = 0;
+
+    @Builder.Default
+    @Column(name = "account_locked", nullable = false)
+    private boolean accountLocked = false;
+
+    @Column(name = "lock_until")
+    private LocalDateTime lockUntil;
+
     /**
      * Set by @PrePersist — never changes after the row is first inserted.
      * updatable = false prevents Hibernate from including this column in UPDATE statements.

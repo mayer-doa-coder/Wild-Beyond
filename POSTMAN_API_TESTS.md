@@ -19,11 +19,14 @@ Set it in every authenticated request via the **Authorization** tab → **Basic 
 
 ### Test Accounts
 
+Credentials depend on your seeded users and environment configuration.
+If your local data differs, query the DB and use the actual account/password values.
+
 | Role   | Username           | Password    | User ID | Can do                                      |
 |--------|--------------------|-------------|---------|---------------------------------------------|
-| BUYER  | `buyer@test.com`   | `seller123` | `6`     | Place orders, view own orders               |
-| SELLER | `seller@test.com`  | `seller123` | `5`     | Add products, update products               |
-| ADMIN  | `admin@test.com`   | `seller123` | `7`     | View all orders, delete orders/products     |
+| BUYER  | `buyer@test.com`   | `<configured-password>` | `6`     | Place orders, view own orders               |
+| SELLER | `seller@test.com`  | `<configured-password>` | `5`     | Add products, update products               |
+| ADMIN  | `admin@test.com`   | `<configured-password>` | `7`     | View all orders, delete orders/products     |
 
 **How to add Basic Auth in Postman:**
 
@@ -312,7 +315,7 @@ The table should be empty (or missing the deleted row).
 2. Enter URL `http://localhost:8080/api/orders`.
 3. Go to **Authorization** tab → `Basic Auth`:
    - Username: `buyer@test.com`
-   - Password: `seller123`
+  - Password: `<configured-password>`
 4. Go to **Headers** tab → add `Content-Type: application/json`.
 5. Go to **Body** tab → raw → JSON:
 
@@ -388,7 +391,7 @@ You should see one order row and one order_item row.
 
 1. Create a new request. Set method to `GET`.
 2. Enter URL `http://localhost:8080/api/orders/my`.
-3. Add **Authorization** → Basic Auth → `buyer@test.com` / `seller123`.
+3. Add **Authorization** → Basic Auth → `buyer@test.com` / `<configured-password>`.
 4. Click **Send**.
 
 **Expected result:**
@@ -458,7 +461,7 @@ Body:   { "id": 1, "status": "PENDING", "totalPrice": 1000.00, "items": [...] }
 2. Enter URL `http://localhost:8080/api/orders`.
 3. Add **Authorization** → Basic Auth:
    - Username: `admin@test.com`
-   - Password: `seller123`
+  - Password: `<configured-password>`
 4. Click **Send**.
 
 **Expected result:**
@@ -492,7 +495,7 @@ Body:   [ { "id": 1, "status": "PENDING", ... } ]
 
 1. Create a new request. Set method to `DELETE`.
 2. Enter URL `http://localhost:8080/api/orders/1`.
-3. Add **Authorization** → Basic Auth → `admin@test.com` / `seller123`.
+3. Add **Authorization** → Basic Auth → `admin@test.com` / `<configured-password>`.
 4. Click **Send**.
 
 **Expected result:**

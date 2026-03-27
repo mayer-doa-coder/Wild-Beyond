@@ -2,10 +2,14 @@ package com.wildbeyond.service;
 
 import com.wildbeyond.dto.ProductDTO;
 import com.wildbeyond.exception.ResourceNotFoundException;
+import com.wildbeyond.exception.UnauthorizedAccessException;
 import com.wildbeyond.model.Product;
+import com.wildbeyond.model.Role;
 import com.wildbeyond.model.User;
 import com.wildbeyond.repository.ProductRepository;
 import com.wildbeyond.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +28,33 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private User currentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Authenticated user not found: " + email));
+    }
+
+    private boolean isAdmin(User user) {
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .anyMatch("ADMIN"::equals);
+    }
+
+    private void assertCanManageProduct(User actor, Product product) {
+        if (isAdmin(actor)) {
+            return;
+        }
+
+        Long ownerId = product.getSeller().getId();
+        if (!actor.getId().equals(ownerId)) {
+            throw new UnauthorizedAccessException("You do not own this resource");
+        }
+    }
 
     /**
      * Create a new product and associate it with an existing seller.
@@ -86,6 +117,9 @@ public class ProductService {
     @Transactional
     public Product update(Long id, ProductDTO dto) {
         Product product = findById(id);
+        User actor = currentUser();
+        assertCanManageProduct(actor, product);
+
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
@@ -101,9 +135,10 @@ public class ProductService {
      */
     @Transactional
     public void delete(Long id) {
-        if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Product not found with id: " + id);
-        }
+        Product product = findById(id);
+        User actor = currentUser();
+        assertCanManageProduct(actor, product);
+
         productRepository.deleteById(id);
     }
 }
