@@ -24,11 +24,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class DashboardController {
 
-    @GetMapping("/")
-    public String redirectRoot() {
-        return "redirect:/auth/login";
-    }
-
     @GetMapping("/dashboard")
     @PreAuthorize("isAuthenticated()")
     public String dashboard(Authentication authentication) {

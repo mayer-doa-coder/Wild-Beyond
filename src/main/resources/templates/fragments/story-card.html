@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<article th:fragment="storyCard(story)" class="group flex gap-4 bg-white/5 hover:bg-white/10 p-3 transition">
+    <img th:src="${story.image}" alt="Story image"
+         class="w-20 h-20 object-cover group-hover:scale-105 transition">
+    <div class="min-w-0">
+        <p class="text-[10px] uppercase tracking-[0.2em] text-lime-300"
+           th:text="${story.category}">Category</p>
+        <h3 class="mt-1 text-sm font-semibold leading-tight"
+            th:text="${story.title}">Story title</h3>
+        <p class="mt-1 text-xs text-gray-300"
+           th:text="${#strings.abbreviate(story.summary, 70)}">Story summary</p>
+    </div>
+</article>
+</body>
+</html>
