@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Wild Beyond</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; background: #f4f6f8; color: #1a1a1a; }
+        header { background: #1b3a0d; padding: 0 2rem; min-height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-brand { font-size: 1.4rem; font-weight: 800; color: #fff; text-decoration: none; }
+        .nav-brand span { color: rgba(160,220,100,.85); }
+        .hdr-links a { color: rgba(255,255,255,.9); text-decoration: none; border: 1px solid rgba(255,255,255,.25); border-radius: 2px; padding: .35rem .75rem; font-size: .84rem; }
+        .hdr-links a:hover { background: rgba(255,255,255,.12); }
+        main { max-width: 980px; margin: 2rem auto; padding: 0 1.25rem; }
+        .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.08); overflow: hidden; }
+        .head { background: #eef3ec; padding: 1rem 1.25rem; border-bottom: 1px solid #dbe4d7; }
+        .head h1 { color: #1b3a0d; font-size: 1.6rem; }
+        .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; padding: 1rem 1.25rem; border-bottom: 1px solid #edf0eb; }
+        .meta p { font-size: .92rem; color: #334155; }
+        .meta strong { color: #1f2937; }
+        .badge { display: inline-block; padding: .22rem .55rem; border-radius: 999px; font-size: .78rem; font-weight: 700; letter-spacing: .02em; }
+        .badge-pending { background: #fff7ed; color: #b45309; border: 1px solid #fed7aa; }
+        .badge-completed { background: #ecfdf3; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-cancelled { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .body { padding: 1rem 1.25rem 1.25rem; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { text-align: left; background: #f8fafc; color: #475569; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; padding: .7rem .8rem; }
+        tbody td { padding: .8rem; border-top: 1px solid #f1f5f9; font-size: .92rem; }
+        .right { text-align: right; }
+        .total { margin-top: .9rem; text-align: right; font-size: 1rem; font-weight: 800; color: #1b3a0d; }
+    </style>
+</head>
+<body>
+<header>
+    <a class="nav-brand" th:href="@{/dashboard}">Wild<span>Beyond</span></a>
+    <div class="hdr-links">
+        <a th:href="@{/orders}">Back to Orders</a>
+        <a th:href="@{/products}">Products</a>
+    </div>
+</header>
+
+<main>
+    <div class="card">
+        <div class="head">
+            <h1>Order Details</h1>
+        </div>
+
+        <div class="meta">
+            <p><strong>Order ID:</strong> <span th:text="${order.id}">1</span></p>
+            <p><strong>Order Date:</strong> <span th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}">2026-01-01 10:00</span></p>
+            <p>
+                <strong>Status:</strong>
+                <span class="badge"
+                      th:classappend="${order.status == 'PENDING' ? ' badge-pending' : (order.status == 'COMPLETED' ? ' badge-completed' : ' badge-cancelled')}"
+                      th:text="${order.status}">PENDING</span>
+            </p>
+            <p><strong>Items:</strong> <span th:text="${#lists.size(order.items)}">1</span></p>
+        </div>
+
+        <div class="body">
+            <table>
+                <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="right">Quantity</th>
+                    <th class="right">Unit Price</th>
+                    <th class="right">Line Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${order.items}">
+                    <td th:text="${item.productName}">Product Name</td>
+                    <td class="right" th:text="${item.quantity}">1</td>
+                    <td class="right" th:text="${'$' + #numbers.formatDecimal(item.unitPrice, 1, 2)}">$0.00</td>
+                    <td class="right" th:text="${'$' + #numbers.formatDecimal(item.unitPrice * item.quantity, 1, 2)}">$0.00</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <p class="total">Total: <span th:text="${'$' + #numbers.formatDecimal(order.totalPrice, 1, 2)}">$0.00</span></p>
+        </div>
+    </div>
+</main>
+</body>
+</html>

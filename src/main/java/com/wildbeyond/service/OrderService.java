@@ -8,6 +8,7 @@ import com.wildbeyond.repository.OrderRepository;
 import com.wildbeyond.repository.ProductRepository;
 import com.wildbeyond.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,10 @@ public class OrderService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Authenticated user not found: " + email));
+    }
+
+    private boolean isAdmin(User user) {
+        return user.getRoles().stream().anyMatch(role -> "ADMIN".equals(role.getName()));
     }
 
     // ── CRUD ──────────────────────────────────────────────────────────────────
@@ -114,6 +119,38 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<Order> findMyOrders() {
         return orderRepository.findByBuyerId(currentUser().getId());
+    }
+
+    /**
+     * Return an ownership-aware order detail DTO for MVC view rendering.
+     * Buyers can only view their own orders; ADMIN can view any order.
+     */
+    @Transactional(readOnly = true)
+    public OrderDTO getOrderById(Long id) {
+        User user = currentUser();
+        Order order = findById(id);
+
+        if (!isAdmin(user) && !order.getBuyer().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You are not allowed to view this order");
+        }
+
+        OrderDTO dto = new OrderDTO();
+        dto.setId(order.getId());
+        dto.setOrderDate(order.getOrderDate());
+        dto.setStatus(order.getStatus().name());
+        dto.setTotalPrice(order.getTotalPrice());
+
+        List<OrderItemDTO> itemDtos = order.getItems().stream().map(item -> {
+            OrderItemDTO itemDto = new OrderItemDTO();
+            itemDto.setProductId(item.getProduct().getId());
+            itemDto.setProductName(item.getProduct().getName());
+            itemDto.setQuantity(item.getQuantity());
+            itemDto.setUnitPrice(item.getUnitPrice());
+            return itemDto;
+        }).toList();
+
+        dto.setItems(itemDtos);
+        return dto;
     }
 
     /**

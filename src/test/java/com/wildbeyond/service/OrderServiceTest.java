@@ -14,13 +14,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,6 +53,7 @@ class OrderServiceTest {
 
     private User buyer;
     private User seller;
+    private User admin;
     private Product product;
     private Order order;
 
@@ -58,10 +62,17 @@ class OrderServiceTest {
         seller = new User();
         seller.setId(2L);
         seller.setEmail("seller@example.com");
+        seller.setRoles(Set.of(Role.builder().name("SELLER").build()));
 
         buyer = new User();
         buyer.setId(1L);
         buyer.setEmail("buyer@example.com");
+        buyer.setRoles(Set.of(Role.builder().name("BUYER").build()));
+
+        admin = new User();
+        admin.setId(99L);
+        admin.setEmail("admin@example.com");
+        admin.setRoles(Set.of(Role.builder().name("ADMIN").build()));
 
         product = Product.builder()
                 .id(10L)
@@ -76,6 +87,14 @@ class OrderServiceTest {
         order.setBuyer(buyer);
         order.setStatus(OrderStatus.PENDING);
         order.setTotalPrice(BigDecimal.valueOf(200.00));
+        order.setOrderDate(LocalDateTime.of(2026, 1, 1, 10, 0));
+
+        OrderItem item = new OrderItem();
+        item.setOrder(order);
+        item.setProduct(product);
+        item.setQuantity(2);
+        item.setUnitPrice(BigDecimal.valueOf(100.00));
+        order.setItems(List.of(item));
     }
 
     @AfterEach
@@ -192,6 +211,52 @@ class OrderServiceTest {
         assertThatThrownBy(() -> orderService.findById(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Order not found with id: 99");
+    }
+
+    // ── getOrderById (ownership-aware detail) ──────────────────────────────
+
+    @Test
+    void getOrderById_returnsMappedDto_forOwner() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+
+        OrderDTO result = orderService.getOrderById(5L);
+
+        assertThat(result.getId()).isEqualTo(5L);
+        assertThat(result.getStatus()).isEqualTo("PENDING");
+        assertThat(result.getTotalPrice()).isEqualByComparingTo("200.00");
+        assertThat(result.getItems()).hasSize(1);
+        assertThat(result.getItems().get(0).getProductName()).isEqualTo("Hiking Boots");
+        assertThat(result.getItems().get(0).getUnitPrice()).isEqualByComparingTo("100.00");
+    }
+
+    @Test
+    void getOrderById_throwsAccessDenied_forNonOwner() {
+        User otherBuyer = new User();
+        otherBuyer.setId(7L);
+        otherBuyer.setEmail("other@example.com");
+        otherBuyer.setRoles(Set.of(Role.builder().name("BUYER").build()));
+
+        mockSecurityContext("other@example.com");
+        when(userRepository.findByEmail("other@example.com")).thenReturn(Optional.of(otherBuyer));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+
+        assertThatThrownBy(() -> orderService.getOrderById(5L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("not allowed");
+    }
+
+    @Test
+    void getOrderById_allowsAdmin_forAnyOrder() {
+        mockSecurityContext("admin@example.com");
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+
+        OrderDTO result = orderService.getOrderById(5L);
+
+        assertThat(result.getId()).isEqualTo(5L);
+        assertThat(result.getItems()).hasSize(1);
     }
 
     // ── delete ───────────────────────────────────────────────────────────────

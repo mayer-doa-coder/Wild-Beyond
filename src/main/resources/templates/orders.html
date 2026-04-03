@@ -51,6 +51,7 @@
                 <th>Date</th>
                 <th>Status</th>
                 <th>Total</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -59,6 +60,9 @@
                 <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}">2026-01-01 10:00</td>
                 <td class="status" th:text="${order.status}">PENDING</td>
                 <td th:text="${'$' + #numbers.formatDecimal(order.totalPrice, 1, 2)}">$0.00</td>
+                <td>
+                    <a th:href="@{/orders/{id}(id=${order.id})}" style="text-decoration: none; font-weight: 700; color: #1b3a0d;">View Details</a>
+                </td>
             </tr>
             </tbody>
         </table>

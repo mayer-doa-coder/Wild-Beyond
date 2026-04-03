@@ -20,7 +20,7 @@ import java.util.Map;
  *   MethodArgumentNotValidException → 400 BAD REQUEST (field-level validation errors)
  *   RuntimeException (fallback)     → 400 BAD REQUEST (unexpected business logic errors)
  */
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "com.wildbeyond.controller.rest")
 public class GlobalExceptionHandler {
 
     /**
