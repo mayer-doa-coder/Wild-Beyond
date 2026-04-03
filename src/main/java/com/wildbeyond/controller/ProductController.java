@@ -38,7 +38,13 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public String getProductById(@PathVariable Long id) {
+    public String getProductById(@PathVariable Long id, Model model) {
+        model.addAttribute("product", productService.findById(id));
+        return "product-detail";
+    }
+
+    @GetMapping("/new")
+    public String showCreateProductForm() {
         return "redirect:/products";
     }
 

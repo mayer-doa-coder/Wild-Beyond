@@ -62,9 +62,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .withUsername(user.getEmail())   // email IS the principal name
                 .password(user.getPassword())    // BCrypt-encoded hash
                 .authorities(authorities)
-                .accountExpired(false)
-                .accountLocked(false)
-                .credentialsExpired(false)
                 .disabled(!user.isEnabled())
                 .build();
     }

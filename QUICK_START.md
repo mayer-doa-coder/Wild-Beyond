@@ -1,133 +1,85 @@
-# Wild Beyond — Quick Start
+# Wild Beyond - Quick Start
 
 ## Prerequisites
 
-| Tool | Version | Check |
-|------|---------|-------|
-| Java (JDK) | 17+ | `java -version` |
-| Maven | 3.9+ | already cached in `~/.m2/wrapper/dists/` |
-| Docker Desktop | any | `docker --version` |
-| PowerShell 7 | 7.x | `pwsh --version` |
+1. Docker Desktop is installed and running.
+2. Ports 5432 and 8080 are available.
 
----
+## 1. Clone Repository
 
-## 1. Start the Database
-
-**Option A — VS Code Task (recommended):**
-`Ctrl+Shift+P` → `Tasks: Run Task` → **DB: Start**
-
-**Option B — Terminal:**
-```pwsh
-docker-compose up -d
+```bash
+git clone <your-repo-url>
+cd Wild-Beyond
 ```
 
-Verify it's ready:
-```pwsh
-docker exec wild_beyond_db pg_isready -U wildbeyond -d wild_beyond
+## 2. Create Environment File
+
+Copy the template and adjust values if needed.
+
+```bash
+cp .env.example .env
 ```
 
-Expected output: `localhost:5432 - accepting connections`
+If copy command is unavailable on your shell, create .env manually with:
 
-| Setting | Value |
-|---------|-------|
-| Host | `localhost` |
-| Port | `5433` |
-| Database | `wild_beyond` |
-| Username | `wildbeyond` |
-| Password | `wildbeyond123` |
-
----
-
-## 2. Run the Application
-
-**Option A — VS Code Task (recommended):**
-`Ctrl+Shift+B` → **App: Run**  *(default build task)*
-
-**Option B — Terminal (PowerShell) — ttawh's machine:**
-```pwsh
-$env:JAVA_HOME = 'C:\Program Files\Java\jdk-25'
-& 'C:\Users\ttawh\.m2\wrapper\dists\apache-maven-3.9.12\59fe215c0ad6947fea90184bf7add084544567b927287592651fda3782e0e798\bin\mvn.cmd' `
-    -f 'D:\Wild-Beyond\pom.xml' spring-boot:run
+```env
+DB_NAME=wild_beyond
+DB_USERNAME=postgres
+DB_PASSWORD=securepassword
+DB_HOST=db
+DB_PORT=5432
 ```
 
-**Option C — Terminal (PowerShell) — 88017's machine:**
-```pwsh
-$env:JAVA_HOME = 'C:\Program Files\Microsoft\jdk-17.0.18.8-hotspot'
-& 'C:\Users\88017\.m2\wrapper\dists\apache-maven-3.9.12\59fe215c0ad6947fea90184bf7add084544567b927287592651fda3782e0e798\bin\mvn.cmd' `
-    -f 'E:\Wild-Beyond\pom.xml' spring-boot:run
+## 3. Start Full Stack
+
+Run one command from the repository root:
+
+```bash
+docker compose up --build
 ```
 
-Wait for:
-```
-Tomcat started on port 8080 (http)
-Started WildBeyondApplication in X seconds
-```
+This starts both:
 
----
+1. PostgreSQL database container
+2. Spring Boot application container
 
-## 3. Open in Browser
+## 4. Verify Startup
 
-| URL | Description | Auth required |
-|-----|-------------|---------------|
-| http://localhost:8080 | Home / landing | No |
-| http://localhost:8080/products | Product listing | No |
-| http://localhost:8080/auth/register | Register new account | No |
-| http://localhost:8080/auth/login | Login | No |
-| http://localhost:8080/dashboard | Role-based dashboard | Yes |
-| http://localhost:8080/admin/** | Admin area | ADMIN only |
+Expected results:
 
----
+1. Database container is healthy and running
+2. Spring Boot application starts successfully
+3. Application is accessible at http://localhost:8080
 
-## 4. Seeded Accounts (DataSeeder)
+Useful checks:
 
-Accounts are created automatically on first startup if they don't already exist.
-Check your `DataSeeder.java` for the exact emails and passwords.
-
-Query current users:
-```pwsh
-docker exec wild_beyond_db psql -U wildbeyond -d wild_beyond -c `
-  "SELECT u.id, u.email, u.enabled, string_agg(r.name, ', ') AS roles FROM users u LEFT JOIN user_roles ur ON u.id = ur.user_id LEFT JOIN roles r ON ur.role_id = r.id GROUP BY u.id, u.email, u.enabled ORDER BY u.id;"
+```bash
+docker compose ps
+docker logs wild_beyond_app
+docker logs wild_beyond_db
 ```
 
-Or use the VS Code task: **DB: Query Users**
+## 5. Stop or Reset
 
----
+Stop containers:
 
-## 5. Stop Everything
-
-```pwsh
-# Stop the app
-Ctrl+C  (in the terminal running spring-boot:run)
-
-# Stop the database
-docker-compose down
-
-# Stop DB AND wipe all data (fresh DB on next start)
-docker-compose down -v
+```bash
+docker compose down
 ```
 
----
+Stop and wipe database volume:
 
-## VS Code Tasks Reference
+```bash
+docker compose down -v
+```
 
-| Task | Shortcut / How to run |
-|------|-----------------------|
-| **App: Run** | `Ctrl+Shift+B` |
-| **App: Build** | `Ctrl+Shift+P` → Run Task |
-| **DB: Start** | `Ctrl+Shift+P` → Run Task |
-| **DB: Stop** | `Ctrl+Shift+P` → Run Task |
-| **DB: Recreate (wipe data)** | `Ctrl+Shift+P` → Run Task |
-| **DB: Health Check** | `Ctrl+Shift+P` → Run Task |
-| **DB: Query Users** | `Ctrl+Shift+P` → Run Task |
+## Troubleshooting
 
----
+1. Confirm Docker is installed and Docker Desktop is running.
+2. Check that ports 5432 and 8080 are free.
+3. Verify .env exists and includes DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT.
+4. If startup fails, run docker compose down -v then docker compose up --build.
 
-## Role-Based Dashboard Routing
+## CI/CD
 
-After login, users are redirected to `/dashboard` which routes by role:
-
-| Role | Redirects to |
-|------|-------------|
-| `ADMIN` | `templates/admin/dashboard.html` |
-| `SELLER` | `templates/seller/dashboard.html` |
-| `BUYER` | `templates/buyer/dashboard.html` |
+See CI/CD workflow details and deployment conditions in CI_CD_PIPELINE.md.

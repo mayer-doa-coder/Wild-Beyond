@@ -3,6 +3,7 @@ package com.wildbeyond.controller;
 import com.wildbeyond.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,12 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("")
-    public String getMyOrders(Model model) {
-        model.addAttribute("orders", orderService.findMyOrders());
-        return "redirect:/dashboard";
+    public String getOrders(Model model, Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        model.addAttribute("orders", isAdmin ? orderService.findAll() : orderService.findMyOrders());
+        return "orders";
     }
 
     @GetMapping("/{id}")
