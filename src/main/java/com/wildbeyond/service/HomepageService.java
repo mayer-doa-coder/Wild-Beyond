@@ -21,11 +21,15 @@ public class HomepageService {
         return blogRepo.findTop5ByPublishedTrueOrderByCreatedAtDesc();
     }
 
+    public List<BlogPost> getAllPublishedBlogs() {
+        return blogRepo.findByPublishedTrueOrderByCreatedAtDesc();
+    }
+
     public List<Product> getFeaturedProducts() {
         return productRepo.findTop5ByOrderByIdDesc();
     }
 
     public Optional<BlogPost> findBlogPostById(Long id) {
-        return blogRepo.findById(id);
+        return blogRepo.findByIdAndPublishedTrue(id);
     }
 }

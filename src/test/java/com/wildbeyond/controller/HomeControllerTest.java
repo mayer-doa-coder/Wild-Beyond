@@ -74,27 +74,20 @@ class HomeControllerTest {
                 .stock(12)
                 .build();
 
-        when(homepageService.getFeaturedBlogs()).thenReturn(List.of(blog));
-        when(homepageService.getFeaturedProducts()).thenReturn(List.of(product));
+        when(homepageService.getAllPublishedBlogs()).thenReturn(List.of(blog));
 
         mockMvc.perform(get("/blog"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("home"))
-                .andExpect(model().attribute("blogs", List.of(blog)))
-                .andExpect(model().attribute("products", List.of(product)))
-                .andExpect(model().attributeExists("stories"))
-                .andExpect(model().attributeExists("featuredStory"));
+                .andExpect(view().name("blog"))
+                .andExpect(model().attribute("blogs", List.of(blog)));
     }
 
     @Test
     @WithAnonymousUser
     void explore_shouldRenderHomeForAnonymousUser() throws Exception {
-        when(homepageService.getFeaturedBlogs()).thenReturn(List.of());
-        when(homepageService.getFeaturedProducts()).thenReturn(List.of());
-
         mockMvc.perform(get("/explore"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("home"));
+                                .andExpect(view().name("explore"));
     }
 
         @Test

@@ -8,4 +8,8 @@ import java.util.List;
 public interface BlogPostRepository extends JpaRepository<BlogPost, Long> {
 
     List<BlogPost> findTop5ByPublishedTrueOrderByCreatedAtDesc();
+
+    List<BlogPost> findByPublishedTrueOrderByCreatedAtDesc();
+
+    java.util.Optional<BlogPost> findByIdAndPublishedTrue(Long id);
 }

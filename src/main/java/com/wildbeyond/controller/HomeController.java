@@ -27,14 +27,13 @@ public class HomeController {
 
     @GetMapping("/blog")
     public String blog(Model model) {
-        populateHomeModel(model);
-        return "home";
+        model.addAttribute("blogs", homepageService.getAllPublishedBlogs());
+        return "blog";
     }
 
     @GetMapping("/explore")
-    public String explore(Model model) {
-        populateHomeModel(model);
-        return "home";
+    public String explore() {
+        return "explore";
     }
 
     @GetMapping("/about")
