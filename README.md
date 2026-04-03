@@ -124,12 +124,41 @@ GitHub Actions workflow: .github/workflows/ci.yml
 
 For full CI/CD details: CI_CD_PIPELINE.md
 
+## Security and Database Polish
+
+- Removed partially wired/incomplete lockout logic to avoid misleading security claims.
+- Production schema strategy now uses Flyway migrations with JPA set to validate.
+- Automatic schema mutation via ddl-auto=update is disabled for production safety.
+- Migration strategy follows versioned scripts under src/main/resources/db/migration.
+
 ## Links
 
-- Repo: https://github.com/your-username/wild-beyond
+- Repo: https://github.com/mayer-doa-coder/Wild-Beyond
 - Live App: https://wild-beyond.onrender.com
 
 Replace with your actual repository and Render service URLs.
+
+## GitHub Workflow Policy
+
+The main branch is protected to enforce safe collaboration:
+
+- No direct commits to main
+- All changes must be submitted through pull requests
+- Minimum 1 approval is required before merge
+- CI checks must pass before merge
+- Branch must be up to date before merge
+
+Required branch protection target:
+
+- Branch pattern: main
+
+Proof artifact:
+
+![Branch Protection](docs/github-branch-protection.png)
+
+Detailed manual enforcement steps and verification procedure:
+
+- See docs/GITHUB_BRANCH_PROTECTION_STEPS.md
 
 ## Deployment Verification
 
@@ -153,6 +182,7 @@ Example expected verification outcomes:
 - POSTMAN_API_TESTS.md
 - docs/architecture-diagram.png
 - docs/er-diagram.png
+- docs/github-branch-protection.png
 
 ## Final Review Checklist
 
