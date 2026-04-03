@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - Wild Beyond</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; background: #f4f6f8; color: #1a1a1a; }
+        header { background: #1b3a0d; padding: 0 2rem; min-height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-brand { font-size: 1.4rem; font-weight: 800; color: #fff; text-decoration: none; }
+        .nav-brand span { color: rgba(160,220,100,.85); }
+        .hdr-links { display: flex; align-items: center; gap: .7rem; }
+        .hdr-links a, .hdr-links button { color: rgba(255,255,255,.9); text-decoration: none; background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 2px; padding: .35rem .75rem; font-size: .84rem; cursor: pointer; }
+        .hdr-links a:hover, .hdr-links button:hover { background: rgba(255,255,255,.12); }
+        main { max-width: 1200px; margin: 2rem auto; padding: 0 1.25rem; }
+        h1 { color: #1b3a0d; font-size: 1.8rem; margin-bottom: 1rem; }
+        .empty { background: #fff; border: 1px dashed #c9d6c1; border-radius: 6px; padding: 1.5rem; color: #667; }
+        .table-wrap { background: #fff; border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,.08); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { text-align: left; background: #eef3ec; color: #355229; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; padding: .8rem 1rem; }
+        tbody td { padding: .9rem 1rem; border-top: 1px solid #f0f0f0; font-size: .92rem; }
+        .roles { font-weight: 700; color: #1b3a0d; }
+    </style>
+</head>
+<body>
+<header>
+    <a class="nav-brand" th:href="@{/dashboard}">Wild<span>Beyond</span></a>
+    <div class="hdr-links">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/products}">Products</a>
+        <form th:action="@{/auth/logout}" method="post" style="display:inline">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<main>
+    <h1>Users</h1>
+
+    <div class="empty" th:if="${#lists.isEmpty(users)}">No users found.</div>
+
+    <div class="table-wrap" th:if="${not #lists.isEmpty(users)}">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Enabled</th>
+                <th>Roles</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.id}">1</td>
+                <td th:text="${u.name}">User</td>
+                <td th:text="${u.email}">user@example.com</td>
+                <td th:text="${u.enabled}">true</td>
+                <td class="roles" th:text="${#strings.listJoin(u.roles.![name], ', ')}">BUYER</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

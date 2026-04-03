@@ -24,7 +24,7 @@ public class OrderController {
     @GetMapping("")
     public String getMyOrders(Model model) {
         model.addAttribute("orders", orderService.findMyOrders());
-        return "redirect:/dashboard";
+        return "orders";
     }
 
     @GetMapping("/{id}")

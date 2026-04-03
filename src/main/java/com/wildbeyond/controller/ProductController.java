@@ -32,6 +32,11 @@ public class ProductController {
         return "redirect:/products";
     }
 
+    @GetMapping("/new")
+    public String showCreateProductForm() {
+        return "redirect:/products";
+    }
+
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
     @PostMapping("")
     public String createProduct() {

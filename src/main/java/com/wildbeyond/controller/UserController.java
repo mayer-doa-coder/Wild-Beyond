@@ -1,7 +1,10 @@
 package com.wildbeyond.controller;
 
+import com.wildbeyond.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -13,11 +16,15 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/users")
 @PreAuthorize("hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class UserController {
 
+    private final UserRepository userRepository;
+
     @GetMapping("")
-    public String getAllUsers() {
-        return "redirect:/dashboard";
+    public String getAllUsers(Model model) {
+        model.addAttribute("users", userRepository.findAll());
+        return "users";
     }
 
     @GetMapping("/{id}")
