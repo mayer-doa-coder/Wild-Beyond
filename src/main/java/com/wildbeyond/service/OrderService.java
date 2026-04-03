@@ -121,6 +121,23 @@ public class OrderService {
         return orderRepository.findByBuyerId(currentUser().getId());
     }
 
+    @Transactional(readOnly = true)
+    public long countOrders() {
+        return orderRepository.count();
+    }
+
+    @Transactional(readOnly = true)
+    public long countOrdersByCurrentUser() {
+        User buyer = currentUser();
+        return orderRepository.countByBuyerId(buyer.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public long countOrdersForSeller() {
+        User seller = currentUser();
+        return orderRepository.countOrdersContainingSellerProducts(seller.getId());
+    }
+
     /**
      * Return an ownership-aware order detail DTO for MVC view rendering.
      * Buyers can only view their own orders; ADMIN can view any order.

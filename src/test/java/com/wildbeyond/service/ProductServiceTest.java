@@ -134,6 +134,22 @@ class ProductServiceTest {
         assertThat(productService.findAll()).isEmpty();
     }
 
+    @Test
+    void countProducts_returnsRepositoryCount() {
+        when(productRepository.count()).thenReturn(42L);
+
+        assertThat(productService.countProducts()).isEqualTo(42L);
+    }
+
+    @Test
+    void countProductsByCurrentSeller_returnsSellerScopedCount() {
+        setAuthenticatedUser("seller@example.com", "ROLE_SELLER");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(productRepository.countBySellerId(1L)).thenReturn(6L);
+
+        assertThat(productService.countProductsByCurrentSeller()).isEqualTo(6L);
+    }
+
     // ── findById ────────────────────────────────────────────────────────────
 
     @Test

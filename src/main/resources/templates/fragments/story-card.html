@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body>
-<article th:fragment="storyCard(story)" class="group flex gap-4 bg-white/5 hover:bg-white/10 p-3 transition">
+<a th:fragment="storyCard(story)" th:href="${story.href}" class="group flex gap-4 bg-white/5 hover:bg-white/10 p-3 transition">
     <img th:src="${story.image}" alt="Story image"
          class="w-20 h-20 object-cover group-hover:scale-105 transition">
     <div class="min-w-0">
@@ -12,6 +12,6 @@
         <p class="mt-1 text-xs text-gray-300"
            th:text="${#strings.abbreviate(story.summary, 70)}">Story summary</p>
     </div>
-</article>
+</a>
 </body>
 </html>

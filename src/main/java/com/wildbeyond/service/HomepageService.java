@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,5 +23,9 @@ public class HomepageService {
 
     public List<Product> getFeaturedProducts() {
         return productRepo.findTop5ByOrderByIdDesc();
+    }
+
+    public Optional<BlogPost> findBlogPostById(Long id) {
+        return blogRepo.findById(id);
     }
 }

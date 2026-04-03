@@ -49,12 +49,12 @@
                 </div>
 
                 <div class="flex items-center gap-8">
-                    <button type="button" aria-label="Search" class="text-white hover:text-yellow-300 transition">
+                    <a th:href="@{/blog}" aria-label="Search stories" class="text-white hover:text-yellow-300 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="7"></circle>
                             <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
                         </svg>
-                    </button>
+                    </a>
                     <button id="hero-menu-toggle" type="button" aria-label="Menu" class="text-white hover:text-yellow-300 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                             <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -135,7 +135,7 @@
     </section>
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div th:replace="~{fragments/feature-banner :: featureBanner('Predicting Deadly Volcanic Mudslides', 'When landscapes shift overnight, science and indigenous field knowledge become lifesaving tools.', 'Read More', '/images/lion.jpg')}"></div>
+        <div th:replace="~{fragments/feature-banner :: featureBanner('Predicting Deadly Volcanic Mudslides', 'When landscapes shift overnight, science and indigenous field knowledge become lifesaving tools.', 'Read More', '/images/lion.jpg', '/blog')}"></div>
     </section>
 
     <section class="bg-black text-white py-14">
@@ -250,12 +250,13 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" th:if="${!#lists.isEmpty(products)}">
-            <article th:each="product, stat : ${products}" class="bg-white shadow p-4 hover:shadow-xl hover:-translate-y-1 transition">
+            <a th:each="product, stat : ${products}" th:href="@{/products/{id}(id=${product.id})}" class="block bg-white shadow p-4 hover:shadow-xl hover:-translate-y-1 transition">
                 <img src="/images/lion.jpg" alt="Product image" class="h-44 w-full object-cover" th:classappend="${stat.index % 2 == 0} ? '' : ' grayscale'">
                 <h3 class="font-bold mt-3" th:text="${product.name}">Product name</h3>
                 <p class="text-sm text-gray-600 mt-1" th:text="${product.description != null ? #strings.abbreviate(product.description, 70) : 'Wildlife inspired essential.'}">Product description</p>
                 <p class="text-emerald-700 font-semibold mt-2" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</p>
-            </article>
+                <p class="text-sm font-semibold mt-3 text-emerald-800 hover:underline">View Product</p>
+            </a>
         </div>
         <p th:if="${#lists.isEmpty(products)}" class="text-gray-500">No featured products available right now.</p>
     </section>
@@ -266,12 +267,12 @@
             <h2 class="super-title text-3xl md:text-4xl">The Best Wildlife Stories Delivered To Your Inbox</h2>
             <p class="mt-3 text-gray-200">Join explorers, photographers, and conservationists receiving weekly editorial picks.</p>
 
-            <form class="mt-8 flex flex-col md:flex-row justify-center gap-4">
+            <form th:action="@{/auth/register}" method="get" class="mt-8 flex flex-col md:flex-row justify-center gap-4">
                 <input type="text" placeholder="Your name"
                       class="px-4 py-3 text-black w-full md:w-56 focus:outline-none focus:ring-2 focus:ring-yellow-300">
                 <input type="email" placeholder="Your email"
                       class="px-4 py-3 text-black w-full md:w-72 focus:outline-none focus:ring-2 focus:ring-yellow-300">
-                <button type="button"
+                <button type="submit"
                        class="bg-yellow-400 text-black px-8 py-3 font-semibold hover:bg-yellow-300 transition">
                     Subscribe
                 </button>

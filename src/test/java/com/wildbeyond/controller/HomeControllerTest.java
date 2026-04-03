@@ -14,7 +14,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,6 +46,7 @@ class HomeControllerTest {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("home"))
+                                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("href=\"#\""))))
                 .andExpect(model().attributeExists("blogs"))
                 .andExpect(model().attributeExists("products"))
                 .andExpect(model().attributeExists("stories"))
@@ -93,4 +96,40 @@ class HomeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("home"));
     }
+
+        @Test
+        @WithAnonymousUser
+        void about_shouldRenderAboutPage() throws Exception {
+                mockMvc.perform(get("/about"))
+                                .andExpect(status().isOk())
+                                .andExpect(view().name("about"));
+        }
+
+        @Test
+        @WithAnonymousUser
+        void blogDetail_shouldRenderBlogDetail_whenPostExists() throws Exception {
+                BlogPost blog = BlogPost.builder()
+                                .id(7L)
+                                .title("River Watch")
+                                .content("Delta report")
+                                .createdAt(LocalDateTime.of(2026, 3, 1, 10, 30))
+                                .published(true)
+                                .build();
+
+                when(homepageService.findBlogPostById(7L)).thenReturn(Optional.of(blog));
+
+                mockMvc.perform(get("/blog/7"))
+                                .andExpect(status().isOk())
+                                .andExpect(view().name("blog-detail"))
+                                .andExpect(model().attribute("post", blog));
+        }
+
+        @Test
+        @WithAnonymousUser
+        void blogDetail_shouldReturn404_whenPostMissing() throws Exception {
+                when(homepageService.findBlogPostById(999L)).thenReturn(Optional.empty());
+
+                mockMvc.perform(get("/blog/999"))
+                                .andExpect(status().isNotFound());
+        }
 }

@@ -136,7 +136,9 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/",
                     "/blog",
+                    "/blog/**",
                     "/explore",
+                    "/about",
                     "/auth/login",
                     "/auth/register"
                 ).permitAll()

@@ -192,6 +192,31 @@ class OrderServiceTest {
         assertThat(result).hasSize(1).contains(order);
     }
 
+    @Test
+    void countOrders_returnsRepositoryCount() {
+        when(orderRepository.count()).thenReturn(11L);
+
+        assertThat(orderService.countOrders()).isEqualTo(11L);
+    }
+
+    @Test
+    void countOrdersByCurrentUser_returnsBuyerScopedCount() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.countByBuyerId(1L)).thenReturn(3L);
+
+        assertThat(orderService.countOrdersByCurrentUser()).isEqualTo(3L);
+    }
+
+    @Test
+    void countOrdersForSeller_returnsSellerScopedCount() {
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(orderRepository.countOrdersContainingSellerProducts(2L)).thenReturn(4L);
+
+        assertThat(orderService.countOrdersForSeller()).isEqualTo(4L);
+    }
+
     // ── findById ─────────────────────────────────────────────────────────────
 
     @Test

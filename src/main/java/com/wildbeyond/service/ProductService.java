@@ -96,6 +96,17 @@ public class ProductService {
         return productRepository.findBySellerId(sellerId);
     }
 
+    @Transactional(readOnly = true)
+    public long countProducts() {
+        return productRepository.count();
+    }
+
+    @Transactional(readOnly = true)
+    public long countProductsByCurrentSeller() {
+        User seller = currentUser();
+        return productRepository.countBySellerId(seller.getId());
+    }
+
     /**
      * Update the mutable fields of an existing product.
      * The seller is intentionally not re-assigned on update.
@@ -185,5 +196,18 @@ public class ProductService {
         if (!product.getSeller().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You are not allowed to manage this product");
         }
+    }
+
+    private User currentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            throw new AccessDeniedException("Authentication is required");
+        }
+
+        return userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Current user not found: " + authentication.getName()));
     }
 }
