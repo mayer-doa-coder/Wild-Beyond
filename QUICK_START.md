@@ -79,3 +79,7 @@ docker compose down -v
 2. Check that ports 5432 and 8080 are free.
 3. Verify .env exists and includes DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT.
 4. If startup fails, run docker compose down -v then docker compose up --build.
+
+## CI/CD
+
+See CI/CD workflow details and deployment conditions in CI_CD_PIPELINE.md.
