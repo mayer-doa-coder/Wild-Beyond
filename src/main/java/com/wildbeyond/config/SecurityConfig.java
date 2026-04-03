@@ -141,6 +141,9 @@ public class SecurityConfig {
                     "/auth/register"
                 ).permitAll()
 
+                // Product management pages (MVC) — seller/admin only
+                .requestMatchers("/products/edit/**", "/products/delete/**").hasAnyRole("SELLER", "ADMIN")
+
                 // Product browsing — public (GET only)
                 .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
 

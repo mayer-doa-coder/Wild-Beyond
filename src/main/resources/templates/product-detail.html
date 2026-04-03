@@ -41,6 +41,18 @@
             <p class="price" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</p>
             <p class="meta" th:text="${'Stock: ' + product.stock}">Stock: 0</p>
             <p class="desc" th:text="${product.description != null ? product.description : 'No description available.'}">Description</p>
+
+            <div style="margin-top: 1rem; display: flex; gap: .6rem;" th:if="${canManageProduct}">
+                <a th:href="@{/products/edit/{id}(id=${product.id})}"
+                   style="display: inline-block; text-decoration: none; background: #b7791f; color: #fff; padding: .5rem .9rem; font-size: .88rem; border-radius: 3px; font-weight: 700;">
+                    Edit
+                </a>
+                <a th:href="@{/products/delete/{id}(id=${product.id})}"
+                   onclick="return confirm('Delete this product?')"
+                   style="display: inline-block; text-decoration: none; background: #b42318; color: #fff; padding: .5rem .9rem; font-size: .88rem; border-radius: 3px; font-weight: 700;">
+                    Delete
+                </a>
+            </div>
         </div>
     </div>
 </main>

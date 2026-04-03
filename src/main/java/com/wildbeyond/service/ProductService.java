@@ -7,6 +7,10 @@ import com.wildbeyond.model.User;
 import com.wildbeyond.repository.ProductRepository;
 import com.wildbeyond.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +72,21 @@ public class ProductService {
     }
 
     /**
+     * Return a DTO for edit form binding in MVC flows.
+     */
+    @Transactional(readOnly = true)
+    public ProductDTO getProductById(Long id) {
+        Product product = findById(id);
+        ProductDTO dto = new ProductDTO();
+        dto.setSellerId(product.getSeller().getId());
+        dto.setName(product.getName());
+        dto.setDescription(product.getDescription());
+        dto.setPrice(product.getPrice());
+        dto.setStock(product.getStock());
+        return dto;
+    }
+
+    /**
      * Return all products belonging to a specific seller.
      *
      * @param sellerId the ID of the seller
@@ -86,6 +105,7 @@ public class ProductService {
     @Transactional
     public Product update(Long id, ProductDTO dto) {
         Product product = findById(id);
+        assertCanManageProduct(product);
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
@@ -101,9 +121,69 @@ public class ProductService {
      */
     @Transactional
     public void delete(Long id) {
-        if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Product not found with id: " + id);
+        Product product = findById(id);
+        assertCanManageProduct(product);
+        productRepository.delete(product);
+    }
+
+    /**
+     * Explicit MVC-oriented update method name for controller readability.
+     */
+    @Transactional
+    public Product updateProduct(Long id, ProductDTO dto) {
+        return update(id, dto);
+    }
+
+    /**
+     * Explicit MVC-oriented delete method name for controller readability.
+     */
+    @Transactional
+    public void deleteProduct(Long id) {
+        delete(id);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canCurrentUserManage(Long productId) {
+        Product product = findById(productId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return false;
         }
-        productRepository.deleteById(id);
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        if (isAdmin) {
+            return true;
+        }
+
+        return userRepository.findByEmail(authentication.getName())
+                .map(user -> product.getSeller().getId().equals(user.getId()))
+                .orElse(false);
+    }
+
+    private void assertCanManageProduct(Product product) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            throw new AccessDeniedException("Authentication is required to manage products");
+        }
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+
+        if (isAdmin) {
+            return;
+        }
+
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Current user not found: " + authentication.getName()));
+
+        if (!product.getSeller().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("You are not allowed to manage this product");
+        }
     }
 }

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product - Wild Beyond</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; background: #f4f6f8; color: #1a1a1a; }
+        header { background: #1b3a0d; padding: 0 2rem; min-height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-brand { font-size: 1.4rem; font-weight: 800; color: #fff; text-decoration: none; }
+        .nav-brand span { color: rgba(160,220,100,.85); }
+        .hdr-links a { color: rgba(255,255,255,.9); text-decoration: none; border: 1px solid rgba(255,255,255,.25); border-radius: 2px; padding: .35rem .75rem; font-size: .84rem; }
+        .hdr-links a:hover { background: rgba(255,255,255,.12); }
+        main { max-width: 860px; margin: 2rem auto; padding: 0 1.25rem; }
+        .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.08); overflow: hidden; }
+        .head { background: #eef3ec; padding: 1rem 1.25rem; border-bottom: 1px solid #dbe4d7; }
+        .head h1 { color: #1b3a0d; font-size: 1.6rem; }
+        .body { padding: 1.25rem; }
+        .field { margin-bottom: .9rem; }
+        .field label { display: block; margin-bottom: .35rem; font-weight: 700; font-size: .88rem; color: #334155; }
+        .field input, .field textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: .6rem .7rem; font-size: .95rem; }
+        .field textarea { min-height: 120px; resize: vertical; }
+        .actions { display: flex; gap: .6rem; margin-top: 1rem; }
+        .btn { border: 0; border-radius: 3px; padding: .55rem .95rem; font-weight: 700; cursor: pointer; }
+        .btn-primary { background: #1b3a0d; color: #fff; }
+        .btn-secondary { background: #475569; color: #fff; text-decoration: none; display: inline-flex; align-items: center; }
+        .alert { margin-bottom: .9rem; padding: .7rem .8rem; border-radius: 4px; font-size: .9rem; }
+        .alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+    </style>
+</head>
+<body>
+<header>
+    <a class="nav-brand" th:href="@{/products}">Wild<span>Beyond</span></a>
+    <div class="hdr-links">
+        <a th:href="@{/products}">Back to Products</a>
+    </div>
+</header>
+
+<main>
+    <div class="card">
+        <div class="head">
+            <h1>Edit Product</h1>
+        </div>
+        <div class="body">
+            <div class="alert alert-error" th:if="${productCreateError}" th:text="${productCreateError}">
+                Unable to update product.
+            </div>
+
+            <form th:action="@{/products/edit/{id}(id=${productId})}" th:object="${product}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" th:field="*{sellerId}" />
+
+                <div class="field">
+                    <label for="name">Name</label>
+                    <input id="name" type="text" th:field="*{name}" maxlength="100" required />
+                </div>
+
+                <div class="field">
+                    <label for="description">Description</label>
+                    <textarea id="description" th:field="*{description}" maxlength="2000"></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="price">Price</label>
+                    <input id="price" type="number" min="0.01" step="0.01" th:field="*{price}" required />
+                </div>
+
+                <div class="field">
+                    <label for="stock">Stock</label>
+                    <input id="stock" type="number" min="0" step="1" th:field="*{stock}" required />
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                    <a class="btn btn-secondary" th:href="@{/products/{id}(id=${productId})}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
