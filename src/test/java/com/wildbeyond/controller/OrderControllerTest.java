@@ -21,10 +21,13 @@ import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -145,4 +148,18 @@ class OrderControllerTest {
                         .with(user("buyer@example.com").roles("BUYER")))
                 .andExpect(status().isNotFound());
     }
+
+        @Test
+        void updateOrderStatus_shouldRedirectToOrderDetail() throws Exception {
+                when(orderService.updateStatus(5L, "CANCELLED")).thenReturn(new Order());
+
+                mockMvc.perform(post("/orders/5/status")
+                                                .with(user("buyer@example.com").roles("BUYER"))
+                                                .with(csrf())
+                                                .param("status", "CANCELLED"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/orders/5"));
+
+                verify(orderService).updateStatus(5L, "CANCELLED");
+        }
 }

@@ -181,6 +181,7 @@ public class SecurityConfig {
                 // (the ** wildcard includes zero segments), so if the wildcard rule
                 // appears first it shadows the exact-path rule below it.
                 .requestMatchers(HttpMethod.POST,   "/api/orders").hasRole("BUYER")
+                .requestMatchers(HttpMethod.PUT,    "/api/orders/**").hasAnyRole("BUYER", "ADMIN")
                 .requestMatchers(HttpMethod.GET,    "/api/orders").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,    "/api/orders/my").authenticated()
                 .requestMatchers(HttpMethod.GET,    "/api/orders/**").authenticated()

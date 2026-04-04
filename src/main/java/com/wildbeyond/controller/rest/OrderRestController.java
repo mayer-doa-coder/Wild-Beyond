@@ -1,6 +1,7 @@
 package com.wildbeyond.controller.rest;
 
 import com.wildbeyond.dto.OrderDTO;
+import com.wildbeyond.dto.OrderStatusUpdateDTO;
 import com.wildbeyond.model.Order;
 import com.wildbeyond.service.OrderService;
 import jakarta.validation.Valid;
@@ -84,6 +85,18 @@ public class OrderRestController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Order>> getAll() {
         return ResponseEntity.ok(orderService.findAll());
+    }
+
+    /**
+     * PUT /api/orders/{id}
+     * Update order status.
+     * BUYER can cancel own active orders; ADMIN can update any order status.
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('BUYER', 'ADMIN')")
+    public ResponseEntity<Order> update(@PathVariable Long id,
+                                        @Valid @RequestBody OrderStatusUpdateDTO dto) {
+        return ResponseEntity.ok(orderService.updateStatus(id, dto.getStatus()));
     }
 
     /**

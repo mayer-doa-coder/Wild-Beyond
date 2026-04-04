@@ -372,6 +372,54 @@ class OrderServiceTest {
         assertThat(result.getItems()).hasSize(1);
     }
 
+    // ── update status ───────────────────────────────────────────────────────
+
+    @Test
+    void updateStatus_allowsOwnerToCancelActiveOrder() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Order updated = orderService.updateStatus(5L, OrderStatus.CANCELLED);
+
+        assertThat(updated.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+        verify(orderRepository).save(order);
+    }
+
+    @Test
+    void updateStatus_blocksOwnerFromUnsupportedTransition() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+
+        assertThatThrownBy(() -> orderService.updateStatus(5L, OrderStatus.SHIPPED))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("not allowed");
+
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    void updateStatus_allowsAdminToSetAnyStatus() {
+        mockSecurityContext("admin@example.com");
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Order updated = orderService.updateStatus(5L, OrderStatus.SHIPPED);
+
+        assertThat(updated.getStatus()).isEqualTo(OrderStatus.SHIPPED);
+        verify(orderRepository).save(order);
+    }
+
+    @Test
+    void updateStatus_throwsForInvalidStatusText() {
+        assertThatThrownBy(() -> orderService.updateStatus(5L, "not-a-status"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid order status");
+    }
+
     // ── delete ───────────────────────────────────────────────────────────────
 
     @Test

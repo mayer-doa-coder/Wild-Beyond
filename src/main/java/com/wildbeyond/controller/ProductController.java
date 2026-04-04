@@ -225,28 +225,4 @@ public class ProductController {
         }
         return "redirect:/products";
     }
-
-    @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
-    @PostMapping("/{id}/edit")
-    public String updateProductLegacy(
-            @PathVariable Long id,
-            @Valid @ModelAttribute("product") ProductDTO dto,
-            BindingResult bindingResult,
-            @RequestParam(value = "photo", required = false) MultipartFile photo,
-            RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "product-form";
-        }
-        try {
-            if (photo != null && !photo.isEmpty()) {
-                productService.updateProduct(id, dto, photo);
-            } else {
-                productService.updateProduct(id, dto);
-            }
-            redirectAttributes.addFlashAttribute("productCreateSuccess", "Product updated successfully.");
-        } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("productCreateError", ex.getMessage());
-        }
-        return "redirect:/products";
-    }
 }
