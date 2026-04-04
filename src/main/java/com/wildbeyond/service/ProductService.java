@@ -7,9 +7,15 @@ import com.wildbeyond.model.User;
 import com.wildbeyond.repository.ProductRepository;
 import com.wildbeyond.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -33,6 +39,11 @@ public class ProductService {
      */
     @Transactional
     public Product create(ProductDTO dto) {
+        return create(dto, null);
+    }
+
+    @Transactional
+    public Product create(ProductDTO dto, MultipartFile photo) {
         User seller = userRepository.findById(dto.getSellerId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Seller not found with id: " + dto.getSellerId()));
@@ -42,6 +53,7 @@ public class ProductService {
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
+        applyPhoto(product, photo);
         product.setSeller(seller);
 
         return productRepository.save(product);
@@ -68,6 +80,21 @@ public class ProductService {
     }
 
     /**
+     * Return a DTO for edit form binding in MVC flows.
+     */
+    @Transactional(readOnly = true)
+    public ProductDTO getProductById(Long id) {
+        Product product = findById(id);
+        ProductDTO dto = new ProductDTO();
+        dto.setSellerId(product.getSeller().getId());
+        dto.setName(product.getName());
+        dto.setDescription(product.getDescription());
+        dto.setPrice(product.getPrice());
+        dto.setStock(product.getStock());
+        return dto;
+    }
+
+    /**
      * Return all products belonging to a specific seller.
      *
      * @param sellerId the ID of the seller
@@ -75,6 +102,17 @@ public class ProductService {
     @Transactional(readOnly = true)
     public List<Product> findBySeller(Long sellerId) {
         return productRepository.findBySellerId(sellerId);
+    }
+
+    @Transactional(readOnly = true)
+    public long countProducts() {
+        return productRepository.count();
+    }
+
+    @Transactional(readOnly = true)
+    public long countProductsByCurrentSeller() {
+        User seller = currentUser();
+        return productRepository.countBySellerId(seller.getId());
     }
 
     /**
@@ -85,11 +123,18 @@ public class ProductService {
      */
     @Transactional
     public Product update(Long id, ProductDTO dto) {
+        return update(id, dto, null);
+    }
+
+    @Transactional
+    public Product update(Long id, ProductDTO dto, MultipartFile photo) {
         Product product = findById(id);
+        assertCanManageProduct(product);
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
+        applyPhoto(product, photo);
         return productRepository.save(product);
     }
 
@@ -101,9 +146,132 @@ public class ProductService {
      */
     @Transactional
     public void delete(Long id) {
-        if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Product not found with id: " + id);
+        Product product = findById(id);
+        assertCanManageProduct(product);
+        productRepository.delete(product);
+    }
+
+    /**
+     * Explicit MVC-oriented update method name for controller readability.
+     */
+    @Transactional
+    public Product updateProduct(Long id, ProductDTO dto) {
+        return update(id, dto);
+    }
+
+    @Transactional
+    public Product updateProduct(Long id, ProductDTO dto, MultipartFile photo) {
+        return update(id, dto, photo);
+    }
+
+    /**
+     * Explicit MVC-oriented delete method name for controller readability.
+     */
+    @Transactional
+    public void deleteProduct(Long id) {
+        delete(id);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canCurrentUserManage(Long productId) {
+        Product product = findById(productId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return false;
         }
-        productRepository.deleteById(id);
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        if (isAdmin) {
+            return true;
+        }
+
+        return userRepository.findByEmail(authentication.getName())
+                .map(user -> product.getSeller().getId().equals(user.getId()))
+                .orElse(false);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canCurrentUserBuy(Long productId) {
+        Product product = findById(productId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return false;
+        }
+
+        return userRepository.findByEmail(authentication.getName())
+                .map(user -> {
+                    boolean isBuyer = user.getRoles().stream().anyMatch(role -> "BUYER".equals(role.getName()));
+                    if (isBuyer) {
+                        return true;
+                    }
+
+                    boolean isSeller = user.getRoles().stream().anyMatch(role -> "SELLER".equals(role.getName()));
+                    if (!isSeller) {
+                        return false;
+                    }
+
+                    return !product.getSeller().getId().equals(user.getId());
+                })
+                .orElse(false);
+    }
+
+    private void assertCanManageProduct(Product product) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            throw new AccessDeniedException("Authentication is required to manage products");
+        }
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+
+        if (isAdmin) {
+            return;
+        }
+
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Current user not found: " + authentication.getName()));
+
+        if (!product.getSeller().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("You are not allowed to manage this product");
+        }
+    }
+
+    private User currentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            throw new AccessDeniedException("Authentication is required");
+        }
+
+        return userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Current user not found: " + authentication.getName()));
+    }
+
+    private void applyPhoto(Product product, MultipartFile photo) {
+        if (photo == null || photo.isEmpty()) {
+            return;
+        }
+
+        String contentType = photo.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Uploaded file must be an image");
+        }
+
+        try {
+            product.setImageData(photo.getBytes());
+            product.setImageContentType(contentType);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Unable to read uploaded image", ex);
+        }
     }
 }

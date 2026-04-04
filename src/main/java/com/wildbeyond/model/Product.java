@@ -31,6 +31,15 @@ public class Product {
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @Column(name = "image_data")
+    private byte[] imageData;
+
+    @Column(name = "image_content_type", length = 100)
+    private String imageContentType;
+
     // ── Relationships ────────────────────────────────────────────────────────
 
     /**

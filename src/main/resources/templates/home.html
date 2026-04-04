@@ -49,12 +49,12 @@
                 </div>
 
                 <div class="flex items-center gap-8">
-                    <button type="button" aria-label="Search" class="text-white hover:text-yellow-300 transition">
+                    <a th:href="@{/blog}" aria-label="Search stories" class="text-white hover:text-yellow-300 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="7"></circle>
                             <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
                         </svg>
-                    </button>
+                    </a>
                     <button id="hero-menu-toggle" type="button" aria-label="Menu" class="text-white hover:text-yellow-300 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                             <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -123,10 +123,13 @@
                 </div>
 
                 <article class="lg:col-span-2 overflow-hidden bg-white/5" th:if="${featuredStory != null}">
-                    <img th:src="${featuredStory.image}" alt="Featured story" class="w-full h-72 md:h-[430px] object-cover">
+                    <a th:href="${featuredStory.href}">
+                        <img th:src="${featuredStory.image}" alt="Featured story" class="w-full h-auto max-h-[430px] object-contain bg-white/10"
+                             onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
+                    </a>
                     <div class="p-6 md:p-8">
                         <p class="text-xs uppercase tracking-[0.2em] text-yellow-300" th:text="${featuredStory.category}">Category</p>
-                        <h3 class="text-2xl md:text-4xl mt-3 font-bold" th:text="${featuredStory.title}">Featured headline</h3>
+                        <h3 class="text-2xl md:text-4xl mt-3 font-bold"><a th:href="${featuredStory.href}" th:text="${featuredStory.title}" class="hover:underline">Featured headline</a></h3>
                         <p class="mt-3 text-gray-300 max-w-3xl" th:text="${featuredStory.summary}">Featured summary</p>
                     </div>
                 </article>
@@ -135,7 +138,7 @@
     </section>
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div th:replace="~{fragments/feature-banner :: featureBanner('Predicting Deadly Volcanic Mudslides', 'When landscapes shift overnight, science and indigenous field knowledge become lifesaving tools.', 'Read More', '/images/lion.jpg')}"></div>
+        <div th:replace="~{fragments/feature-banner :: featureBanner('Predicting Deadly Volcanic Mudslides', 'When landscapes shift overnight, science and indigenous field knowledge become lifesaving tools.', 'Read More', ${featureBannerImage}, '/blog')}"></div>
     </section>
 
     <section class="bg-black text-white py-14">
@@ -146,14 +149,15 @@
             </div>
 
             <div class="flex overflow-x-auto gap-6 pb-2 snap-x">
-                <article th:each="doc : ${documentaries}"
-                         class="min-w-[220px] md:min-w-[260px] snap-start overflow-hidden bg-white/5 border border-white/10 hover:border-yellow-300/50 transition">
-                    <img th:src="${doc.image}" alt="Documentary poster" class="w-full h-64 object-cover">
+                <a th:each="doc : ${documentaries}" th:href="${doc.href}"
+                   class="min-w-[220px] md:min-w-[260px] snap-start overflow-hidden bg-white/5 border border-white/10 hover:border-yellow-300/50 transition">
+                          <img th:src="${doc.image}" alt="Documentary poster" class="w-full h-auto max-h-72 object-contain bg-white/10"
+                                 onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                     <div class="p-4">
                         <h3 class="font-semibold" th:text="${doc.title}">Documentary title</h3>
                         <p class="text-xs text-gray-300 mt-2" th:text="${doc.summary}">Documentary summary</p>
                     </div>
-                </article>
+                </a>
             </div>
         </div>
     </section>
@@ -163,10 +167,11 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <article class="lg:col-span-2 bg-white shadow overflow-hidden">
-                <img th:src="${featuredStory.image}" alt="Travel feature" class="w-full h-80 object-cover">
+                <a th:href="${featuredStory.href}"><img th:src="${featuredStory.image}" alt="Travel feature" class="w-full h-auto max-h-[26rem] object-contain bg-slate-100"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';"></a>
                 <div class="p-6">
                     <p class="text-xs uppercase tracking-[0.2em] text-emerald-700">Travel Feature</p>
-                    <h3 class="text-3xl font-bold mt-2" th:text="${featuredStory.title}">Travel feature title</h3>
+                    <h3 class="text-3xl font-bold mt-2"><a th:href="${featuredStory.href}" th:text="${featuredStory.title}" class="hover:underline">Travel feature title</a></h3>
                     <p class="mt-3 text-gray-600" th:text="${featuredStory.summary}">Travel feature summary</p>
                 </div>
             </article>
@@ -176,7 +181,7 @@
                 <div class="space-y-4">
                     <article th:each="story : ${travelStories}" class="pb-3 border-b border-gray-200 last:border-none last:pb-0">
                         <p class="text-[10px] uppercase tracking-[0.2em] text-emerald-700" th:text="${story.category}">Category</p>
-                        <h4 class="font-semibold mt-1" th:text="${story.title}">Story title</h4>
+                        <h4 class="font-semibold mt-1"><a th:href="${story.href}" th:text="${story.title}" class="hover:underline">Story title</a></h4>
                         <p class="text-sm text-gray-600 mt-1" th:text="${#strings.abbreviate(story.summary, 80)}">Story summary</p>
                     </article>
                 </div>
@@ -190,7 +195,8 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <article class="lg:col-span-2 bg-white/5 overflow-hidden">
-                    <img src="/images/lion.jpg" alt="Issue cover" class="w-full h-[380px] object-cover">
+                    <img th:src="${issueCoverImage}" alt="Issue cover" class="w-full h-auto max-h-[380px] object-contain bg-white/10"
+                         onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                     <div class="p-6">
                         <h3 class="text-2xl font-bold">Engineering Silk Stronger Than Steel</h3>
                         <p class="mt-2 text-gray-300">A science-first look at resilient fibers inspired by natural systems.</p>
@@ -200,7 +206,7 @@
                 <aside class="border border-white/10">
                     <article th:each="item : ${issueArticles}" class="px-5 py-4 border-b border-white/10 last:border-none">
                         <p class="text-[10px] uppercase tracking-[0.2em] text-yellow-300" th:text="${item.category}">Issue</p>
-                        <h4 class="mt-1 font-semibold" th:text="${item.title}">Article title</h4>
+                        <h4 class="mt-1 font-semibold"><a th:href="${item.href}" th:text="${item.title}" class="hover:underline">Article title</a></h4>
                     </article>
                 </aside>
             </div>
@@ -215,21 +221,24 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <article class="bg-white overflow-hidden shadow hover:-translate-y-1 transition">
-                <img src="/images/lion.jpg" alt="Conservation card" class="w-full h-44 object-cover">
+                <img th:src="${missionImageOne}" alt="Conservation card" class="w-full h-auto max-h-52 object-contain bg-slate-100"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                 <div class="p-5">
                     <h3 class="font-bold">Habitat Recovery</h3>
                     <p class="text-sm text-gray-600 mt-2">Restoration projects that rebuild migration and breeding pathways.</p>
                 </div>
             </article>
             <article class="bg-white overflow-hidden shadow hover:-translate-y-1 transition">
-                <img src="/images/lion.jpg" alt="Conservation card" class="w-full h-44 object-cover grayscale">
+                <img th:src="${missionImageTwo}" alt="Conservation card" class="w-full h-auto max-h-52 object-contain bg-slate-100 grayscale"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                 <div class="p-5">
                     <h3 class="font-bold">Community Rangers</h3>
                     <p class="text-sm text-gray-600 mt-2">Local stewardship models protecting vulnerable species.</p>
                 </div>
             </article>
             <article class="bg-white overflow-hidden shadow hover:-translate-y-1 transition">
-                <img src="/images/lion.jpg" alt="Conservation card" class="w-full h-44 object-cover saturate-150">
+                <img th:src="${missionImageThree}" alt="Conservation card" class="w-full h-auto max-h-52 object-contain bg-slate-100 saturate-150"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                 <div class="p-5">
                     <h3 class="font-bold">Data + Action</h3>
                     <p class="text-sm text-gray-600 mt-2">Field science translated into practical conservation action.</p>
@@ -250,12 +259,15 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" th:if="${!#lists.isEmpty(products)}">
-            <article th:each="product, stat : ${products}" class="bg-white shadow p-4 hover:shadow-xl hover:-translate-y-1 transition">
-                <img src="/images/lion.jpg" alt="Product image" class="h-44 w-full object-cover" th:classappend="${stat.index % 2 == 0} ? '' : ' grayscale'">
+            <a th:each="product, stat : ${products}" th:href="@{/products/{id}(id=${product.id})}" class="block bg-white shadow p-4 hover:shadow-xl hover:-translate-y-1 transition">
+                <img th:if="${product.imageData != null}" th:src="@{/products/{id}/photo(id=${product.id})}" alt="Product image" class="w-full h-auto max-h-52 object-contain bg-slate-100" th:classappend="${stat.index % 2 == 0} ? '' : ' grayscale'">
+                <img th:if="${product.imageData == null}" th:src="${featuredShopFallbackImage}" alt="Product image" class="w-full h-auto max-h-52 object-contain bg-slate-100" th:classappend="${stat.index % 2 == 0} ? '' : ' grayscale'"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                 <h3 class="font-bold mt-3" th:text="${product.name}">Product name</h3>
                 <p class="text-sm text-gray-600 mt-1" th:text="${product.description != null ? #strings.abbreviate(product.description, 70) : 'Wildlife inspired essential.'}">Product description</p>
                 <p class="text-emerald-700 font-semibold mt-2" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</p>
-            </article>
+                <p class="text-sm font-semibold mt-3 text-emerald-800 hover:underline">View Product</p>
+            </a>
         </div>
         <p th:if="${#lists.isEmpty(products)}" class="text-gray-500">No featured products available right now.</p>
     </section>
@@ -266,12 +278,12 @@
             <h2 class="super-title text-3xl md:text-4xl">The Best Wildlife Stories Delivered To Your Inbox</h2>
             <p class="mt-3 text-gray-200">Join explorers, photographers, and conservationists receiving weekly editorial picks.</p>
 
-            <form class="mt-8 flex flex-col md:flex-row justify-center gap-4">
+            <form th:action="@{/auth/register}" method="get" class="mt-8 flex flex-col md:flex-row justify-center gap-4">
                 <input type="text" placeholder="Your name"
                       class="px-4 py-3 text-black w-full md:w-56 focus:outline-none focus:ring-2 focus:ring-yellow-300">
                 <input type="email" placeholder="Your email"
                       class="px-4 py-3 text-black w-full md:w-72 focus:outline-none focus:ring-2 focus:ring-yellow-300">
-                <button type="button"
+                <button type="submit"
                        class="bg-yellow-400 text-black px-8 py-3 font-semibold hover:bg-yellow-300 transition">
                     Subscribe
                 </button>

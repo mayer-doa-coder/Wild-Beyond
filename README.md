@@ -127,9 +127,7 @@ For full CI/CD details: CI_CD_PIPELINE.md
 ## Security and Database Polish
 
 - Removed partially wired/incomplete lockout logic to avoid misleading security claims.
-- Production schema strategy now uses Flyway migrations with JPA set to validate.
-- Automatic schema mutation via ddl-auto=update is disabled for production safety.
-- Migration strategy follows versioned scripts under src/main/resources/db/migration.
+- Database schema is managed directly through JPA auto update configuration.
 
 ## Links
 

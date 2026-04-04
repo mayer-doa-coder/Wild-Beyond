@@ -31,11 +31,10 @@
     </section>
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            <article class="bg-white border border-gray-200 shadow p-5"><h3 class="text-xs uppercase tracking-[.14em] text-gray-500">Total Users</h3><p class="mt-3 text-4xl font-bold text-emerald-900">—</p></article>
-            <article class="bg-white border border-gray-200 shadow p-5"><h3 class="text-xs uppercase tracking-[.14em] text-gray-500">Total Products</h3><p class="mt-3 text-4xl font-bold text-emerald-900">—</p></article>
-            <article class="bg-white border border-gray-200 shadow p-5"><h3 class="text-xs uppercase tracking-[.14em] text-gray-500">Total Orders</h3><p class="mt-3 text-4xl font-bold text-emerald-900">—</p></article>
-            <article class="bg-white border border-gray-200 shadow p-5"><h3 class="text-xs uppercase tracking-[.14em] text-gray-500">Revenue</h3><p class="mt-3 text-4xl font-bold text-emerald-900">—</p></article>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            <article class="bg-white border border-gray-200 shadow p-5"><h3 class="text-xs uppercase tracking-[.14em] text-gray-500">Total Users</h3><p class="mt-3 text-4xl font-bold text-emerald-900" th:text="${userCount}">0</p></article>
+            <article class="bg-white border border-gray-200 shadow p-5"><h3 class="text-xs uppercase tracking-[.14em] text-gray-500">Total Products</h3><p class="mt-3 text-4xl font-bold text-emerald-900" th:text="${productCount}">0</p></article>
+            <article class="bg-white border border-gray-200 shadow p-5"><h3 class="text-xs uppercase tracking-[.14em] text-gray-500">Total Orders</h3><p class="mt-3 text-4xl font-bold text-emerald-900" th:text="${orderCount}">0</p></article>
         </div>
 
         <h2 class="super-title text-3xl mb-5">Quick Actions</h2>

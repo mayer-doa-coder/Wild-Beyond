@@ -135,11 +135,22 @@ public class SecurityConfig {
                 // Public pages — no login required
                 .requestMatchers(
                     "/",
+                    "/home",
+                    "/index",
                     "/blog",
+                    "/blog/**",
                     "/explore",
+                    "/explore/**",
+                    "/about",
                     "/auth/login",
                     "/auth/register"
                 ).permitAll()
+
+                // Product management pages (MVC) — seller/admin only
+                .requestMatchers("/products/edit/**", "/products/delete/**").hasAnyRole("SELLER", "ADMIN")
+
+                // Cart + checkout (MVC) — buyer + seller can purchase; admin excluded
+                .requestMatchers("/cart", "/cart/**").hasAnyRole("BUYER", "SELLER")
 
                 // Product browsing — public (GET only)
                 .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()

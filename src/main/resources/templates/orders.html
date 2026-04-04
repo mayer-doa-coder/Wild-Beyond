@@ -4,65 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders - Wild Beyond</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Titillium+Web:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; background: #f4f6f8; color: #1a1a1a; }
-        header { background: #1b3a0d; padding: 0 2rem; min-height: 64px; display: flex; align-items: center; justify-content: space-between; }
-        .nav-brand { font-size: 1.4rem; font-weight: 800; color: #fff; text-decoration: none; }
-        .nav-brand span { color: rgba(160,220,100,.85); }
-        .hdr-links { display: flex; align-items: center; gap: .7rem; }
-        .hdr-links a, .hdr-links button { color: rgba(255,255,255,.9); text-decoration: none; background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 2px; padding: .35rem .75rem; font-size: .84rem; cursor: pointer; }
-        .hdr-links a:hover, .hdr-links button:hover { background: rgba(255,255,255,.12); }
-        main { max-width: 1100px; margin: 2rem auto; padding: 0 1.25rem; }
-        h1 { color: #1b3a0d; font-size: 1.8rem; margin-bottom: 1rem; }
-        .empty { background: #fff; border: 1px dashed #c9d6c1; border-radius: 6px; padding: 1.5rem; color: #667; }
-        .empty a { color: #1b3a0d; font-weight: 700; text-decoration: none; }
-        .table-wrap { background: #fff; border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,.08); overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        thead th { text-align: left; background: #eef3ec; color: #355229; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; padding: .8rem 1rem; }
-        tbody td { padding: .9rem 1rem; border-top: 1px solid #f0f0f0; font-size: .92rem; }
-        .status { font-weight: 700; color: #1b3a0d; }
+        * { font-family: 'Titillium Web', sans-serif; }
+        .super-title { font-family: 'Permanent Marker', cursive; }
+        .brand-mark { font-family: 'Permanent Marker', cursive; letter-spacing: .02em; }
     </style>
 </head>
-<body>
-<header>
-    <a class="nav-brand" th:href="@{/dashboard}">Wild<span>Beyond</span></a>
-    <div class="hdr-links">
-        <a th:href="@{/products}">Products</a>
-        <a th:href="@{/dashboard}">Dashboard</a>
-        <form th:action="@{/auth/logout}" method="post" style="display:inline">
-            <button type="submit">Logout</button>
-        </form>
-    </div>
-</header>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<main>
-    <h1>My Orders</h1>
-
-    <div class="empty" th:if="${#lists.isEmpty(orders)}">
-        No orders yet. <a th:href="@{/products}">Browse products</a> to place your first order.
+<main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <h1 class="text-3xl font-bold text-emerald-950">My Orders</h1>
+        <a th:href="@{/cart}" class="text-sm font-semibold text-emerald-800 hover:underline">Cart</a>
     </div>
 
-    <div class="table-wrap" th:if="${not #lists.isEmpty(orders)}">
-        <table>
+    <div class="mb-6 flex flex-wrap gap-2" th:if="${#authorization.expression('hasRole(''SELLER'')')}">
+        <a th:href="@{/orders(view='buying')}"
+           class="px-4 py-2 text-sm font-semibold border"
+           th:classappend="${ordersView == 'buying'} ? ' bg-emerald-900 text-white border-emerald-900' : ' bg-white text-emerald-900 border-emerald-300'">Buying Orders</a>
+        <a th:href="@{/orders(view='selling')}"
+           class="px-4 py-2 text-sm font-semibold border"
+           th:classappend="${ordersView == 'selling'} ? ' bg-emerald-900 text-white border-emerald-900' : ' bg-white text-emerald-900 border-emerald-300'">My Product Orders</a>
+    </div>
+
+    <div class="bg-white border border-dashed border-gray-300 p-8 text-gray-600" th:if="${#lists.isEmpty(orders)}">
+        No orders yet. <a th:href="@{/products}" class="font-semibold text-emerald-800 hover:underline">Browse products</a> to place your first order.
+    </div>
+
+    <div class="bg-white border border-gray-200 shadow overflow-hidden" th:if="${not #lists.isEmpty(orders)}">
+        <table class="w-full border-collapse">
             <thead>
-            <tr>
-                <th>ID</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Total</th>
+            <tr class="bg-emerald-50 text-emerald-900 text-xs uppercase tracking-[0.14em]">
+                <th class="text-left px-4 py-3">ID</th>
+                <th class="text-left px-4 py-3">Date</th>
+                <th class="text-left px-4 py-3">Status</th>
+                <th class="text-left px-4 py-3">Total</th>
+                <th class="text-left px-4 py-3">Actions</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="order : ${orders}">
-                <td th:text="${order.id}">1</td>
-                <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}">2026-01-01 10:00</td>
-                <td class="status" th:text="${order.status}">PENDING</td>
-                <td th:text="${'$' + #numbers.formatDecimal(order.totalPrice, 1, 2)}">$0.00</td>
+            <tr th:each="order : ${orders}" class="border-t border-gray-100">
+                <td class="px-4 py-3" th:text="${order.id}">1</td>
+                <td class="px-4 py-3" th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}">2026-01-01 10:00</td>
+                <td class="px-4 py-3 font-semibold text-emerald-800" th:text="${order.status}">PENDING</td>
+                <td class="px-4 py-3" th:text="${'$' + #numbers.formatDecimal(order.totalPrice, 1, 2)}">$0.00</td>
+                <td class="px-4 py-3">
+                    <a th:href="@{/orders/{id}(id=${order.id})}" class="font-semibold text-emerald-800 hover:underline">View Details</a>
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
 </main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

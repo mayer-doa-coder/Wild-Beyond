@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Wild Beyond</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Titillium+Web:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { font-family: 'Titillium Web', sans-serif; }
+        .super-title { font-family: 'Permanent Marker', cursive; }
+        .brand-mark { font-family: 'Permanent Marker', cursive; letter-spacing: .02em; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="flex-1">
+    <section class="relative py-16 text-white bg-cover bg-center"
+             style="background-image: linear-gradient(rgba(2,6,23,.55), rgba(2,6,23,.75)), url('/images/lion.jpg');">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="super-title text-5xl">Wild Beyond Blog</h1>
+            <p class="mt-3 text-gray-200 max-w-2xl">Field stories, conservation reports, and ecosystem insights from across the wild.</p>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" th:if="${featuredArticle != null}">
+        <article class="grid grid-cols-1 lg:grid-cols-3 bg-white border border-gray-200 shadow overflow-hidden">
+            <img th:src="${featuredArticle.imageUrl}" alt="Featured blog image" class="lg:col-span-2 w-full h-72 lg:h-full object-cover">
+            <div class="p-6 lg:p-8">
+                <p class="text-xs uppercase tracking-[0.16em] text-emerald-700" th:text="${featuredArticle.sourceName}">Source</p>
+                <h2 class="mt-2 text-3xl font-bold text-emerald-950" th:text="${featuredArticle.title}">Headline</h2>
+                <p class="mt-3 text-gray-600" th:text="${featuredArticle.summary}">Summary</p>
+                <div class="mt-5 flex gap-3">
+                    <a th:if="${featuredArticle.internal}" th:href="@{/blog/{id}(id=${featuredArticle.localId})}" class="bg-emerald-900 text-white px-4 py-2 text-sm font-semibold hover:bg-emerald-800 transition">Read Story</a>
+                    <a th:if="${!featuredArticle.internal}" th:href="${featuredArticle.sourceUrl}" target="_blank" rel="noopener noreferrer" class="bg-emerald-900 text-white px-4 py-2 text-sm font-semibold hover:bg-emerald-800 transition">Open Source</a>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2" th:if="${not #lists.isEmpty(editorialPicks)}">
+        <h2 class="super-title text-3xl md:text-4xl mb-6">Editorial Picks</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <article th:each="article : ${editorialPicks}" class="bg-white border border-gray-200 shadow hover:shadow-lg transition overflow-hidden">
+                <img th:src="${article.imageUrl}" alt="Blog cover" class="w-full h-44 object-cover">
+                <div class="p-5">
+                    <p class="text-xs uppercase tracking-[0.16em] text-emerald-700" th:text="${article.sourceName}">Source</p>
+                    <h3 class="mt-2 text-lg font-bold text-emerald-950" th:text="${article.title}">Article title</h3>
+                    <p class="mt-2 text-sm text-gray-600" th:text="${#strings.abbreviate(article.summary, 120)}">Summary</p>
+                    <a th:if="${article.internal}" th:href="@{/blog/{id}(id=${article.localId})}" class="inline-block mt-4 text-sm font-semibold text-emerald-800 hover:underline">Read More</a>
+                    <a th:if="${!article.internal}" th:href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer" class="inline-block mt-4 text-sm font-semibold text-emerald-800 hover:underline">Open Source</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="bg-black text-white py-12" th:if="${not #lists.isEmpty(visualStories)}">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="super-title text-3xl md:text-4xl mb-6">Visual Story Blocks</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <article th:each="article : ${visualStories}" class="relative h-64 overflow-hidden border border-white/20">
+                    <img th:src="${article.imageUrl}" alt="Visual block" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
+                    <div class="relative z-10 h-full p-5 flex flex-col justify-end">
+                        <p class="text-xs uppercase tracking-[0.16em] text-yellow-300" th:text="${article.sourceName}">Source</p>
+                        <h3 class="mt-1 text-xl font-bold" th:text="${article.title}">Story title</h3>
+                        <a th:if="${article.internal}" th:href="@{/blog/{id}(id=${article.localId})}" class="mt-3 inline-block text-sm font-semibold text-yellow-300 hover:underline">Read Story</a>
+                        <a th:if="${!article.internal}" th:href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-block text-sm font-semibold text-yellow-300 hover:underline">Open Source</a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" th:if="${#lists.isEmpty(articles)}">
+        <div class="bg-white border border-dashed border-gray-300 p-8 text-gray-600">
+            No published blog posts yet. Explore current highlights in the
+            <a th:href="@{/explore}" class="font-semibold text-emerald-800 hover:underline">Explore page</a>.
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

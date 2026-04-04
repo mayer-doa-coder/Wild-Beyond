@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -102,4 +103,56 @@ class ProductControllerTest {
 
         verify(productService, never()).create(any());
     }
+
+        @Test
+        void editProductForm_shouldRenderEditPageForSeller() throws Exception {
+                ProductDTO dto = new ProductDTO();
+                dto.setSellerId(22L);
+                dto.setName("Field Kit");
+                dto.setDescription("Portable kit");
+                dto.setPrice(BigDecimal.valueOf(29.99));
+                dto.setStock(2);
+
+                when(productService.getProductById(11L)).thenReturn(dto);
+                when(productService.findById(11L)).thenReturn(
+                        Product.builder().id(11L).name("Field Kit").build()
+                );
+
+                mockMvc.perform(get("/products/edit/11")
+                                                .with(user("seller@example.com").roles("SELLER")))
+                                .andExpect(status().isOk())
+                                .andExpect(view().name("product-form"))
+                                .andExpect(model().attributeExists("product"))
+                                .andExpect(model().attribute("productId", 11L));
+        }
+
+        @Test
+        void updateProduct_shouldDelegateToServiceAndRedirect() throws Exception {
+                when(productService.updateProduct(any(Long.class), any(ProductDTO.class))).thenReturn(
+                                Product.builder().id(11L).name("Updated").price(BigDecimal.valueOf(39.99)).stock(3).build()
+                );
+
+                mockMvc.perform(post("/products/edit/11")
+                                                .with(user("seller@example.com").roles("SELLER"))
+                                                .with(csrf())
+                                                .param("sellerId", "22")
+                                                .param("name", "Updated")
+                                                .param("description", "Updated desc")
+                                                .param("price", "39.99")
+                                                .param("stock", "3"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/products"));
+
+                verify(productService).updateProduct(eq(11L), any(ProductDTO.class));
+        }
+
+        @Test
+        void deleteProduct_shouldDelegateToServiceAndRedirect() throws Exception {
+                mockMvc.perform(get("/products/delete/11")
+                                                .with(user("seller@example.com").roles("SELLER")))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/products"));
+
+                verify(productService).deleteProduct(11L);
+        }
 }

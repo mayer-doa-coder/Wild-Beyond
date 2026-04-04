@@ -14,12 +14,6 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: false
 
-  # Disable Liquibase / Flyway if present
-  liquibase:
-    enabled: false
-  flyway:
-    enabled: false
-
 logging:
   level:
     root: WARN
