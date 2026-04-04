@@ -15,6 +15,7 @@
                 <a th:href="@{/blog}" class="hover:text-lime-300 transition">Blog</a>
                 <a th:href="@{/explore}" class="hover:text-lime-300 transition">Explore</a>
                 <a th:href="@{/products}" class="hover:text-lime-300 transition">Marketplace</a>
+                <a th:href="@{/cart}" sec:authorize="hasAnyRole('BUYER','SELLER')" class="hover:text-lime-300 transition">Cart</a>
 
                 <a th:href="@{/auth/login}" sec:authorize="isAnonymous()" class="hover:text-lime-300 transition">Login</a>
                 <a th:href="@{/auth/register}" sec:authorize="isAnonymous()" class="hover:text-lime-300 transition">Register</a>

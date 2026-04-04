@@ -13,7 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -37,6 +39,11 @@ public class ProductService {
      */
     @Transactional
     public Product create(ProductDTO dto) {
+        return create(dto, null);
+    }
+
+    @Transactional
+    public Product create(ProductDTO dto, MultipartFile photo) {
         User seller = userRepository.findById(dto.getSellerId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Seller not found with id: " + dto.getSellerId()));
@@ -46,6 +53,7 @@ public class ProductService {
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
+        applyPhoto(product, photo);
         product.setSeller(seller);
 
         return productRepository.save(product);
@@ -115,12 +123,18 @@ public class ProductService {
      */
     @Transactional
     public Product update(Long id, ProductDTO dto) {
+        return update(id, dto, null);
+    }
+
+    @Transactional
+    public Product update(Long id, ProductDTO dto, MultipartFile photo) {
         Product product = findById(id);
         assertCanManageProduct(product);
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
+        applyPhoto(product, photo);
         return productRepository.save(product);
     }
 
@@ -143,6 +157,11 @@ public class ProductService {
     @Transactional
     public Product updateProduct(Long id, ProductDTO dto) {
         return update(id, dto);
+    }
+
+    @Transactional
+    public Product updateProduct(Long id, ProductDTO dto, MultipartFile photo) {
+        return update(id, dto, photo);
     }
 
     /**
@@ -171,6 +190,33 @@ public class ProductService {
 
         return userRepository.findByEmail(authentication.getName())
                 .map(user -> product.getSeller().getId().equals(user.getId()))
+                .orElse(false);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canCurrentUserBuy(Long productId) {
+        Product product = findById(productId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return false;
+        }
+
+        return userRepository.findByEmail(authentication.getName())
+                .map(user -> {
+                    boolean isBuyer = user.getRoles().stream().anyMatch(role -> "BUYER".equals(role.getName()));
+                    if (isBuyer) {
+                        return true;
+                    }
+
+                    boolean isSeller = user.getRoles().stream().anyMatch(role -> "SELLER".equals(role.getName()));
+                    if (!isSeller) {
+                        return false;
+                    }
+
+                    return !product.getSeller().getId().equals(user.getId());
+                })
                 .orElse(false);
     }
 
@@ -209,5 +255,23 @@ public class ProductService {
         return userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Current user not found: " + authentication.getName()));
+    }
+
+    private void applyPhoto(Product product, MultipartFile photo) {
+        if (photo == null || photo.isEmpty()) {
+            return;
+        }
+
+        String contentType = photo.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Uploaded file must be an image");
+        }
+
+        try {
+            product.setImageData(photo.getBytes());
+            product.setImageContentType(contentType);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Unable to read uploaded image", ex);
+        }
     }
 }

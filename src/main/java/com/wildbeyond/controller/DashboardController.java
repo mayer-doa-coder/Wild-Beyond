@@ -63,6 +63,7 @@ public class DashboardController {
     public String sellerDashboard(Model model) {
         model.addAttribute("myProducts", productService.countProductsByCurrentSeller());
         model.addAttribute("myOrders", orderService.countOrdersForSeller());
+        model.addAttribute("myBuyingOrders", orderService.countBuyingOrdersForCurrentSeller());
         return "seller/dashboard";
     }
 
@@ -70,6 +71,7 @@ public class DashboardController {
     @PreAuthorize("hasRole('BUYER')")
     public String buyerDashboard(Model model) {
         model.addAttribute("myOrders", orderService.countOrdersByCurrentUser());
+        model.addAttribute("recentOrders", orderService.findMyOrders().stream().limit(5).toList());
         return "buyer/dashboard";
     }
 }

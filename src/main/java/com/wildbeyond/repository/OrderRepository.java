@@ -26,6 +26,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             """)
         long countOrdersContainingSellerProducts(@Param("sellerId") Long sellerId);
 
+            @Query("""
+                select distinct o
+                from Order o
+                join o.items i
+                where i.product.seller.id = :sellerId
+                order by o.orderDate desc
+                """)
+            List<Order> findOrdersContainingSellerProducts(@Param("sellerId") Long sellerId);
+
     /**
      * Find all orders with a specific status.
      * Used for admin order management (e.g. filter PENDING orders).

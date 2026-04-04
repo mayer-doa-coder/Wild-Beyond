@@ -82,6 +82,27 @@ class OrderControllerTest {
         verify(orderService).findAll();
     }
 
+        @Test
+        void getOrders_shouldUseSellerProductOrders_whenSellerViewSelling() throws Exception {
+                Order order = Order.builder()
+                                .id(3L)
+                                .orderDate(LocalDateTime.of(2026, 1, 3, 14, 0))
+                                .status(OrderStatus.PENDING)
+                                .totalPrice(BigDecimal.valueOf(120.00))
+                                .build();
+
+                when(orderService.findOrdersForCurrentSellerProducts()).thenReturn(List.of(order));
+
+                mockMvc.perform(get("/orders")
+                                                .param("view", "selling")
+                                                .with(user("seller@example.com").roles("SELLER")))
+                                .andExpect(status().isOk())
+                                .andExpect(view().name("orders"))
+                                .andExpect(model().attribute("ordersView", "selling"));
+
+                verify(orderService).findOrdersForCurrentSellerProducts();
+        }
+
     @Test
     void getOrderById_shouldRenderDetailView_whenAuthorized() throws Exception {
         OrderItemDTO item = new OrderItemDTO();

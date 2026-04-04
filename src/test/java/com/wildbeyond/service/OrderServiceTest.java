@@ -144,7 +144,28 @@ class OrderServiceTest {
         assertThat(result.getStatus()).isEqualTo(OrderStatus.PENDING);
         // 2 × £100.00 = £200.00
         assertThat(result.getTotalPrice()).isEqualByComparingTo(BigDecimal.valueOf(200.00));
+        assertThat(product.getStock()).isEqualTo(18);
         verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    void create_throwsWhenStockIsInsufficient() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+
+        product.setStock(1);
+        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(10L);
+        itemDto.setQuantity(2);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        assertThatThrownBy(() -> orderService.create(dto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Insufficient stock");
     }
 
     @Test
@@ -179,6 +200,73 @@ class OrderServiceTest {
         assertThatThrownBy(() -> orderService.create(dto))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("ghost@example.com");
+    }
+
+    @Test
+    void create_allowsSellerToBuyOtherSellerProduct() {
+        User otherSeller = new User();
+        otherSeller.setId(33L);
+        otherSeller.setEmail("other-seller@example.com");
+        otherSeller.setRoles(Set.of(Role.builder().name("SELLER").build()));
+
+        Product otherSellerProduct = Product.builder()
+                .id(20L)
+                .name("Compass")
+                .price(BigDecimal.valueOf(40.00))
+                .stock(15)
+                .seller(otherSeller)
+                .build();
+
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(productRepository.findById(20L)).thenReturn(Optional.of(otherSellerProduct));
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(20L);
+        itemDto.setQuantity(1);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        Order result = orderService.create(dto);
+        assertThat(result.getBuyer().getId()).isEqualTo(2L);
+        assertThat(result.getTotalPrice()).isEqualByComparingTo("40.00");
+    }
+
+    @Test
+    void create_blocksSellerBuyingOwnProduct() {
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(10L);
+        itemDto.setQuantity(1);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        assertThatThrownBy(() -> orderService.create(dto))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("cannot buy their own products");
+    }
+
+    @Test
+    void create_blocksAdminFromPlacingOrder() {
+        mockSecurityContext("admin@example.com");
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(10L);
+        itemDto.setQuantity(1);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        assertThatThrownBy(() -> orderService.create(dto))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("Only buyers and sellers");
     }
 
     // ── findAll ──────────────────────────────────────────────────────────────

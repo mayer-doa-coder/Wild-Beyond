@@ -12,6 +12,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,8 +26,20 @@ public class HomeController {
         return "home";
     }
 
+    @GetMapping({"/home", "/index"})
+    public String homeAlias() {
+        return "redirect:/";
+    }
+
     @GetMapping("/blog")
     public String blog(Model model) {
+        var articles = homepageService.getBlogFeed();
+        model.addAttribute("articles", articles);
+        model.addAttribute("featuredArticle", articles.isEmpty() ? null : articles.get(0));
+        model.addAttribute("editorialPicks", articles.size() > 1 ? articles.subList(1, Math.min(5, articles.size())) : Collections.emptyList());
+        model.addAttribute("visualStories", articles.size() > 5 ? articles.subList(5, Math.min(11, articles.size())) : Collections.emptyList());
+
+        // Compatibility with previous template/tests.
         model.addAttribute("blogs", homepageService.getAllPublishedBlogs());
         return "blog";
     }

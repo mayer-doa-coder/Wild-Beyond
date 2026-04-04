@@ -7,6 +7,12 @@ spring:
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      auto-commit: false
+
+external:
+  blog:
+    request-timeout-seconds: 8
 
   jpa:
     open-in-view: false

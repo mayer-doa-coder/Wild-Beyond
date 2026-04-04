@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 
 @WebMvcTest(HomeController.class)
 @Import(SecurityConfig.class)
@@ -55,6 +56,14 @@ class HomeControllerTest {
                 .andExpect(model().attributeExists("travelStories"))
                 .andExpect(model().attributeExists("issueArticles"));
     }
+
+        @Test
+        @WithAnonymousUser
+        void homeAlias_shouldRedirectToRoot() throws Exception {
+                mockMvc.perform(get("/home"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/"));
+        }
 
     @Test
     @WithAnonymousUser

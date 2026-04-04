@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Business logic for Order CRUD operations.
@@ -55,6 +57,16 @@ public class OrderService {
         return user.getRoles().stream().anyMatch(role -> "ADMIN".equals(role.getName()));
     }
 
+    private boolean hasRole(User user, String roleName) {
+        return user.getRoles().stream().anyMatch(role -> roleName.equals(role.getName()));
+    }
+
+    private void assertBuyerOrSeller(User user) {
+        if (!(hasRole(user, "BUYER") || hasRole(user, "SELLER"))) {
+            throw new AccessDeniedException("Only buyers and sellers can place orders");
+        }
+    }
+
     // ── CRUD ──────────────────────────────────────────────────────────────────
 
     /**
@@ -73,6 +85,28 @@ public class OrderService {
     @Transactional
     public Order create(OrderDTO dto) {
         User buyer = currentUser();
+        assertBuyerOrSeller(buyer);
+
+        Map<Long, Integer> requestedItems = new LinkedHashMap<>();
+        for (OrderItemDTO itemDto : dto.getItems()) {
+            Integer existing = requestedItems.getOrDefault(itemDto.getProductId(), 0);
+            requestedItems.put(itemDto.getProductId(), existing + itemDto.getQuantity());
+        }
+
+        return createFromRequestedItems(buyer, requestedItems);
+    }
+
+    @Transactional
+    public Order createFromCart(Map<Long, Integer> productQuantities) {
+        User buyer = currentUser();
+        assertBuyerOrSeller(buyer);
+        return createFromRequestedItems(buyer, productQuantities);
+    }
+
+    private Order createFromRequestedItems(User buyer, Map<Long, Integer> productQuantities) {
+        if (productQuantities == null || productQuantities.isEmpty()) {
+            throw new IllegalArgumentException("Cart is empty");
+        }
 
         Order order = new Order();
         order.setBuyer(buyer);
@@ -81,22 +115,38 @@ public class OrderService {
         List<OrderItem> items = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 
-        for (OrderItemDTO itemDto : dto.getItems()) {
-            Product product = productRepository.findById(itemDto.getProductId())
+        for (Map.Entry<Long, Integer> entry : productQuantities.entrySet()) {
+            Long productId = entry.getKey();
+            Integer quantity = entry.getValue();
+            if (quantity == null || quantity <= 0) {
+                throw new IllegalArgumentException("Quantity must be at least 1");
+            }
+
+            Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Product not found with id: " + itemDto.getProductId()));
+                            "Product not found with id: " + productId));
+
+            if (hasRole(buyer, "SELLER") && product.getSeller().getId().equals(buyer.getId())) {
+                throw new AccessDeniedException("Sellers cannot buy their own products");
+            }
+
+            if (product.getStock() == null || product.getStock() < quantity) {
+                throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
+            }
 
             OrderItem item = new OrderItem();
             item.setOrder(order);
             item.setProduct(product);
-            item.setQuantity(itemDto.getQuantity());
+            item.setQuantity(quantity);
             // Snapshot the price at the time of ordering — preserves order history
             // even if the product's price changes later.
             item.setUnitPrice(product.getPrice());
 
             items.add(item);
             total = total.add(product.getPrice()
-                    .multiply(BigDecimal.valueOf(itemDto.getQuantity())));
+                    .multiply(BigDecimal.valueOf(quantity)));
+
+                product.setStock(product.getStock() - quantity);
         }
 
         order.setItems(items);
@@ -122,14 +172,32 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    public List<Order> findOrdersForCurrentSellerProducts() {
+        User seller = currentUser();
+        if (!hasRole(seller, "SELLER")) {
+            throw new AccessDeniedException("Only sellers can access product order history");
+        }
+        return orderRepository.findOrdersContainingSellerProducts(seller.getId());
+    }
+
+    @Transactional(readOnly = true)
     public long countOrders() {
         return orderRepository.count();
     }
 
     @Transactional(readOnly = true)
     public long countOrdersByCurrentUser() {
-        User buyer = currentUser();
-        return orderRepository.countByBuyerId(buyer.getId());
+        User user = currentUser();
+        return orderRepository.countByBuyerId(user.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public long countBuyingOrdersForCurrentSeller() {
+        User seller = currentUser();
+        if (!hasRole(seller, "SELLER")) {
+            throw new AccessDeniedException("Only sellers can access buying order count");
+        }
+        return orderRepository.countByBuyerId(seller.getId());
     }
 
     @Transactional(readOnly = true)

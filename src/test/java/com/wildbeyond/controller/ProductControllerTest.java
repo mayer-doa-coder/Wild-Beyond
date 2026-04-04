@@ -114,6 +114,9 @@ class ProductControllerTest {
                 dto.setStock(2);
 
                 when(productService.getProductById(11L)).thenReturn(dto);
+                when(productService.findById(11L)).thenReturn(
+                        Product.builder().id(11L).name("Field Kit").build()
+                );
 
                 mockMvc.perform(get("/products/edit/11")
                                                 .with(user("seller@example.com").roles("SELLER")))

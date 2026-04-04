@@ -30,6 +30,8 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
+      GUARDIAN_API_KEY: ${GUARDIAN_API_KEY:-}
+      NEWSAPI_KEY: ${NEWSAPI_KEY:-}
     ports:
       - "8180:8080"
     restart: unless-stopped

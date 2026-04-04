@@ -26,11 +26,28 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("")
-    public String getOrders(Model model, Authentication authentication) {
+    public String getOrders(@RequestParam(value = "view", required = false) String view,
+                            Model model,
+                            Authentication authentication) {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isSeller = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_SELLER"));
 
-        model.addAttribute("orders", isAdmin ? orderService.findAll() : orderService.findMyOrders());
+        if (isAdmin) {
+            model.addAttribute("orders", orderService.findAll());
+            model.addAttribute("ordersView", "all");
+            return "orders";
+        }
+
+        if (isSeller && "selling".equalsIgnoreCase(view)) {
+            model.addAttribute("orders", orderService.findOrdersForCurrentSellerProducts());
+            model.addAttribute("ordersView", "selling");
+            return "orders";
+        }
+
+        model.addAttribute("orders", orderService.findMyOrders());
+        model.addAttribute("ordersView", "buying");
         return "orders";
     }
 
