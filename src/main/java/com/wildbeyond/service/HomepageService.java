@@ -55,7 +55,7 @@ public class HomepageService {
             .build();
     private final Map<String, String> wikiImageCache = new ConcurrentHashMap<>();
 
-            private static final List<ExploreEntryView> EXPLORE_ENTRIES = List.of(
+    private static final List<ExploreEntryView> EXPLORE_ENTRIES = List.of(
                 entry("animals", "african-elephant", "African Elephant", "The largest land mammal and ecosystem engineer.", "African elephants open migration paths, disperse seeds over long distances, and create water access points used by many other species. Their presence supports biodiversity across entire savannah systems.", "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=1400&q=80", "50% 38%", "Savannah, woodland", "Endangered", "https://www.worldwildlife.org/species/african-elephant"),
                 entry("animals", "snow-leopard", "Snow Leopard", "A high-altitude predator of cold mountain ranges.", "Snow leopards regulate prey populations in alpine ecosystems and indicate healthy mountain food webs. Their wide range needs protected corridors and community-supported coexistence plans.", "https://images.unsplash.com/photo-1552410260-0fd9b577afa6?auto=format&fit=crop&w=1400&q=80", "50% 40%", "Alpine mountains", "Vulnerable", "https://www.worldwildlife.org/species/snow-leopard"),
                 entry("animals", "bengal-tiger", "Bengal Tiger", "An apex predator critical to forest balance.", "Bengal tigers help stabilize herbivore populations and keep forest ecosystems resilient. Their conservation protects large landscapes that also store carbon and support river systems.", "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1400&q=80", "50% 32%", "Tropical and subtropical forests", "Endangered", "https://www.worldwildlife.org/species/tiger"),
@@ -66,6 +66,8 @@ public class HomepageService {
                 entry("animals", "polar-bear", "Polar Bear", "An Arctic predator dependent on sea ice.", "Polar bears are strongly affected by sea-ice decline, which reduces hunting opportunities and increases energetic stress. Their status reflects broader Arctic climate change.", "https://images.unsplash.com/photo-1517783999520-f068d7431a60?auto=format&fit=crop&w=1400&q=80", "50% 42%", "Arctic coasts and ice", "Vulnerable", "https://www.worldwildlife.org/species/polar-bear"),
                 entry("animals", "mountain-gorilla", "Mountain Gorilla", "A conservation recovery story still needing vigilance.", "Mountain gorillas have rebounded through anti-poaching patrols, habitat protection, and veterinary intervention. Continued community partnership remains essential.", "https://images.unsplash.com/photo-1559253664-ca249d4608c3?auto=format&fit=crop&w=1400&q=80", "50% 28%", "Montane forests", "Endangered", "https://www.worldwildlife.org/species/mountain-gorilla"),
                 entry("animals", "sea-otter", "Sea Otter", "A keystone species in kelp ecosystems.", "Sea otters control sea urchin populations, preventing kelp collapse and helping coastal biodiversity thrive. Their return often improves nearshore ecosystem resilience.", "https://images.unsplash.com/photo-1456926631375-92c8ce872def?auto=format&fit=crop&w=1400&q=80", "50% 55%", "Coastal kelp zones", "Endangered", "https://www.worldwildlife.org/species/sea-otter"),
+                entry("animals", "giant-panda", "Giant Panda", "A bamboo-forest specialist and conservation symbol.", "Giant pandas support mountain forest conservation at a landscape scale because protecting their habitat also safeguards headwater forests, understory diversity, and many co-existing species.", "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=1400&q=80", "50% 32%", "Temperate bamboo forests", "Vulnerable", "https://www.worldwildlife.org/species/giant-panda"),
+                entry("animals", "manatee", "West Indian Manatee", "A gentle grazer tied to healthy seagrass.", "Manatees maintain seagrass bed dynamics through grazing and movement. Their wellbeing depends on clean warm waters, protected migration corridors, and reduced boat-strike risks.", "https://images.unsplash.com/photo-1546026423-cc4642628d2b?auto=format&fit=crop&w=1400&q=80", "50% 52%", "Coastal lagoons and estuaries", "Vulnerable", "https://www.worldwildlife.org/species/manatee"),
 
                 entry("birds", "bald-eagle", "Bald Eagle", "A freshwater ecosystem health indicator.", "Bald eagles signal robust aquatic food chains and protected nesting habitats. Their population rebound demonstrates the value of long-term policy and habitat restoration.", "https://images.unsplash.com/photo-1611689342806-0863700ce1e4?auto=format&fit=crop&w=1400&q=80", "50% 26%", "Rivers, lakes, coasts", "Least Concern", "https://www.audubon.org/field-guide/bird/bald-eagle"),
                 entry("birds", "scarlet-macaw", "Scarlet Macaw", "A colorful rainforest seed disperser.", "Scarlet macaws require mature forests and nesting cavities. Their movement patterns help distribute seeds and support forest regeneration at scale.", "https://images.unsplash.com/photo-1591198936750-16d8e15edb9e?auto=format&fit=crop&w=1400&q=80", "50% 34%", "Lowland rainforests", "Least Concern", "https://animaldiversity.org/accounts/Ara_macao/"),
@@ -77,6 +79,8 @@ public class HomepageService {
                 entry("birds", "great-hornbill", "Great Hornbill", "A large-fruited tree disperser in Asian forests.", "Great hornbills transport seeds over long distances and are highly sensitive to old-growth forest loss. Their decline often mirrors canopy fragmentation.", "https://images.unsplash.com/photo-1591608971362-f08b2a75731a?auto=format&fit=crop&w=1400&q=80", "50% 28%", "Tropical forests", "Vulnerable", "https://www.iucnredlist.org/species/22682464/184778946"),
                 entry("birds", "arctic-tern", "Arctic Tern", "A long-distance migrant crossing oceans.", "Arctic terns undertake one of the longest migrations on Earth, linking polar marine ecosystems. Their trends help track climate-driven changes in ocean productivity.", "https://images.unsplash.com/photo-1470115636492-6d2b56f9146d?auto=format&fit=crop&w=1400&q=80", "50% 48%", "Polar coasts and open ocean", "Least Concern", "https://www.audubon.org/field-guide/bird/arctic-tern"),
                 entry("birds", "peacock", "Indian Peafowl", "A ground-foraging bird with elaborate courtship.", "Peafowl use mixed scrub and forest-edge habitats and are culturally important in many regions. Habitat pressure and disturbance affect breeding behavior.", "https://images.unsplash.com/photo-1549608276-5786777e6587?auto=format&fit=crop&w=1400&q=80", "50% 35%", "Scrub and forest edges", "Least Concern", "https://www.britannica.com/animal/peafowl"),
+                entry("birds", "atlantic-puffin", "Atlantic Puffin", "A charismatic seabird tied to productive cold waters.", "Atlantic puffins rely on healthy forage fish populations and secure nesting cliffs. Their breeding success provides early warning signals of food-web shifts in marine ecosystems.", "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?auto=format&fit=crop&w=1400&q=80", "50% 42%", "North Atlantic coasts", "Vulnerable", "https://www.audubon.org/field-guide/bird/atlantic-puffin"),
+                entry("birds", "whooping-crane", "Whooping Crane", "A wetland-dependent migratory crane.", "Whooping cranes depend on intact breeding marshes and protected stopover wetlands along migration corridors. Their recovery demonstrates how coordinated habitat protection can rebuild a species.", "https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1400&q=80", "50% 45%", "Marshes and coastal wetlands", "Endangered", "https://www.fws.gov/species/whooping-crane-grus-americana"),
 
                 entry("ecosystems", "mangrove-forest", "Mangrove Forest", "Coastal nurseries and storm buffers.", "Mangroves reduce erosion, support fisheries, and store significant blue carbon. Protecting tidal flow and reducing coastal conversion are central to restoration success.", "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=1400&q=80", "50% 58%", "Intertidal tropical coast", "High conservation priority", "https://www.iucn.org/resources/issues-brief/mangroves-and-climate-change"),
                 entry("ecosystems", "coral-reef", "Coral Reef", "Biodiversity hubs of tropical seas.", "Coral reefs support fisheries, coastal protection, and tourism livelihoods. Rising heat and acidification increase bleaching and slow reef recovery.", "https://images.unsplash.com/photo-1546026423-cc4642628d2b?auto=format&fit=crop&w=1400&q=80", "50% 52%", "Warm shallow oceans", "Critically stressed", "https://www.noaa.gov/education/resource-collections/marine-life/coral-reef-ecosystems"),
@@ -87,19 +91,21 @@ public class HomepageService {
                 entry("ecosystems", "alpine-ecosystem", "Alpine Ecosystem", "High-elevation habitats with short growing seasons.", "Alpine ecosystems host specialized species adapted to cold and low oxygen. Warming shifts species ranges uphill and compresses available habitat.", "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80", "50% 52%", "Mountain zones", "Climate-sensitive", "https://www.unep.org/news-and-stories/story/alpine-ecosystems-under-pressure"),
                 entry("ecosystems", "desert-ecosystem", "Desert Ecosystem", "Water-limited systems with specialized life.", "Deserts host resilient plants and animals adapted to heat and scarcity. Land degradation and groundwater overuse can quickly destabilize these systems.", "https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1400&q=80", "50% 58%", "Arid and semi-arid regions", "High vulnerability", "https://www.britannica.com/science/desert"),
                 entry("ecosystems", "seagrass-meadow", "Seagrass Meadow", "Shallow marine meadows storing blue carbon.", "Seagrass meadows stabilize sediment, support fisheries nurseries, and absorb carbon. They decline under poor water quality and physical disturbance.", "https://images.unsplash.com/photo-1544551763-7ef4200d2a1a?auto=format&fit=crop&w=1400&q=80", "50% 58%", "Coastal shallow waters", "Declining globally", "https://www.unep.org/resources/report/out-blue-seagrass-ecosystem"),
-                entry("ecosystems", "boreal-forest", "Boreal Forest", "Vast northern forest and carbon reservoir.", "Boreal forests regulate global climate through carbon storage and albedo effects. Fire regime shifts and warming are major emerging pressures.", "https://images.unsplash.com/photo-1476231682828-37e571bc172f?auto=format&fit=crop&w=1400&q=80", "50% 45%", "Northern latitudes", "Climate-sensitive", "https://www.worldwildlife.org/biomes/boreal-forests-taiga")
+                entry("ecosystems", "boreal-forest", "Boreal Forest", "Vast northern forest and carbon reservoir.", "Boreal forests regulate global climate through carbon storage and albedo effects. Fire regime shifts and warming are major emerging pressures.", "https://images.unsplash.com/photo-1476231682828-37e571bc172f?auto=format&fit=crop&w=1400&q=80", "50% 45%", "Northern latitudes", "Climate-sensitive", "https://www.worldwildlife.org/biomes/boreal-forests-taiga"),
+                entry("ecosystems", "peatland", "Peatland Ecosystem", "Waterlogged carbon stores with global climate value.", "Peatlands hold immense long-term carbon stocks and regulate watershed behavior. Drainage and peat extraction can rapidly convert these landscapes from carbon sinks into major emission sources.", "https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?auto=format&fit=crop&w=1400&q=80", "50% 56%", "Bogs, fens, and mire systems", "High conservation priority", "https://www.unep.org/explore-topics/ecosystems-and-biodiversity/what-we-do/protecting-peatlands"),
+                entry("ecosystems", "river-delta", "River Delta", "Dynamic floodplain mosaics supporting fisheries and birds.", "River deltas connect upstream sediment flow, wetlands, agriculture, and coastal nurseries. Restoring flow variability and reducing pollution improves resilience for both biodiversity and communities.", "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1400&q=80", "50% 50%", "Estuarine floodplain complexes", "High vulnerability", "https://www.worldwildlife.org/places/greater-mekong")
             );
 
-            private static ExploreEntryView entry(String category,
-                              String slug,
-                              String name,
-                              String shortDescription,
-                              String detail,
-                              String imageUrl,
-                              String imagePosition,
-                              String habitat,
-                              String conservationStatus,
-                              String sourceUrl) {
+    private static ExploreEntryView entry(String category,
+                          String slug,
+                          String name,
+                          String shortDescription,
+                          String detail,
+                          String imageUrl,
+                          String imagePosition,
+                          String habitat,
+                          String conservationStatus,
+                          String sourceUrl) {
             return ExploreEntryView.builder()
                 .category(category)
                 .slug(slug)
@@ -154,7 +160,13 @@ public class HomepageService {
             "Blue whale",
             "Red panda",
             "Komodo dragon",
-            "African wild dog"
+            "African wild dog",
+            "Atlantic puffin",
+            "Snow leopard",
+            "Mountain gorilla",
+            "Sea turtle",
+            "Orca",
+            "Great hornbill"
         );
 
         return gallerySubjects.stream()
@@ -199,9 +211,15 @@ public class HomepageService {
             case "temperate-forest" -> "Temperate forest";
             case "seagrass-meadow" -> "Seagrass meadow";
             case "boreal-forest" -> "Taiga";
+            case "peatland" -> "Peatland";
+            case "river-delta" -> "River delta";
             case "gray-wolf" -> "Wolf";
+            case "manatee" -> "West Indian manatee";
+            case "giant-panda" -> "Giant panda";
             case "mountain-gorilla" -> "Mountain gorilla";
             case "greater-flamingo" -> "Greater flamingo";
+            case "atlantic-puffin" -> "Atlantic puffin";
+            case "whooping-crane" -> "Whooping crane";
             case "indian-peafowl", "peacock" -> "Indian peafowl";
             default -> entry.getName();
         };
@@ -233,9 +251,9 @@ public class HomepageService {
             }
 
             JsonNode root = objectMapper.readTree(response.body());
-            String image = root.path("thumbnail").path("source").textValue();
+            String image = root.path("originalimage").path("source").textValue();
             if (image == null || image.isBlank()) {
-                image = root.path("originalimage").path("source").textValue();
+                image = root.path("thumbnail").path("source").textValue();
             }
             if (image == null || image.isBlank()) {
                 return Optional.empty();

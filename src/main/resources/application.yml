@@ -10,10 +10,6 @@ spring:
     hikari:
       auto-commit: false
 
-external:
-  blog:
-    request-timeout-seconds: 8
-
   jpa:
     open-in-view: false
     hibernate:
@@ -25,6 +21,10 @@ external:
 
   thymeleaf:
     cache: false
+
+external:
+  blog:
+    request-timeout-seconds: 8
 
 server:
   port: 8080
