@@ -140,6 +140,7 @@ public class SecurityConfig {
                     "/blog",
                     "/blog/**",
                     "/explore",
+                    "/explore/**",
                     "/about",
                     "/auth/login",
                     "/auth/register"

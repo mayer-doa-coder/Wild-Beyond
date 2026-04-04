@@ -124,7 +124,8 @@
 
                 <article class="lg:col-span-2 overflow-hidden bg-white/5" th:if="${featuredStory != null}">
                     <a th:href="${featuredStory.href}">
-                        <img th:src="${featuredStory.image}" alt="Featured story" class="w-full h-72 md:h-[430px] object-cover">
+                        <img th:src="${featuredStory.image}" alt="Featured story" class="w-full h-auto max-h-[430px] object-contain bg-white/10"
+                             onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                     </a>
                     <div class="p-6 md:p-8">
                         <p class="text-xs uppercase tracking-[0.2em] text-yellow-300" th:text="${featuredStory.category}">Category</p>
@@ -137,7 +138,7 @@
     </section>
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div th:replace="~{fragments/feature-banner :: featureBanner('Predicting Deadly Volcanic Mudslides', 'When landscapes shift overnight, science and indigenous field knowledge become lifesaving tools.', 'Read More', '/images/lion.jpg', '/blog')}"></div>
+        <div th:replace="~{fragments/feature-banner :: featureBanner('Predicting Deadly Volcanic Mudslides', 'When landscapes shift overnight, science and indigenous field knowledge become lifesaving tools.', 'Read More', ${featureBannerImage}, '/blog')}"></div>
     </section>
 
     <section class="bg-black text-white py-14">
@@ -150,7 +151,8 @@
             <div class="flex overflow-x-auto gap-6 pb-2 snap-x">
                 <a th:each="doc : ${documentaries}" th:href="${doc.href}"
                    class="min-w-[220px] md:min-w-[260px] snap-start overflow-hidden bg-white/5 border border-white/10 hover:border-yellow-300/50 transition">
-                    <img th:src="${doc.image}" alt="Documentary poster" class="w-full h-64 object-cover">
+                          <img th:src="${doc.image}" alt="Documentary poster" class="w-full h-auto max-h-72 object-contain bg-white/10"
+                                 onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                     <div class="p-4">
                         <h3 class="font-semibold" th:text="${doc.title}">Documentary title</h3>
                         <p class="text-xs text-gray-300 mt-2" th:text="${doc.summary}">Documentary summary</p>
@@ -165,7 +167,8 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <article class="lg:col-span-2 bg-white shadow overflow-hidden">
-                <a th:href="${featuredStory.href}"><img th:src="${featuredStory.image}" alt="Travel feature" class="w-full h-80 object-cover"></a>
+                <a th:href="${featuredStory.href}"><img th:src="${featuredStory.image}" alt="Travel feature" class="w-full h-auto max-h-[26rem] object-contain bg-slate-100"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';"></a>
                 <div class="p-6">
                     <p class="text-xs uppercase tracking-[0.2em] text-emerald-700">Travel Feature</p>
                     <h3 class="text-3xl font-bold mt-2"><a th:href="${featuredStory.href}" th:text="${featuredStory.title}" class="hover:underline">Travel feature title</a></h3>
@@ -192,7 +195,8 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <article class="lg:col-span-2 bg-white/5 overflow-hidden">
-                    <img src="/images/lion.jpg" alt="Issue cover" class="w-full h-[380px] object-cover">
+                    <img th:src="${issueCoverImage}" alt="Issue cover" class="w-full h-auto max-h-[380px] object-contain bg-white/10"
+                         onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                     <div class="p-6">
                         <h3 class="text-2xl font-bold">Engineering Silk Stronger Than Steel</h3>
                         <p class="mt-2 text-gray-300">A science-first look at resilient fibers inspired by natural systems.</p>
@@ -217,21 +221,24 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <article class="bg-white overflow-hidden shadow hover:-translate-y-1 transition">
-                <img src="/images/lion.jpg" alt="Conservation card" class="w-full h-44 object-cover">
+                <img th:src="${missionImageOne}" alt="Conservation card" class="w-full h-auto max-h-52 object-contain bg-slate-100"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                 <div class="p-5">
                     <h3 class="font-bold">Habitat Recovery</h3>
                     <p class="text-sm text-gray-600 mt-2">Restoration projects that rebuild migration and breeding pathways.</p>
                 </div>
             </article>
             <article class="bg-white overflow-hidden shadow hover:-translate-y-1 transition">
-                <img src="/images/lion.jpg" alt="Conservation card" class="w-full h-44 object-cover grayscale">
+                <img th:src="${missionImageTwo}" alt="Conservation card" class="w-full h-auto max-h-52 object-contain bg-slate-100 grayscale"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                 <div class="p-5">
                     <h3 class="font-bold">Community Rangers</h3>
                     <p class="text-sm text-gray-600 mt-2">Local stewardship models protecting vulnerable species.</p>
                 </div>
             </article>
             <article class="bg-white overflow-hidden shadow hover:-translate-y-1 transition">
-                <img src="/images/lion.jpg" alt="Conservation card" class="w-full h-44 object-cover saturate-150">
+                <img th:src="${missionImageThree}" alt="Conservation card" class="w-full h-auto max-h-52 object-contain bg-slate-100 saturate-150"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                 <div class="p-5">
                     <h3 class="font-bold">Data + Action</h3>
                     <p class="text-sm text-gray-600 mt-2">Field science translated into practical conservation action.</p>
@@ -253,7 +260,9 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" th:if="${!#lists.isEmpty(products)}">
             <a th:each="product, stat : ${products}" th:href="@{/products/{id}(id=${product.id})}" class="block bg-white shadow p-4 hover:shadow-xl hover:-translate-y-1 transition">
-                <img src="/images/lion.jpg" alt="Product image" class="h-44 w-full object-cover" th:classappend="${stat.index % 2 == 0} ? '' : ' grayscale'">
+                <img th:if="${product.imageData != null}" th:src="@{/products/{id}/photo(id=${product.id})}" alt="Product image" class="w-full h-auto max-h-52 object-contain bg-slate-100" th:classappend="${stat.index % 2 == 0} ? '' : ' grayscale'">
+                <img th:if="${product.imageData == null}" th:src="${featuredShopFallbackImage}" alt="Product image" class="w-full h-auto max-h-52 object-contain bg-slate-100" th:classappend="${stat.index % 2 == 0} ? '' : ' grayscale'"
+                     onerror="this.onerror=null;this.src='/images/deer-hero.jpg';">
                 <h3 class="font-bold mt-3" th:text="${product.name}">Product name</h3>
                 <p class="text-sm text-gray-600 mt-1" th:text="${product.description != null ? #strings.abbreviate(product.description, 70) : 'Wildlife inspired essential.'}">Product description</p>
                 <p class="text-emerald-700 font-semibold mt-2" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</p>
