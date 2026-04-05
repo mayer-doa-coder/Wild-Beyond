@@ -13,7 +13,41 @@ It delivers:
 
 ## Features
 
-Add your screenshots in this section where needed.
+1. Home page
+
+![Home Page](src/main/resources/static/images/homepage.png)
+
+2. Latest stories section
+
+![Latest Stories](src/main/resources/static/images/latest-stories.png)
+
+3. Visual story blocks
+
+![Visual Story Blocks](src/main/resources/static/images/visual-story-blocks.png)
+
+4. Explore page
+
+![Explore](src/main/resources/static/images/explore.png)
+
+5. Travel stories section
+
+![Travel Stories](src/main/resources/static/images/travel-stories.png)
+
+6. Sign in page
+
+![Sign In](src/main/resources/static/images/signin.png)
+
+7. Product add page
+
+![Product Add](src/main/resources/static/images/product-add.png)
+
+8. Seller dashboard
+
+![Seller Dashboard](src/main/resources/static/images/seller-dashboard.png)
+
+9. Orders view page
+
+![Order View](src/main/resources/static/images/order-view.png)
 
 ### Public Experience Features
 
@@ -163,26 +197,34 @@ src/test/java/com/wildbeyond
 
 ## Architecture and Design Diagrams
 
-### Architecture Diagram
+### Architecture Diagram Detailed
 
-- ![Architecture Detailed](docs/diagrams/architectural-diagram-detailed.png)
-- ![Architecture Simplified](docs/diagrams/architectural-diagram-simplified.png)
+- ![Architecture Detailed](docs/architectural-diagram-detailed.png)
 
-### DFD Diagram
+### Architecture Diagram Simplified
+- ![Architecture Simplified](docs/architectural-diagram-simplified.png)
 
-- ![DFD Level 0](docs/diagrams/dfd-level-0-context.png)
-- ![DFD Level 1](docs/diagrams/dfd-level-1.png)
-- ![DFD Level 2 Checkout](docs/diagrams/dfd-level-2-checkout.png)
-- ![DFD Level 2 Product Management](docs/diagrams/dfd-level-2-project-management.png)
+### DFD Diagram Level 0
+- ![DFD Level 0](docs/dfd-level-0-context.png)
+
+### DFD Diagram Level 1
+- ![DFD Level 1](docs/dfd-level-1.png)
+
+### DFD Diagram Level 2 Checkout
+- ![DFD Level 2 Checkout](docs/dfd-level-2-checkout.png)
+
+### DFD Diagram Level 2 Product Management
+- ![DFD Level 2 Product Management](docs/dfd-level-2-project-management.png)
 
 ### ER Diagram
 
-- ![ER Diagram](docs/diagrams/er-diagram.png)
+- ![ER Diagram](docs/er-diagram.png)
 
-### Activity Diagram (Buyer + Seller)
+### Activity Diagram Buyer
+- ![Buyer Activity Diagram](docs/activity-diagram-buyer-flow.png)
 
-- ![Buyer Activity Diagram](docs/diagrams/activity-diagram-buyer-flow.png)
-- ![Seller Activity Diagram](docs/diagrams/activity-diagram-seller-flow.png)
+### Activity Diagram Seller
+- ![Seller Activity Diagram](docs/activity-diagram-seller-flow.png)
 
 ## API Endpoints
 
