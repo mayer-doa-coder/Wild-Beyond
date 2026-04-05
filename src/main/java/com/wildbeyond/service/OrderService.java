@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,6 +250,67 @@ public class OrderService {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Order not found with id: " + id));
+    }
+
+    /**
+     * Update order status with role-aware transition rules.
+     *
+     * ADMIN: can set any status.
+     * BUYER (owner only): can cancel when the order is still active.
+     */
+    @Transactional
+    public Order updateStatus(Long id, OrderStatus nextStatus) {
+        User user = currentUser();
+        Order order = findById(id);
+
+        List<OrderStatus> allowedStatuses = computeAllowedStatuses(user, order);
+        if (!allowedStatuses.contains(nextStatus)) {
+            throw new AccessDeniedException("You are not allowed to set this order status");
+        }
+
+        order.setStatus(nextStatus);
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order updateStatus(Long id, String statusValue) {
+        OrderStatus nextStatus;
+        try {
+            nextStatus = OrderStatus.valueOf(statusValue.trim().toUpperCase());
+        } catch (RuntimeException ex) {
+            throw new IllegalArgumentException("Invalid order status: " + statusValue);
+        }
+        return updateStatus(id, nextStatus);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderStatus> getAllowedStatusUpdates(Long id) {
+        User user = currentUser();
+        Order order = findById(id);
+        return computeAllowedStatuses(user, order);
+    }
+
+    private List<OrderStatus> computeAllowedStatuses(User user, Order order) {
+        if (isAdmin(user)) {
+            return Arrays.asList(OrderStatus.values());
+        }
+
+        boolean isOwner = order.getBuyer().getId().equals(user.getId());
+        if (!isOwner) {
+            return List.of();
+        }
+
+        EnumSet<OrderStatus> cancellable = EnumSet.of(
+                OrderStatus.PENDING,
+                OrderStatus.CONFIRMED,
+                OrderStatus.PROCESSING
+        );
+
+        if (cancellable.contains(order.getStatus())) {
+            return List.of(OrderStatus.CANCELLED);
+        }
+
+        return List.of();
     }
 
     /**
