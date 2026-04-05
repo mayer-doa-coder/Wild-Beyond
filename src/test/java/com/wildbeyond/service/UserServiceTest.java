@@ -129,4 +129,11 @@ class UserServiceTest {
         // PasswordEncoder must always be called — never skip encoding
         verify(passwordEncoder).encode("securePass1");
     }
+
+    @Test
+    void countUsers_returnsRepositoryCount() {
+        when(userRepository.count()).thenReturn(15L);
+
+        assertThat(userService.countUsers()).isEqualTo(15L);
+    }
 }

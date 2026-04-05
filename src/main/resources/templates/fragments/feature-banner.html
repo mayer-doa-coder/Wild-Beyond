@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<section th:fragment="featureBanner(title, subtitle, buttonText, image, buttonHref)"
+         class="relative overflow-hidden min-h-[430px] bg-cover bg-center"
+         th:style="'background-image: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.7)), url(' + ${image} + ');'">
+    <div class="absolute inset-0"></div>
+    <div class="relative z-10 p-8 md:p-14 text-white max-w-3xl">
+        <p class="text-xs uppercase tracking-[0.25em] text-yellow-300">Feature</p>
+        <h2 class="super-title mt-3 text-3xl md:text-5xl leading-tight" th:text="${title}">Feature Title</h2>
+        <p class="mt-4 text-gray-200 text-base md:text-lg" th:text="${subtitle}">Feature subtitle</p>
+        <a th:href="${buttonHref}"
+           class="inline-block mt-6 bg-yellow-400 text-black px-6 py-2.5 rounded-full font-semibold hover:bg-yellow-300 transition"
+           th:text="${buttonText}">Read More</a>
+    </div>
+</section>
+</body>
+</html>

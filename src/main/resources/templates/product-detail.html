@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - Wild Beyond</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Titillium+Web:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { font-family: 'Titillium Web', sans-serif; }
+        .super-title { font-family: 'Permanent Marker', cursive; }
+        .brand-mark { font-family: 'Permanent Marker', cursive; letter-spacing: .02em; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-white border border-gray-200 shadow overflow-hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
+            <div class="bg-gray-200">
+                 <img th:if="${product.imageData != null}" th:src="@{/products/{id}/photo(id=${product.id})}"
+                     alt="Product image" class="w-full h-full min-h-[320px] object-cover">
+                 <img th:if="${product.imageData == null}" src="/images/lion.jpg"
+                     alt="Product image" class="w-full h-full min-h-[320px] object-cover">
+            </div>
+            <div class="p-6 md:p-8">
+                <h1 class="text-3xl text-emerald-950 font-bold" th:text="${product.name}">Product Name</h1>
+                <p class="mt-3 text-2xl text-emerald-800 font-semibold" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</p>
+                     <p class="mt-2 text-sm text-gray-600" th:if="${product.seller != null}"
+                         th:text="${'Seller: ' + product.seller.name}">Seller: Name</p>
+                <p class="mt-2 text-sm text-gray-600" th:text="${'Stock: ' + product.stock}">Stock: 0</p>
+                <p class="mt-4 text-gray-700 leading-relaxed" th:text="${product.description != null ? product.description : 'No description available.'}">Description</p>
+
+                <div class="mt-6 flex flex-wrap gap-3">
+                    <a th:href="@{${productsBasePath}}" class="inline-block bg-emerald-900 text-white px-4 py-2 text-sm font-semibold hover:bg-emerald-800 transition">Back to Products</a>
+                    <a th:href="@{${dashboardPath}}" class="inline-block bg-slate-700 text-white px-4 py-2 text-sm font-semibold hover:bg-slate-600 transition">Dashboard</a>
+                    <a th:href="@{${cartBasePath}}" class="inline-block bg-slate-700 text-white px-4 py-2 text-sm font-semibold hover:bg-slate-600 transition" th:if="${canBuyProduct}">Cart</a>
+                </div>
+
+                <form th:if="${canBuyProduct}" th:action="@{${cartBasePath + '/add/' + product.id}}" method="post" class="mt-3 flex items-center gap-2">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="number" name="quantity" min="1" value="1" class="w-24 border border-gray-300 px-3 py-2 text-sm" />
+                    <button type="submit" class="inline-block bg-sky-700 text-white px-4 py-2 text-sm font-semibold hover:bg-sky-600 transition">Buy</button>
+                </form>
+
+                <div class="mt-3 flex flex-wrap gap-3" th:if="${canManageProduct}">
+                    <a th:href="@{${productsBasePath + '/edit/' + product.id}}"
+                       class="inline-block bg-amber-600 text-white px-4 py-2 text-sm font-semibold hover:bg-amber-500 transition">
+                        Edit
+                    </a>
+                    <a th:href="@{${productsBasePath + '/delete/' + product.id}}"
+                       onclick="return confirm('Delete this product?')"
+                       class="inline-block bg-red-700 text-white px-4 py-2 text-sm font-semibold hover:bg-red-600 transition">
+                        Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

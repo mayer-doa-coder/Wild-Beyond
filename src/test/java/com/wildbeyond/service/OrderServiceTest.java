@@ -14,13 +14,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,6 +53,7 @@ class OrderServiceTest {
 
     private User buyer;
     private User seller;
+    private User admin;
     private Product product;
     private Order order;
 
@@ -58,10 +62,17 @@ class OrderServiceTest {
         seller = new User();
         seller.setId(2L);
         seller.setEmail("seller@example.com");
+        seller.setRoles(Set.of(Role.builder().name("SELLER").build()));
 
         buyer = new User();
         buyer.setId(1L);
         buyer.setEmail("buyer@example.com");
+        buyer.setRoles(Set.of(Role.builder().name("BUYER").build()));
+
+        admin = new User();
+        admin.setId(99L);
+        admin.setEmail("admin@example.com");
+        admin.setRoles(Set.of(Role.builder().name("ADMIN").build()));
 
         product = Product.builder()
                 .id(10L)
@@ -76,6 +87,14 @@ class OrderServiceTest {
         order.setBuyer(buyer);
         order.setStatus(OrderStatus.PENDING);
         order.setTotalPrice(BigDecimal.valueOf(200.00));
+        order.setOrderDate(LocalDateTime.of(2026, 1, 1, 10, 0));
+
+        OrderItem item = new OrderItem();
+        item.setOrder(order);
+        item.setProduct(product);
+        item.setQuantity(2);
+        item.setUnitPrice(BigDecimal.valueOf(100.00));
+        order.setItems(List.of(item));
     }
 
     @AfterEach
@@ -125,7 +144,28 @@ class OrderServiceTest {
         assertThat(result.getStatus()).isEqualTo(OrderStatus.PENDING);
         // 2 × £100.00 = £200.00
         assertThat(result.getTotalPrice()).isEqualByComparingTo(BigDecimal.valueOf(200.00));
+        assertThat(product.getStock()).isEqualTo(18);
         verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    void create_throwsWhenStockIsInsufficient() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+
+        product.setStock(1);
+        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(10L);
+        itemDto.setQuantity(2);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        assertThatThrownBy(() -> orderService.create(dto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Insufficient stock");
     }
 
     @Test
@@ -162,6 +202,73 @@ class OrderServiceTest {
                 .hasMessageContaining("ghost@example.com");
     }
 
+    @Test
+    void create_allowsSellerToBuyOtherSellerProduct() {
+        User otherSeller = new User();
+        otherSeller.setId(33L);
+        otherSeller.setEmail("other-seller@example.com");
+        otherSeller.setRoles(Set.of(Role.builder().name("SELLER").build()));
+
+        Product otherSellerProduct = Product.builder()
+                .id(20L)
+                .name("Compass")
+                .price(BigDecimal.valueOf(40.00))
+                .stock(15)
+                .seller(otherSeller)
+                .build();
+
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(productRepository.findById(20L)).thenReturn(Optional.of(otherSellerProduct));
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(20L);
+        itemDto.setQuantity(1);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        Order result = orderService.create(dto);
+        assertThat(result.getBuyer().getId()).isEqualTo(2L);
+        assertThat(result.getTotalPrice()).isEqualByComparingTo("40.00");
+    }
+
+    @Test
+    void create_blocksSellerBuyingOwnProduct() {
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(10L);
+        itemDto.setQuantity(1);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        assertThatThrownBy(() -> orderService.create(dto))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("cannot buy their own products");
+    }
+
+    @Test
+    void create_blocksAdminFromPlacingOrder() {
+        mockSecurityContext("admin@example.com");
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+
+        OrderItemDTO itemDto = new OrderItemDTO();
+        itemDto.setProductId(10L);
+        itemDto.setQuantity(1);
+
+        OrderDTO dto = new OrderDTO();
+        dto.setItems(List.of(itemDto));
+
+        assertThatThrownBy(() -> orderService.create(dto))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("Only buyers and sellers");
+    }
+
     // ── findAll ──────────────────────────────────────────────────────────────
 
     @Test
@@ -171,6 +278,31 @@ class OrderServiceTest {
         List<Order> result = orderService.findAll();
 
         assertThat(result).hasSize(1).contains(order);
+    }
+
+    @Test
+    void countOrders_returnsRepositoryCount() {
+        when(orderRepository.count()).thenReturn(11L);
+
+        assertThat(orderService.countOrders()).isEqualTo(11L);
+    }
+
+    @Test
+    void countOrdersByCurrentUser_returnsBuyerScopedCount() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.countByBuyerId(1L)).thenReturn(3L);
+
+        assertThat(orderService.countOrdersByCurrentUser()).isEqualTo(3L);
+    }
+
+    @Test
+    void countOrdersForSeller_returnsSellerScopedCount() {
+        mockSecurityContext("seller@example.com");
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(orderRepository.countOrdersContainingSellerProducts(2L)).thenReturn(4L);
+
+        assertThat(orderService.countOrdersForSeller()).isEqualTo(4L);
     }
 
     // ── findById ─────────────────────────────────────────────────────────────
@@ -192,6 +324,100 @@ class OrderServiceTest {
         assertThatThrownBy(() -> orderService.findById(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Order not found with id: 99");
+    }
+
+    // ── getOrderById (ownership-aware detail) ──────────────────────────────
+
+    @Test
+    void getOrderById_returnsMappedDto_forOwner() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+
+        OrderDTO result = orderService.getOrderById(5L);
+
+        assertThat(result.getId()).isEqualTo(5L);
+        assertThat(result.getStatus()).isEqualTo("PENDING");
+        assertThat(result.getTotalPrice()).isEqualByComparingTo("200.00");
+        assertThat(result.getItems()).hasSize(1);
+        assertThat(result.getItems().get(0).getProductName()).isEqualTo("Hiking Boots");
+        assertThat(result.getItems().get(0).getUnitPrice()).isEqualByComparingTo("100.00");
+    }
+
+    @Test
+    void getOrderById_throwsAccessDenied_forNonOwner() {
+        User otherBuyer = new User();
+        otherBuyer.setId(7L);
+        otherBuyer.setEmail("other@example.com");
+        otherBuyer.setRoles(Set.of(Role.builder().name("BUYER").build()));
+
+        mockSecurityContext("other@example.com");
+        when(userRepository.findByEmail("other@example.com")).thenReturn(Optional.of(otherBuyer));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+
+        assertThatThrownBy(() -> orderService.getOrderById(5L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("not allowed");
+    }
+
+    @Test
+    void getOrderById_allowsAdmin_forAnyOrder() {
+        mockSecurityContext("admin@example.com");
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+
+        OrderDTO result = orderService.getOrderById(5L);
+
+        assertThat(result.getId()).isEqualTo(5L);
+        assertThat(result.getItems()).hasSize(1);
+    }
+
+    // ── update status ───────────────────────────────────────────────────────
+
+    @Test
+    void updateStatus_allowsOwnerToCancelActiveOrder() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Order updated = orderService.updateStatus(5L, OrderStatus.CANCELLED);
+
+        assertThat(updated.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+        verify(orderRepository).save(order);
+    }
+
+    @Test
+    void updateStatus_blocksOwnerFromUnsupportedTransition() {
+        mockSecurityContext("buyer@example.com");
+        when(userRepository.findByEmail("buyer@example.com")).thenReturn(Optional.of(buyer));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+
+        assertThatThrownBy(() -> orderService.updateStatus(5L, OrderStatus.SHIPPED))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("not allowed");
+
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    void updateStatus_allowsAdminToSetAnyStatus() {
+        mockSecurityContext("admin@example.com");
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Order updated = orderService.updateStatus(5L, OrderStatus.SHIPPED);
+
+        assertThat(updated.getStatus()).isEqualTo(OrderStatus.SHIPPED);
+        verify(orderRepository).save(order);
+    }
+
+    @Test
+    void updateStatus_throwsForInvalidStatusText() {
+        assertThatThrownBy(() -> orderService.updateStatus(5L, "not-a-status"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid order status");
     }
 
     // ── delete ───────────────────────────────────────────────────────────────

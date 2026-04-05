@@ -49,7 +49,7 @@ public class ProductRestController {
     }
 
     // ── Write ─────────────────────────────────────────────────────────────────
-    // POST  → SELLER only  (sellers list their own products)
+    // POST  → SELLER only
     // PUT   → SELLER + ADMIN  (admin can correct/update any listing)
     // DELETE → SELLER + ADMIN  (admin can remove harmful content)
 

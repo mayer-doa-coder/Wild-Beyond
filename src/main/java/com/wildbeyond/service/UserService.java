@@ -58,4 +58,9 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    @Transactional(readOnly = true)
+    public long countUsers() {
+        return userRepository.count();
+    }
 }

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Wild Beyond</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <h1 class="text-4xl font-bold text-emerald-900">About Wild Beyond</h1>
+    <p class="mt-4 text-gray-700 leading-relaxed">
+        Wild Beyond is a conservation-first editorial and marketplace platform sharing wildlife stories,
+        field research, and mission-driven products that support ecosystem protection.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-4">
+        <a th:href="@{/blog}" class="px-5 py-2.5 bg-emerald-900 text-white font-semibold hover:bg-emerald-800 transition">Read Stories</a>
+        <a th:href="@{/products}" class="px-5 py-2.5 border border-emerald-900 text-emerald-900 font-semibold hover:bg-emerald-50 transition">Explore Marketplace</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

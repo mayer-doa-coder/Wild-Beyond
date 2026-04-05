@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -90,7 +91,7 @@ class OrderRestControllerTest {
         dto.setItems(List.of(itemDto));
     }
 
-    // ── POST /api/orders (BUYER / ADMIN) ─────────────────────────────────────
+        // ── POST /api/orders (BUYER / SELLER) ────────────────────────────────────
 
     @Test
     @WithMockUser(roles = "BUYER")
@@ -107,8 +108,8 @@ class OrderRestControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "BUYER")
-    void create_returns201_whenAdminPlacesOrder() throws Exception {
+        @WithMockUser(roles = "SELLER")
+        void create_returns201_whenSellerPlacesOrder() throws Exception {
         when(orderService.create(any(OrderDTO.class))).thenReturn(order);
 
         mockMvc.perform(post("/api/orders")
@@ -119,8 +120,8 @@ class OrderRestControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "SELLER")
-    void create_returns403_whenSellerTriesToPlaceOrder() throws Exception {
+        @WithMockUser(roles = "ADMIN")
+        void create_returns403_whenAdminTriesToPlaceOrder() throws Exception {
         mockMvc.perform(post("/api/orders")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -214,6 +215,57 @@ class OrderRestControllerTest {
         mockMvc.perform(get("/api/orders"))
                 .andExpect(status().isForbidden());
     }
+
+        // ── PUT /api/orders/{id} (BUYER owner / ADMIN) ─────────────────────────
+
+        @Test
+        @WithMockUser(roles = "BUYER")
+        void update_returns200_forBuyer() throws Exception {
+                Order updated = new Order();
+                updated.setId(5L);
+                updated.setStatus(OrderStatus.CANCELLED);
+                updated.setTotalPrice(BigDecimal.valueOf(200.00));
+
+                when(orderService.updateStatus(5L, OrderStatus.CANCELLED)).thenReturn(updated);
+
+                mockMvc.perform(put("/api/orders/5")
+                                                .with(csrf())
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content("{\"status\":\"CANCELLED\"}"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(5))
+                                .andExpect(jsonPath("$.status").value("CANCELLED"));
+        }
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        void update_returns200_forAdmin() throws Exception {
+                Order updated = new Order();
+                updated.setId(5L);
+                updated.setStatus(OrderStatus.SHIPPED);
+                updated.setTotalPrice(BigDecimal.valueOf(200.00));
+
+                when(orderService.updateStatus(5L, OrderStatus.SHIPPED)).thenReturn(updated);
+
+                mockMvc.perform(put("/api/orders/5")
+                                                .with(csrf())
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content("{\"status\":\"SHIPPED\"}"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.status").value("SHIPPED"));
+        }
+
+        @Test
+        @WithMockUser(roles = "SELLER")
+        void update_returns403_forSeller() throws Exception {
+                mockMvc.perform(put("/api/orders/5")
+                                                .with(csrf())
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content("{\"status\":\"CANCELLED\"}"))
+                                .andExpect(status().isForbidden());
+
+                verify(orderService, never()).updateStatus(anyLong(), any(OrderStatus.class));
+        }
 
     // ── DELETE /api/orders/{id} (ADMIN only) ─────────────────────────────────
 

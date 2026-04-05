@@ -1,6 +1,7 @@
 package com.wildbeyond.controller.rest;
 
 import com.wildbeyond.dto.OrderDTO;
+import com.wildbeyond.dto.OrderStatusUpdateDTO;
 import com.wildbeyond.model.Order;
 import com.wildbeyond.service.OrderService;
 import jakarta.validation.Valid;
@@ -17,8 +18,8 @@ import java.util.List;
  *
  * Base path: /api/orders
  *
- * Authenticated users:      POST /api/orders       — place a new order
- *                           GET  /api/orders/my     — view own orders
+ * BUYER + SELLER:           POST /api/orders        — place a new order
+ * Authenticated users:      GET  /api/orders/my     — view own orders
  *                           GET  /api/orders/{id}   — view a specific order
  * ADMIN only:               GET  /api/orders        — view all orders
  *                           DELETE /api/orders/{id} — cancel / remove an order
@@ -36,16 +37,17 @@ public class OrderRestController {
 
     private final OrderService orderService;
 
-    // ── Place order (any authenticated user) ──────────────────────────────────
+    // ── Place order (BUYER + SELLER) ─────────────────────────────────────────
 
     /**
      * POST /api/orders
      * Places a new order for the current authenticated buyer.
-     * Only BUYER role is permitted — sellers sell, buyers buy.
+     * BUYER and SELLER roles are permitted.
+     * Sellers are blocked from buying their own products in OrderService.
      * Status is automatically set to PENDING.
      */
     @PostMapping
-    @PreAuthorize("hasRole('BUYER')")
+    @PreAuthorize("hasAnyRole('BUYER', 'SELLER')")
     public ResponseEntity<Order> create(@Valid @RequestBody OrderDTO dto) {
         Order saved = orderService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
@@ -84,6 +86,18 @@ public class OrderRestController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Order>> getAll() {
         return ResponseEntity.ok(orderService.findAll());
+    }
+
+    /**
+     * PUT /api/orders/{id}
+     * Update order status.
+     * BUYER can cancel own active orders; ADMIN can update any order status.
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('BUYER', 'ADMIN')")
+    public ResponseEntity<Order> update(@PathVariable Long id,
+                                        @Valid @RequestBody OrderStatusUpdateDTO dto) {
+        return ResponseEntity.ok(orderService.updateStatus(id, dto.getStatus()));
     }
 
     /**

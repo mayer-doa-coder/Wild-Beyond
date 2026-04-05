@@ -1,39 +1,39 @@
 services:
-  postgres:
+  db:
     image: postgres:16-alpine
     container_name: wild_beyond_db
     environment:
-      POSTGRES_DB: wild_beyond
-      POSTGRES_USER: wildbeyond
-      POSTGRES_PASSWORD: wildbeyond123
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U wildbeyond -d wild_beyond"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10
 
-  # App service — only started when the "app" profile is active.
-  # Usage: docker-compose --profile app up -d
-  # Build the JAR first: App: Package task, then Docker: Build Image task.
   app:
-    profiles: [app]
     build: .
     image: wild-beyond-app:latest
     container_name: wild_beyond_app
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/wild_beyond
-      DB_USERNAME: wildbeyond
-      DB_PASSWORD: wildbeyond123
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      GUARDIAN_API_KEY: ${GUARDIAN_API_KEY:-}
+      NEWSAPI_KEY: ${NEWSAPI_KEY:-}
     ports:
-      - "8080:8080"
+      - "8180:8080"
     restart: unless-stopped
 
 volumes:

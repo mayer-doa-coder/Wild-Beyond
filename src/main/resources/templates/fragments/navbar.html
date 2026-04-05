@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<body>
+<nav th:fragment="navbar" class="sticky top-0 z-50 bg-emerald-950/95 backdrop-blur border-b border-emerald-800/70 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="h-16 flex items-center justify-between gap-6">
+            <a th:href="@{/}" class="brand-mark text-2xl tracking-wide whitespace-nowrap">
+                Wild<span class="text-lime-400">Beyond</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
+                <a th:href="@{/}" class="hover:text-lime-300 transition">Home</a>
+                <a th:href="@{/blog}" class="hover:text-lime-300 transition">Blog</a>
+                <a th:href="@{/explore}" class="hover:text-lime-300 transition">Explore</a>
+                <a th:href="@{/products}" sec:authorize="isAnonymous()" class="hover:text-lime-300 transition">Marketplace</a>
+                <a th:href="@{/buyer/products}" sec:authorize="hasRole('BUYER') and !hasRole('SELLER') and !hasRole('ADMIN')" class="hover:text-lime-300 transition">Marketplace</a>
+                <a th:href="@{/seller/products}" sec:authorize="hasRole('SELLER') and !hasRole('ADMIN')" class="hover:text-lime-300 transition">Marketplace</a>
+                <a th:href="@{/admin/products}" sec:authorize="hasRole('ADMIN')" class="hover:text-lime-300 transition">Marketplace</a>
+
+                <a th:href="@{/buyer/cart}" sec:authorize="hasRole('BUYER') and !hasRole('SELLER')" class="hover:text-lime-300 transition">Cart</a>
+                <a th:href="@{/seller/cart}" sec:authorize="hasRole('SELLER')" class="hover:text-lime-300 transition">Cart</a>
+
+                <a th:href="@{/auth/login}" sec:authorize="isAnonymous()" class="hover:text-lime-300 transition">Login</a>
+                <a th:href="@{/auth/register}" sec:authorize="isAnonymous()" class="hover:text-lime-300 transition">Register</a>
+
+                <a th:href="@{/dashboard}" sec:authorize="isAuthenticated()" class="hover:text-lime-300 transition">Profile</a>
+                <form th:action="@{/auth/logout}" method="post" sec:authorize="isAuthenticated()" class="inline">
+                    <button type="submit" class="hover:text-lime-300 transition">Logout</button>
+                </form>
+            </div>
+
+            <div class="md:hidden text-sm flex items-center gap-3">
+                <a th:href="@{/dashboard}" sec:authorize="isAuthenticated()" class="bg-lime-400 text-emerald-950 px-3 py-1.5 font-semibold">Profile</a>
+                <a th:href="@{/auth/login}" sec:authorize="isAnonymous()" class="bg-lime-400 text-emerald-950 px-3 py-1.5 font-semibold">Login</a>
+            </div>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

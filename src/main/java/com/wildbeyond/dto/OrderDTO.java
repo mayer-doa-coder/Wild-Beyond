@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -16,6 +18,12 @@ import java.util.List;
  */
 @Data
 public class OrderDTO {
+
+    // Populated for read/detail views.
+    private Long id;
+    private LocalDateTime orderDate;
+    private String status;
+    private BigDecimal totalPrice;
 
     @NotEmpty(message = "Order must contain at least one item")
     @Valid

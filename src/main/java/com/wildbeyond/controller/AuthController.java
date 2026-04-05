@@ -49,6 +49,7 @@ public class AuthController {
     public String showLoginPage(
             @RequestParam(value = "error",  required = false) String error,
             @RequestParam(value = "logout", required = false) String logout,
+            @RequestParam(value = "expired", required = false) String expired,
             Model model) {
 
         if (error != null) {
@@ -58,6 +59,10 @@ public class AuthController {
 
         if (logout != null) {
             model.addAttribute("logoutMessage", "You have been logged out successfully.");
+        }
+
+        if (expired != null) {
+            model.addAttribute("errorMessage", "Your session timed out. Please sign in again.");
         }
 
         return "login";   // resolves to templates/login.html

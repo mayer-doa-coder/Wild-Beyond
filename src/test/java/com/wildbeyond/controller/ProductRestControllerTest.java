@@ -131,7 +131,7 @@ class ProductRestControllerTest {
                 .andExpect(jsonPath("$.error").value("Product not found with id: 99"));
     }
 
-    // ── POST /api/products (SELLER / ADMIN only) ──────────────────────────────
+    // ── POST /api/products (SELLER only) ──────────────────────────────────────
 
     @Test
     @WithMockUser(roles = "SELLER")
@@ -148,15 +148,15 @@ class ProductRestControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "SELLER")
-    void create_returns201_whenAdminAuthorized() throws Exception {
-        when(productService.create(any(ProductDTO.class))).thenReturn(product);
-
+    @WithMockUser(roles = "ADMIN")
+    void create_returns403_whenAdminTriesToCreate() throws Exception {
         mockMvc.perform(post("/api/products")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isForbidden());
+
+        verify(productService, never()).create(any());
     }
 
     @Test

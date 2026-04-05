@@ -3,10 +3,12 @@ spring:
     name: Wild-Beyond
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:${JDBC_DATABASE_URL:jdbc:${DATABASE_URL:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:wild_beyond}}}}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:postgres}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:postgres}}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      auto-commit: false
 
   jpa:
     open-in-view: false
@@ -20,12 +22,19 @@ spring:
   thymeleaf:
     cache: false
 
+external:
+  blog:
+    request-timeout-seconds: 8
+
 server:
-  port: 8080
+  port: ${PORT:8080}
+  servlet:
+    session:
+      timeout: 30m
 
 logging:
   file:
-    name: D:/Wild-Beyond/app.log
+    name: ${LOG_PATH:./app.log}
   level:
     root: INFO
     org.hibernate.SQL: DEBUG

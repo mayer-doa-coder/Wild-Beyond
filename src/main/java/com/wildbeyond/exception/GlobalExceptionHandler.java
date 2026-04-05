@@ -2,6 +2,7 @@ package com.wildbeyond.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,10 +18,11 @@ import java.util.Map;
  *
  * Handled cases:
  *   ResourceNotFoundException       → 404 NOT FOUND
+ *   AccessDeniedException           → 403 FORBIDDEN
  *   MethodArgumentNotValidException → 400 BAD REQUEST (field-level validation errors)
  *   RuntimeException (fallback)     → 400 BAD REQUEST (unexpected business logic errors)
  */
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "com.wildbeyond.controller.rest")
 public class GlobalExceptionHandler {
 
     /**
@@ -36,6 +38,13 @@ public class GlobalExceptionHandler {
         Map<String, String> body = new HashMap<>();
         body.put("error", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
     /**

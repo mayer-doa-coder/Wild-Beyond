@@ -2,8 +2,5 @@
 .gitignore
 .vscode
 *.md
-mvnw
-mvnw.cmd
 src/test
-target/*
-!target/Wild-Beyond-0.0.1-SNAPSHOT.jar
+target/
