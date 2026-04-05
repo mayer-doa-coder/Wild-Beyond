@@ -119,7 +119,7 @@ GitHub Actions workflow: .github/workflows/ci.yml
 - CI runs on push for feature/**, dev, and main
 - CI runs on pull requests into dev and main
 - Build and tests run before any deployment
-- Deployment runs only on push to main after successful build job
+- Deployment trigger runs on push to dev and main after successful build job
 - Render deployment is triggered via secure RENDER_DEPLOY_HOOK secret
 
 For full CI/CD details: CI_CD_PIPELINE.md
@@ -165,13 +165,13 @@ Detailed manual enforcement steps and verification procedure:
 - [ ] Login and registration work
 - [ ] Products page and API are accessible
 - [ ] Orders can be created with buyer role
-- [ ] Main branch push triggers CI and conditional deploy
+- [ ] Dev/Main push triggers CI and conditional deploy
 
 Example expected verification outcomes:
 
 - Homepage responds at /
 - Products API responds at /api/products
-- Render deploy hook runs only from main branch pipeline
+- Render deploy hook runs from dev/main branch pipeline
 
 ## Required Submission Artifacts
 

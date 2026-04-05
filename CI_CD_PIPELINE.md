@@ -29,13 +29,17 @@ Deployment is blocked automatically if build or tests fail because deploy depend
 
 ## Conditional Deployment Rules
 
-Deploy job runs only when all conditions are true:
+Render deploy trigger runs only when all conditions are true:
 
 1. Event is push.
-2. Target branch is main.
+2. Target branch is main or dev.
 3. Build job completed successfully.
 
-No deployment occurs on feature/dev pushes or on pull requests.
+No deployment occurs on feature/** pushes or on pull requests.
+
+Note:
+- The deploy job itself always completes (no skipped check status).
+- On non-deploy events it records an informational "policy skip" message and exits successfully.
 
 ## Render Integration
 
@@ -59,11 +63,11 @@ Deploy step:
 
 ## CI/CD Flow
 
-Developer -> Push -> CI (Build + Test + Docker build) -> Merge/Push to main -> Deploy job -> Render
+Developer -> Push -> CI (Build + Test + Docker build) -> Push to dev/main -> Deploy job -> Render
 
 ## Validation Checklist
 
 1. Push to feature branch: CI runs, deploy does not run.
 2. Open PR to dev/main: CI runs, deploy does not run.
-3. Merge to main: CI runs, deploy runs after successful build/tests.
+3. Push to dev or main: CI runs, deploy runs after successful build/tests.
 4. Confirm updated service revision in Render dashboard.

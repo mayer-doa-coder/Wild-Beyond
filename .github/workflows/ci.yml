@@ -52,10 +52,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Trigger Render deploy hook
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
@@ -64,3 +64,8 @@ jobs:
             exit 1
           fi
           curl --fail --silent --show-error --request POST "$RENDER_DEPLOY_HOOK"
+
+      - name: Deployment not triggered for this event
+        if: github.event_name != 'push' || (github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev')
+        run: |
+          echo "Deployment policy skip for event=${{ github.event_name }} ref=${{ github.ref }}"
