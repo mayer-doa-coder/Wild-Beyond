@@ -13,41 +13,47 @@ It delivers:
 
 ## Features
 
-1. Home page
+### Feature Screenshots
 
-![Home Page](src/main/resources/static/images/homepage.png)
+#### Home and Public Experience
 
-2. Latest stories section
+- Home hero section
 
-![Latest Stories](src/main/resources/static/images/latest-stories.png)
+![Home Hero](src/main/resources/static/images/Screenshot%202026-04-05%20230545.png)
 
-3. Visual story blocks
+- Latest stories and feature highlights
 
-![Visual Story Blocks](src/main/resources/static/images/visual-story-blocks.png)
+![Latest Stories](src/main/resources/static/images/Screenshot%202026-04-05%20230606.png)
 
-4. Explore page
+- Wildlife categories (Explore)
 
-![Explore](src/main/resources/static/images/explore.png)
+![Explore Categories](src/main/resources/static/images/Screenshot%202026-04-05%20230554.png)
 
-5. Travel stories section
+- Visual story blocks
 
-![Travel Stories](src/main/resources/static/images/travel-stories.png)
+![Visual Story Blocks](src/main/resources/static/images/Screenshot%202026-04-05%20230521.png)
 
-6. Sign in page
+#### Product Form UI
 
-![Sign In](src/main/resources/static/images/signin.png)
+- Product creation form detail
 
-7. Product add page
+![Product Form](src/main/resources/static/images/Screenshot%202026-04-05%20230330.png)
 
-![Product Add](src/main/resources/static/images/product-add.png)
+#### Marketplace and Product Management
 
-8. Seller dashboard
+- Product listing and in-page add-product form
 
-![Seller Dashboard](src/main/resources/static/images/seller-dashboard.png)
+![Marketplace Product Management](src/main/resources/static/images/Screenshot%202026-04-05%20230444.png)
 
-9. Orders view page
+#### Orders and Dashboards
 
-![Order View](src/main/resources/static/images/order-view.png)
+- Seller dashboard
+
+![Seller Dashboard](src/main/resources/static/images/Screenshot%202026-04-05%20230238.png)
+
+- Orders page (buying vs seller product orders)
+
+![Orders View](src/main/resources/static/images/Screenshot%202026-04-05%20230309.png)
 
 ### Public Experience Features
 
@@ -197,34 +203,26 @@ src/test/java/com/wildbeyond
 
 ## Architecture and Design Diagrams
 
-### Architecture Diagram Detailed
+### Architecture Diagram
 
-- ![Architecture Detailed](docs/architectural-diagram-detailed.png)
+- ![Architecture Detailed](docs/diagrams/architectural-diagram-detailed.png)
+- ![Architecture Simplified](docs/diagrams/architectural-diagram-simplified.png)
 
-### Architecture Diagram Simplified
-- ![Architecture Simplified](docs/architectural-diagram-simplified.png)
+### DFD Diagram
 
-### DFD Diagram Level 0
-- ![DFD Level 0](docs/dfd-level-0-context.png)
-
-### DFD Diagram Level 1
-- ![DFD Level 1](docs/dfd-level-1.png)
-
-### DFD Diagram Level 2 Checkout
-- ![DFD Level 2 Checkout](docs/dfd-level-2-checkout.png)
-
-### DFD Diagram Level 2 Product Management
-- ![DFD Level 2 Product Management](docs/dfd-level-2-project-management.png)
+- ![DFD Level 0](docs/diagrams/dfd-level-0-context.png)
+- ![DFD Level 1](docs/diagrams/dfd-level-1.png)
+- ![DFD Level 2 Checkout](docs/diagrams/dfd-level-2-checkout.png)
+- ![DFD Level 2 Product Management](docs/diagrams/dfd-level-2-project-management.png)
 
 ### ER Diagram
 
-- ![ER Diagram](docs/er-diagram.png)
+- ![ER Diagram](docs/diagrams/er-diagram.png)
 
-### Activity Diagram Buyer
-- ![Buyer Activity Diagram](docs/activity-diagram-buyer-flow.png)
+### Activity Diagram (Buyer + Seller)
 
-### Activity Diagram Seller
-- ![Seller Activity Diagram](docs/activity-diagram-seller-flow.png)
+- ![Buyer Activity Diagram](docs/diagrams/activity-diagram-buyer-flow.png)
+- ![Seller Activity Diagram](docs/diagrams/activity-diagram-seller-flow.png)
 
 ## API Endpoints
 
