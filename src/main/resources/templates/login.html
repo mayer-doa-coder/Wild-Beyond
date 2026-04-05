@@ -36,14 +36,18 @@
             <form th:action="@{/auth/login}" method="post" class="space-y-4">
                 <div>
                     <label for="email" class="block text-xs font-semibold uppercase tracking-[.12em] text-gray-600 mb-1">Email</label>
-                    <input id="email" name="email" type="email" required placeholder="you@example.com"
+                    <input id="email" name="email" type="email" required autocomplete="username" placeholder="you@example.com"
                            class="w-full border border-gray-300 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-700/30 focus:border-emerald-700">
                 </div>
                 <div>
                     <label for="password" class="block text-xs font-semibold uppercase tracking-[.12em] text-gray-600 mb-1">Password</label>
-                    <input id="password" name="password" type="password" required placeholder="Your password"
+                    <input id="password" name="password" type="password" required autocomplete="current-password" placeholder="Your password"
                            class="w-full border border-gray-300 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-700/30 focus:border-emerald-700">
                 </div>
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" name="remember-me" class="h-4 w-4 border-gray-300 text-emerald-700 focus:ring-emerald-600" />
+                    Keep me signed in
+                </label>
                 <button type="submit" class="w-full bg-emerald-900 text-white py-2.5 font-semibold hover:bg-emerald-800 transition">Sign In</button>
             </form>
 

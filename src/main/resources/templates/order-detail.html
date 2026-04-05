@@ -39,7 +39,7 @@
             <div th:if="${orderUpdateSuccess}" class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 text-sm" th:text="${orderUpdateSuccess}"></div>
             <div th:if="${orderUpdateError}" class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm" th:text="${orderUpdateError}"></div>
 
-            <form th:if="${canUpdateStatus}" th:action="@{/orders/{id}/status(id=${order.id})}" method="post" class="mb-5 flex flex-wrap items-end gap-3">
+            <form th:if="${canUpdateStatus}" th:action="@{${ordersBasePath + '/' + order.id + '/status'}}" method="post" class="mb-5 flex flex-wrap items-end gap-3">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <div>
                     <label for="status" class="block text-sm font-semibold text-gray-700">Update Status</label>
@@ -75,7 +75,7 @@
 
             <p class="mt-4 text-right text-lg font-bold text-emerald-800">Total: <span th:text="${'$' + #numbers.formatDecimal(order.totalPrice, 1, 2)}">$0.00</span></p>
             <div class="mt-5">
-                <a th:href="@{/orders}" class="inline-block bg-emerald-900 text-white px-4 py-2 text-sm font-semibold hover:bg-emerald-800 transition">Back to Orders</a>
+                <a th:href="@{${ordersBasePath}}" class="inline-block bg-emerald-900 text-white px-4 py-2 text-sm font-semibold hover:bg-emerald-800 transition">Back to Orders</a>
             </div>
         </div>
     </div>

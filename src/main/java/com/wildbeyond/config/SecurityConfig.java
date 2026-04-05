@@ -40,12 +40,14 @@ import org.springframework.security.web.SecurityFilterChain;
  *     GET  /auth/register      — registration page
  *     POST /auth/register      — submit registration
  *
- *   BUYER + SELLER + ADMIN (any authenticated user):
+ *   BUYER + SELLER (authenticated):
  *     GET  /orders             — own order history
  *     POST /orders             — place a new order
  *
- *   SELLER + ADMIN only:
+ *   SELLER only:
  *     POST   /products         — create a product
+ *
+ *   SELLER + ADMIN:
  *     PUT    /products/{id}    — update a product
  *     DELETE /products/{id}    — delete a product
  *
@@ -150,18 +152,32 @@ public class SecurityConfig {
                 .requestMatchers("/products/edit/**", "/products/delete/**").hasAnyRole("SELLER", "ADMIN")
 
                 // Cart + checkout (MVC) — buyer + seller can purchase; admin excluded
-                .requestMatchers("/cart", "/cart/**").hasAnyRole("BUYER", "SELLER")
+                .requestMatchers("/cart", "/cart/**", "/buyer/cart", "/buyer/cart/**", "/seller/cart", "/seller/cart/**")
+                .hasAnyRole("BUYER", "SELLER")
 
                 // Product browsing — public (GET only)
                 .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
 
                 // Product write rules:
-                //   POST   → SELLER only  (only sellers list products)
-                //   PUT    → SELLER + ADMIN  (admin can correct any listing)
-                //   DELETE → SELLER + ADMIN  (admin can remove harmful content)
+                //   POST   → SELLER only
+                //   PUT    → SELLER + ADMIN
+                //   DELETE → SELLER + ADMIN
                 .requestMatchers(HttpMethod.POST,   "/products").hasRole("SELLER")
                 .requestMatchers(HttpMethod.PUT,    "/products/**").hasAnyRole("SELLER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasAnyRole("SELLER", "ADMIN")
+
+                // Role-scoped MVC product routes
+                .requestMatchers("/admin/products", "/admin/products/**").hasRole("ADMIN")
+                .requestMatchers("/seller/products", "/seller/products/**").hasRole("SELLER")
+                .requestMatchers("/buyer/products", "/buyer/products/**").hasRole("BUYER")
+
+                // Role-scoped MVC order routes
+                .requestMatchers("/admin/orders", "/admin/orders/**").hasRole("ADMIN")
+                .requestMatchers("/seller/orders", "/seller/orders/**").hasRole("SELLER")
+                .requestMatchers("/buyer/orders", "/buyer/orders/**").hasRole("BUYER")
+
+                // Unscoped MVC orders route remains available and redirects to canonical role scope
+                .requestMatchers("/orders", "/orders/**").authenticated()
 
                 // REST API — /api/products
                 .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
@@ -170,7 +186,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("SELLER", "ADMIN")
 
                 // REST API — /api/orders
-                //   POST   /api/orders        — BUYER only (sellers sell, buyers buy)
+                //   POST   /api/orders        — BUYER + SELLER (seller cannot buy own products)
                 //   GET    /api/orders        — ADMIN only (full platform view)
                 //   GET    /api/orders/my     — any authenticated user sees their own orders
                 //   GET    /api/orders/{id}   — any authenticated user
@@ -180,7 +196,7 @@ public class SecurityConfig {
                 // Spring's AntPathMatcher matches /api/orders/** against /api/orders
                 // (the ** wildcard includes zero segments), so if the wildcard rule
                 // appears first it shadows the exact-path rule below it.
-                .requestMatchers(HttpMethod.POST,   "/api/orders").hasRole("BUYER")
+                .requestMatchers(HttpMethod.POST,   "/api/orders").hasAnyRole("BUYER", "SELLER")
                 .requestMatchers(HttpMethod.PUT,    "/api/orders/**").hasAnyRole("BUYER", "ADMIN")
                 .requestMatchers(HttpMethod.GET,    "/api/orders").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,    "/api/orders/my").authenticated()
@@ -189,7 +205,7 @@ public class SecurityConfig {
 
                 // Admin only — full user management and admin dashboard
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/users/**").hasRole("ADMIN")
+                .requestMatchers("/users/**", "/admin/users", "/admin/users/**").hasRole("ADMIN")
 
                 // All other requests require authentication
                 .anyRequest().authenticated()
@@ -211,12 +227,23 @@ public class SecurityConfig {
                 .permitAll()
             )
 
+            .rememberMe(remember -> remember
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds(60 * 60 * 24 * 30)
+                .key("wild-beyond-remember-me-key")
+                .userDetailsService(customUserDetailsService)
+            )
+
+            .sessionManagement(session -> session
+                .invalidSessionUrl("/auth/login?expired=true")
+            )
+
             // ── Logout ────────────────────────────────────────────────────────
             .logout(logout -> logout
                 .logoutUrl("/auth/logout")                // POST /auth/logout — Spring handles this
                 .logoutSuccessUrl("/auth/login?logout=true")
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
+                .deleteCookies("JSESSIONID", "remember-me")
                 .permitAll()
             )
 

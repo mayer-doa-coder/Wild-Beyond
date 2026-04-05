@@ -2,8 +2,12 @@ package com.wildbeyond.service;
 
 import com.wildbeyond.dto.ProductDTO;
 import com.wildbeyond.exception.ResourceNotFoundException;
+import com.wildbeyond.model.Order;
+import com.wildbeyond.model.OrderItem;
 import com.wildbeyond.model.Product;
 import com.wildbeyond.model.User;
+import com.wildbeyond.repository.OrderItemRepository;
+import com.wildbeyond.repository.OrderRepository;
 import com.wildbeyond.repository.ProductRepository;
 import com.wildbeyond.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Business logic for Product CRUD operations.
@@ -30,6 +37,8 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final OrderRepository orderRepository;
 
     /**
      * Create a new product and associate it with an existing seller.
@@ -47,6 +56,7 @@ public class ProductService {
         User seller = userRepository.findById(dto.getSellerId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Seller not found with id: " + dto.getSellerId()));
+        assertCanCreateForSeller(seller);
 
         Product product = new Product();
         product.setName(dto.getName());
@@ -148,7 +158,38 @@ public class ProductService {
     public void delete(Long id) {
         Product product = findById(id);
         assertCanManageProduct(product);
+        detachProductFromOrders(product.getId());
         productRepository.delete(product);
+    }
+
+    private void detachProductFromOrders(Long productId) {
+        List<OrderItem> linkedItems = orderItemRepository.findByProductId(productId);
+        if (linkedItems.isEmpty()) {
+            return;
+        }
+
+        Map<Long, Order> touchedOrders = new LinkedHashMap<>();
+        for (OrderItem item : linkedItems) {
+            touchedOrders.put(item.getOrder().getId(), item.getOrder());
+        }
+
+        for (Order order : touchedOrders.values()) {
+            order.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
+
+            if (order.getItems().isEmpty()) {
+                orderRepository.delete(order);
+                continue;
+            }
+
+            order.setTotalPrice(calculateOrderTotal(order));
+            orderRepository.save(order);
+        }
+    }
+
+    private BigDecimal calculateOrderTotal(Order order) {
+        return order.getItems().stream()
+                .map(item -> item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     /**
@@ -241,6 +282,29 @@ public class ProductService {
 
         if (!product.getSeller().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You are not allowed to manage this product");
+        }
+    }
+
+    private void assertCanCreateForSeller(User seller) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return;
+        }
+
+        boolean isSeller = authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_SELLER".equals(a.getAuthority()));
+        if (!isSeller) {
+            return;
+        }
+
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Current user not found: " + authentication.getName()));
+
+        if (!seller.getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Sellers can only create products for themselves");
         }
     }
 

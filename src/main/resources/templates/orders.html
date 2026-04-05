@@ -20,20 +20,20 @@
 <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h1 class="text-3xl font-bold text-emerald-950">My Orders</h1>
-        <a th:href="@{/cart}" class="text-sm font-semibold text-emerald-800 hover:underline">Cart</a>
+        <a th:href="@{${cartBasePath}}" class="text-sm font-semibold text-emerald-800 hover:underline">Cart</a>
     </div>
 
     <div class="mb-6 flex flex-wrap gap-2" th:if="${#authorization.expression('hasRole(''SELLER'')')}">
-        <a th:href="@{/orders(view='buying')}"
+        <a th:href="@{${ordersBasePath + '?view=buying'}}"
            class="px-4 py-2 text-sm font-semibold border"
            th:classappend="${ordersView == 'buying'} ? ' bg-emerald-900 text-white border-emerald-900' : ' bg-white text-emerald-900 border-emerald-300'">Buying Orders</a>
-        <a th:href="@{/orders(view='selling')}"
+        <a th:href="@{${ordersBasePath + '?view=selling'}}"
            class="px-4 py-2 text-sm font-semibold border"
            th:classappend="${ordersView == 'selling'} ? ' bg-emerald-900 text-white border-emerald-900' : ' bg-white text-emerald-900 border-emerald-300'">My Product Orders</a>
     </div>
 
     <div class="bg-white border border-dashed border-gray-300 p-8 text-gray-600" th:if="${#lists.isEmpty(orders)}">
-        No orders yet. <a th:href="@{/products}" class="font-semibold text-emerald-800 hover:underline">Browse products</a> to place your first order.
+        No orders yet. <a th:href="@{${productsBasePath}}" class="font-semibold text-emerald-800 hover:underline">Browse products</a> to place your first order.
     </div>
 
     <div class="bg-white border border-gray-200 shadow overflow-hidden" th:if="${not #lists.isEmpty(orders)}">
@@ -54,7 +54,7 @@
                 <td class="px-4 py-3 font-semibold text-emerald-800" th:text="${order.status}">PENDING</td>
                 <td class="px-4 py-3" th:text="${'$' + #numbers.formatDecimal(order.totalPrice, 1, 2)}">$0.00</td>
                 <td class="px-4 py-3">
-                    <a th:href="@{/orders/{id}(id=${order.id})}" class="font-semibold text-emerald-800 hover:underline">View Details</a>
+                    <a th:href="@{${ordersBasePath + '/' + order.id}}" class="font-semibold text-emerald-800 hover:underline">View Details</a>
                 </td>
             </tr>
             </tbody>

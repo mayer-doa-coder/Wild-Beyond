@@ -2,8 +2,12 @@ package com.wildbeyond.service;
 
 import com.wildbeyond.dto.ProductDTO;
 import com.wildbeyond.exception.ResourceNotFoundException;
+import com.wildbeyond.model.Order;
+import com.wildbeyond.model.OrderItem;
 import com.wildbeyond.model.Product;
 import com.wildbeyond.model.User;
+import com.wildbeyond.repository.OrderItemRepository;
+import com.wildbeyond.repository.OrderRepository;
 import com.wildbeyond.repository.ProductRepository;
 import com.wildbeyond.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +23,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -41,6 +46,12 @@ class ProductServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private OrderItemRepository orderItemRepository;
+
+    @Mock
+    private OrderRepository orderRepository;
 
     @InjectMocks
     private ProductService productService;
@@ -112,6 +123,31 @@ class ProductServiceTest {
         assertThatThrownBy(() -> productService.create(dto))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Seller not found with id: 1");
+
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    void create_throwsAccessDenied_whenSellerTriesToCreateForAnotherSeller() {
+        setAuthenticatedUser("seller@example.com", "ROLE_SELLER");
+
+        User otherSeller = new User();
+        otherSeller.setId(2L);
+        otherSeller.setEmail("other@example.com");
+
+        ProductDTO otherSellerDto = new ProductDTO();
+        otherSellerDto.setSellerId(2L);
+        otherSellerDto.setName("Tent");
+        otherSellerDto.setDescription("A sturdy tent");
+        otherSellerDto.setPrice(BigDecimal.valueOf(199.99));
+        otherSellerDto.setStock(50);
+
+        when(userRepository.findById(2L)).thenReturn(Optional.of(otherSeller));
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+
+        assertThatThrownBy(() -> productService.create(otherSellerDto))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("create products for themselves");
 
         verify(productRepository, never()).save(any());
     }
@@ -254,11 +290,60 @@ class ProductServiceTest {
 
         when(productRepository.findById(10L)).thenReturn(Optional.of(product));
         when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(orderItemRepository.findByProductId(10L)).thenReturn(List.of());
 
         productService.delete(10L);
 
+        verify(orderItemRepository).findByProductId(10L);
         verify(productRepository).delete(product);
     }
+
+        @Test
+        void delete_recalculatesOrderTotal_whenProductIsReferencedInOrders() {
+        setAuthenticatedUser("seller@example.com", "ROLE_SELLER");
+
+        Product otherProduct = Product.builder()
+            .id(99L)
+            .name("Binocular")
+            .price(BigDecimal.valueOf(50.00))
+            .stock(10)
+            .seller(seller)
+            .build();
+
+        Order order = new Order();
+        order.setId(91L);
+        order.setItems(new ArrayList<>());
+
+        OrderItem removable = OrderItem.builder()
+            .id(1L)
+            .order(order)
+            .product(product)
+            .quantity(1)
+            .unitPrice(BigDecimal.valueOf(199.99))
+            .build();
+
+        OrderItem retained = OrderItem.builder()
+            .id(2L)
+            .order(order)
+            .product(otherProduct)
+            .quantity(2)
+            .unitPrice(BigDecimal.valueOf(50.00))
+            .build();
+
+        order.getItems().add(removable);
+        order.getItems().add(retained);
+
+        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+        when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(seller));
+        when(orderItemRepository.findByProductId(10L)).thenReturn(List.of(removable));
+
+        productService.delete(10L);
+
+        verify(orderRepository).save(order);
+        assertThat(order.getItems()).containsExactly(retained);
+        assertThat(order.getTotalPrice()).isEqualByComparingTo("100.00");
+        verify(productRepository).delete(product);
+        }
 
     @Test
     void delete_throwsAccessDenied_whenSellerDoesNotOwnProduct() {

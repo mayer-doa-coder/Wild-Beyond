@@ -28,6 +28,9 @@ external:
 
 server:
   port: ${PORT:8080}
+  servlet:
+    session:
+      timeout: 30m
 
 logging:
   file:

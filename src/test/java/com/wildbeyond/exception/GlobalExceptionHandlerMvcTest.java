@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -122,6 +123,28 @@ class GlobalExceptionHandlerMvcTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error").value("Seller not found with id: 7"));
+    }
+
+    @Test
+    @WithMockUser(roles = "SELLER")
+    void postProduct_returns403_whenServiceThrowsAccessDenied() throws Exception {
+        when(productService.create(any(ProductDTO.class)))
+                .thenThrow(new AccessDeniedException("Sellers can only create products for themselves"));
+
+        ProductDTO validDto = new ProductDTO();
+        validDto.setSellerId(7L);
+        validDto.setName("Tent");
+        validDto.setDescription("Outdoor tent");
+        validDto.setPrice(BigDecimal.valueOf(150.00));
+        validDto.setStock(10);
+
+        mockMvc.perform(post("/api/products")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isForbidden())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("Sellers can only create products for themselves"));
     }
 
     // ── 4. Validation: negative price → 400 ──────────────────────────────────

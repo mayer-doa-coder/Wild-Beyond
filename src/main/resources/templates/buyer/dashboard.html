@@ -38,7 +38,7 @@
         <section class="mb-10" th:if="${not #lists.isEmpty(recentOrders)}">
             <h2 class="super-title text-3xl mb-5">Recent Purchases</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <a th:each="order : ${recentOrders}" th:href="@{/orders/{id}(id=${order.id})}" class="bg-white border border-gray-200 shadow p-5 hover:shadow-lg transition">
+                <a th:each="order : ${recentOrders}" th:href="@{/buyer/orders/{id}(id=${order.id})}" class="bg-white border border-gray-200 shadow p-5 hover:shadow-lg transition">
                     <p class="font-semibold" th:text="${'Order #' + order.id}">Order #1</p>
                     <p class="text-sm text-gray-600 mt-1" th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}">2026-01-01 10:00</p>
                     <p class="text-sm text-emerald-800 font-semibold mt-2" th:text="${'$' + #numbers.formatDecimal(order.totalPrice, 1, 2)}">$0.00</p>
@@ -48,11 +48,11 @@
 
         <h2 class="super-title text-3xl mb-5">Quick Actions</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <a th:href="@{/products}" class="bg-white border border-gray-200 shadow p-5 hover:shadow-lg transition">
+            <a th:href="@{/buyer/products}" class="bg-white border border-gray-200 shadow p-5 hover:shadow-lg transition">
                 <p class="font-semibold">Browse Products</p>
                 <p class="text-sm text-gray-600 mt-1">Discover wildlife conservation products</p>
             </a>
-            <a th:href="@{/orders}" class="bg-white border border-gray-200 shadow p-5 hover:shadow-lg transition">
+            <a th:href="@{/buyer/orders}" class="bg-white border border-gray-200 shadow p-5 hover:shadow-lg transition">
                 <p class="font-semibold">My Orders</p>
                 <p class="text-sm text-gray-600 mt-1">Track your order history</p>
             </a>

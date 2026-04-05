@@ -63,6 +63,14 @@ class ProductControllerTest {
                 .andExpect(model().attributeExists("newProduct"));
     }
 
+        @Test
+        void getProducts_shouldRedirectToSellerScopedPath_forAuthenticatedSeller() throws Exception {
+                mockMvc.perform(get("/products")
+                                                .with(user("seller@example.com").roles("SELLER")))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/seller/products"));
+        }
+
     @Test
     void createProduct_shouldCreateWithAuthenticatedSeller() throws Exception {
         when(userRepository.findByEmail("seller@example.com")).thenReturn(Optional.of(
@@ -81,7 +89,7 @@ class ProductControllerTest {
                         .param("price", "29.99")
                         .param("stock", "2"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/products"));
+                .andExpect(redirectedUrl("/seller/products"));
 
         ArgumentCaptor<ProductDTO> captor = ArgumentCaptor.forClass(ProductDTO.class);
         verify(productService).create(captor.capture());
@@ -99,7 +107,7 @@ class ProductControllerTest {
                         .param("price", "")
                         .param("stock", ""))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/products"));
+                .andExpect(redirectedUrl("/seller/products"));
 
         verify(productService, never()).create(any());
     }
@@ -118,7 +126,7 @@ class ProductControllerTest {
                         Product.builder().id(11L).name("Field Kit").build()
                 );
 
-                mockMvc.perform(get("/products/edit/11")
+                mockMvc.perform(get("/seller/products/edit/11")
                                                 .with(user("seller@example.com").roles("SELLER")))
                                 .andExpect(status().isOk())
                                 .andExpect(view().name("product-form"))
@@ -141,7 +149,7 @@ class ProductControllerTest {
                                                 .param("price", "39.99")
                                                 .param("stock", "3"))
                                 .andExpect(status().is3xxRedirection())
-                                .andExpect(redirectedUrl("/products"));
+                                .andExpect(redirectedUrl("/seller/products"));
 
                 verify(productService).updateProduct(eq(11L), any(ProductDTO.class));
         }
@@ -151,7 +159,7 @@ class ProductControllerTest {
                 mockMvc.perform(get("/products/delete/11")
                                                 .with(user("seller@example.com").roles("SELLER")))
                                 .andExpect(status().is3xxRedirection())
-                                .andExpect(redirectedUrl("/products"));
+                                .andExpect(redirectedUrl("/seller/products"));
 
                 verify(productService).deleteProduct(11L);
         }

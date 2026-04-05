@@ -3,6 +3,7 @@ package com.wildbeyond.exception;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -53,6 +54,21 @@ class GlobalExceptionHandlerTest {
 
         assertThat(body).hasSize(1).containsKey("error");
     }
+
+        // ── handleAccessDenied ───────────────────────────────────────────────────
+
+        @Test
+        void handleAccessDenied_returns403_withErrorMessage() {
+                AccessDeniedException ex =
+                                new AccessDeniedException("You are not allowed to manage this product");
+
+                ResponseEntity<Map<String, String>> response = handler.handleAccessDenied(ex);
+
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+                assertThat(response.getBody())
+                                .isNotNull()
+                                .containsEntry("error", "You are not allowed to manage this product");
+        }
 
     // ── handleValidation ─────────────────────────────────────────────────────
 

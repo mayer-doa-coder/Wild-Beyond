@@ -1,6 +1,8 @@
 # Wild Beyond — REST API Test Guide (Postman)
 
-Base URL: `http://localhost:8080`
+Base URL: `http://localhost:8180`
+
+> If you run the app with `./mvnw spring-boot:run` (without Docker), use `http://localhost:8080` instead.
 
 ---
 
@@ -21,9 +23,11 @@ Set it in every authenticated request via the **Authorization** tab → **Basic 
 
 | Role   | Username           | Password    | User ID | Can do                                      |
 |--------|--------------------|-------------|---------|---------------------------------------------|
-| BUYER  | `buyer@test.com`   | `seller123` | `6`     | Place orders, view own orders               |
-| SELLER | `seller@test.com`  | `seller123` | `5`     | Add products, update products               |
-| ADMIN  | `admin@test.com`   | `seller123` | `7`     | View all orders, delete orders/products     |
+| BUYER  | `buyer@test.com`   | `seller123` | dynamic | Place orders, view own orders               |
+| SELLER | `seller@test.com`  | `seller123` | dynamic | Add products, update products               |
+| ADMIN  | `admin@test.com`   | `seller123` | dynamic | View all orders, delete orders/products     |
+
+> These demo users are auto-seeded on app startup by `DataSeeder`.
 
 **How to add Basic Auth in Postman:**
 
@@ -43,7 +47,7 @@ Set it in every authenticated request via the **Authorization** tab → **Basic 
 | Field  | Value                              |
 |--------|------------------------------------|
 | Method | `GET`                              |
-| URL    | `http://localhost:8080/api/products` |
+| URL    | `http://localhost:8180/api/products` |
 | Auth   | None                               |
 | Body   | None                               |
 
@@ -51,7 +55,7 @@ Set it in every authenticated request via the **Authorization** tab → **Basic 
 
 1. Create a new request in Postman.
 2. Set method to `GET`.
-3. Enter URL `http://localhost:8080/api/products`.
+3. Enter URL `http://localhost:8180/api/products`.
 4. Click **Send**.
 
 **Expected result:**
@@ -68,7 +72,7 @@ Body:   []
 | Status | Cause                              | Fix                                      |
 |--------|------------------------------------|------------------------------------------|
 | 401    | Security blocking public GET       | Check `/error` is in `permitAll` in `SecurityConfig` |
-| 404    | Wrong URL or app not started       | Verify app is running on port 8080       |
+| 404    | Wrong URL or app not started       | Verify app is running on port 8180 (Docker) or 8080 (mvnw) |
 | 500    | Service/DB error on startup        | Check app logs for stack trace           |
 
 ---
@@ -80,20 +84,30 @@ Body:   []
 | Field          | Value                                |
 |----------------|--------------------------------------|
 | Method         | `POST`                               |
-| URL            | `http://localhost:8080/api/products` |
+| URL            | `http://localhost:8180/api/products` |
 | Auth           | Basic Auth (see above)               |
 | Content-Type   | `application/json`                   |
 
 **Steps:**
 
 1. Create a new request. Set method to `POST`.
-2. Enter URL `http://localhost:8080/api/products`.
+2. Enter URL `http://localhost:8180/api/products`.
 3. Go to **Authorization** tab → `Basic Auth` → enter credentials.
 4. Go to **Headers** tab → add:
    - Key: `Content-Type`
    - Value: `application/json`
 5. Go to **Body** tab → select **raw** → select **JSON** from the dropdown.
-6. Paste the following body:
+6. Resolve the seller id first (required):
+
+```sql
+SELECT u.id, u.email FROM users u
+JOIN user_roles ur ON ur.user_id = u.id
+JOIN roles r ON r.id = ur.role_id
+WHERE r.name = 'SELLER'
+ORDER BY u.id;
+```
+
+7. Paste the following body (replace `2` with your actual seller user id):
 
 ```json
 {
@@ -101,11 +115,11 @@ Body:   []
   "description": "Premium wildlife photography lens",
   "price": 500,
   "stock": 10,
-  "sellerId": 5
+  "sellerId": 2
 }
 ```
 
-7. Click **Send**.
+8. Click **Send**.
 
 **Expected result:**
 
@@ -129,9 +143,9 @@ Body:
 | Status | Body                        | Cause                          | Fix                                        |
 |--------|-----------------------------|--------------------------------|--------------------------------------------|
 | 401    | —                           | Missing or wrong credentials   | Re-check Basic Auth username/password      |
-| 403    | —                           | User is not SELLER or ADMIN    | Use `seller@test.com` (id=5, role=SELLER)  |
+| 403    | —                           | User is not SELLER             | Use `seller@test.com`                      |
 | 400    | `"name": "must not be blank"` | `@Valid` rejected the DTO    | Supply all required fields                 |
-| 500    | `"Seller not found"`        | `sellerId` doesn't exist in DB | Use `sellerId: 5` (confirmed in users table) |
+| 500    | `"Seller not found"`        | `sellerId` doesn't exist in DB | Use a real seller id from the SQL query above |
 
 **Database verification:**
 
@@ -150,7 +164,7 @@ You should see one row with the product you just created.
 | Field  | Value                                      |
 |--------|--------------------------------------------|
 | Method | `GET`                                      |
-| URL    | `http://localhost:8080/api/products/{id}`  |
+| URL    | `http://localhost:8180/api/products/{id}`  |
 | Auth   | None                                       |
 | Body   | None                                       |
 
@@ -159,7 +173,7 @@ Replace `{id}` with the actual `id` from TEST-3 (e.g. `1`).
 **Steps:**
 
 1. Create a new request. Set method to `GET`.
-2. Enter URL `http://localhost:8080/api/products/1` (replace `1` with your id).
+2. Enter URL `http://localhost:8180/api/products/1` (replace `1` with your id).
 3. Click **Send**.
 
 **Expected result:**
@@ -192,7 +206,7 @@ Body:
 | Field          | Value                                        |
 |----------------|----------------------------------------------|
 | Method         | `PUT`                                        |
-| URL            | `http://localhost:8080/api/products/{id}`    |
+| URL            | `http://localhost:8180/api/products/{id}`    |
 | Auth           | Basic Auth (see above)                       |
 | Content-Type   | `application/json`                           |
 
@@ -201,7 +215,7 @@ Replace `{id}` with the same id from TEST-3.
 **Steps:**
 
 1. Create a new request. Set method to `PUT`.
-2. Enter URL `http://localhost:8080/api/products/1`.
+2. Enter URL `http://localhost:8180/api/products/1`.
 3. Add **Authorization** → `Basic Auth` → enter credentials.
 4. Add **Header**: `Content-Type: application/json`.
 5. Set **Body** → raw → JSON:
@@ -249,14 +263,14 @@ The `name`, `price`, `description`, and `stock` columns should reflect the updat
 | Field  | Value                                        |
 |--------|----------------------------------------------|
 | Method | `DELETE`                                     |
-| URL    | `http://localhost:8080/api/products/{id}`    |
+| URL    | `http://localhost:8180/api/products/{id}`    |
 | Auth   | Basic Auth (see above)                       |
 | Body   | None                                         |
 
 **Steps:**
 
 1. Create a new request. Set method to `DELETE`.
-2. Enter URL `http://localhost:8080/api/products/1`.
+2. Enter URL `http://localhost:8180/api/products/1`.
 3. Add **Authorization** → `Basic Auth` → enter credentials.
 4. Click **Send**.
 
@@ -269,7 +283,7 @@ Body:   (empty)
 
 **Confirm deletion — repeat TEST-4:**
 
-Send `GET http://localhost:8080/api/products/1` again.
+Send `GET http://localhost:8180/api/products/1` again.
 
 Expected: `404 Not Found` (GlobalExceptionHandler catches `ResourceNotFoundException`).
 
@@ -295,23 +309,23 @@ The table should be empty (or missing the deleted row).
 
 ---
 
-## TEST-7 · POST Create Order (BUYER places an order)
+## TEST-7 · POST Create Order (BUYER or SELLER places an order)
 
-**Purpose:** Place a new order as a buyer. The buyer identity is taken from the auth principal, not the request body.
+**Purpose:** Place a new order as a buyer or seller. The buyer identity is taken from the auth principal, not the request body.
 
 | Field        | Value                              |
 |--------------|------------------------------------|
 | Method       | `POST`                             |
-| URL          | `http://localhost:8080/api/orders` |
-| Auth         | Basic Auth — **BUYER** account     |
+| URL          | `http://localhost:8180/api/orders` |
+| Auth         | Basic Auth — **BUYER** or **SELLER** account |
 | Content-Type | `application/json`                 |
 
 **Steps:**
 
 1. Create a new request. Set method to `POST`.
-2. Enter URL `http://localhost:8080/api/orders`.
+2. Enter URL `http://localhost:8180/api/orders`.
 3. Go to **Authorization** tab → `Basic Auth`:
-   - Username: `buyer@test.com`
+  - Username: `buyer@test.com` **or** `seller@test.com`
    - Password: `seller123`
 4. Go to **Headers** tab → add `Content-Type: application/json`.
 5. Go to **Body** tab → raw → JSON:
@@ -357,8 +371,9 @@ Body:
 
 | Status | Cause                                       | Fix                                                   |
 |--------|---------------------------------------------|-------------------------------------------------------|
-| 401    | Missing or wrong credentials                | Re-check Basic Auth — use `buyer@test.com`            |
-| 403    | Using a SELLER account to place order       | Only BUYER and ADMIN can place orders                 |
+| 401    | Missing or wrong credentials                | Re-check Basic Auth — use `buyer@test.com` or `seller@test.com` |
+| 403    | Using an ADMIN account to place order       | Only BUYER and SELLER can place orders                |
+| 403    | Seller tries to buy own product             | Use a product listed by a different seller            |
 | 400    | `"items": "Order must contain at least one item"` | Add at least one item to the `items` array      |
 | 404    | `"Product not found with id: ..."`          | Run TEST-3 first; use the `id` from its response      |
 
@@ -380,14 +395,14 @@ You should see one order row and one order_item row.
 | Field  | Value                                 |
 |--------|---------------------------------------|
 | Method | `GET`                                 |
-| URL    | `http://localhost:8080/api/orders/my` |
+| URL    | `http://localhost:8180/api/orders/my` |
 | Auth   | Basic Auth — **BUYER** account        |
 | Body   | None                                  |
 
 **Steps:**
 
 1. Create a new request. Set method to `GET`.
-2. Enter URL `http://localhost:8080/api/orders/my`.
+2. Enter URL `http://localhost:8180/api/orders/my`.
 3. Add **Authorization** → Basic Auth → `buyer@test.com` / `seller123`.
 4. Click **Send**.
 
@@ -414,14 +429,14 @@ Body:   [ { "id": 1, "status": "PENDING", "totalPrice": 1000.00, "items": [...] 
 | Field  | Value                                       |
 |--------|---------------------------------------------|
 | Method | `GET`                                       |
-| URL    | `http://localhost:8080/api/orders/{id}`     |
+| URL    | `http://localhost:8180/api/orders/{id}`     |
 | Auth   | Basic Auth — any account                    |
 | Body   | None                                        |
 
 **Steps:**
 
 1. Create a new request. Set method to `GET`.
-2. Enter URL `http://localhost:8080/api/orders/1` (replace `1` with id from TEST-7).
+2. Enter URL `http://localhost:8180/api/orders/1` (replace `1` with id from TEST-7).
 3. Add **Authorization** → Basic Auth → any valid account.
 4. Click **Send**.
 
@@ -448,14 +463,14 @@ Body:   { "id": 1, "status": "PENDING", "totalPrice": 1000.00, "items": [...] }
 | Field  | Value                                 |
 |--------|---------------------------------------|
 | Method | `GET`                                 |
-| URL    | `http://localhost:8080/api/orders`    |
+| URL    | `http://localhost:8180/api/orders`    |
 | Auth   | Basic Auth — **ADMIN** account        |
 | Body   | None                                  |
 
 **Steps:**
 
 1. Create a new request. Set method to `GET`.
-2. Enter URL `http://localhost:8080/api/orders`.
+2. Enter URL `http://localhost:8180/api/orders`.
 3. Add **Authorization** → Basic Auth:
    - Username: `admin@test.com`
    - Password: `seller123`
@@ -484,14 +499,14 @@ Body:   [ { "id": 1, "status": "PENDING", ... } ]
 | Field  | Value                                       |
 |--------|---------------------------------------------|
 | Method | `DELETE`                                    |
-| URL    | `http://localhost:8080/api/orders/{id}`     |
+| URL    | `http://localhost:8180/api/orders/{id}`     |
 | Auth   | Basic Auth — **ADMIN** account              |
 | Body   | None                                        |
 
 **Steps:**
 
 1. Create a new request. Set method to `DELETE`.
-2. Enter URL `http://localhost:8080/api/orders/1`.
+2. Enter URL `http://localhost:8180/api/orders/1`.
 3. Add **Authorization** → Basic Auth → `admin@test.com` / `seller123`.
 4. Click **Send**.
 
@@ -504,7 +519,7 @@ Body:   (empty)
 
 **Confirm deletion — repeat TEST-9:**
 
-Send `GET http://localhost:8080/api/orders/1` again.
+Send `GET http://localhost:8180/api/orders/1` again.
 
 Expected: `404 Not Found`
 ```json
@@ -544,7 +559,7 @@ Run in this order — products must exist before orders can be placed.
 
 | Step | Test    | Method   | URL                          | Account  | Expected           |
 |------|---------|----------|------------------------------|----------|--------------------|
-| 1    | TEST-7  | `POST`   | `/api/orders`                | BUYER    | 201 + order JSON   |
+| 1    | TEST-7  | `POST`   | `/api/orders`                | BUYER/SELLER | 201 + order JSON |
 | 2    | TEST-8  | `GET`    | `/api/orders/my`             | BUYER    | 200 `[{...}]`      |
 | 3    | TEST-9  | `GET`    | `/api/orders/{id}`           | BUYER    | 200 + JSON         |
 | 4    | TEST-10 | `GET`    | `/api/orders`                | ADMIN    | 200 all orders     |
@@ -558,10 +573,10 @@ Run in this order — products must exist before orders can be placed.
 | Action                        | BUYER | SELLER | ADMIN |
 |-------------------------------|-------|--------|-------|
 | Browse products (GET)         | ✅    | ✅     | ✅    |
-| Add product (POST)            | ❌    | ✅     | ✅    |
+| Add product (POST)            | ❌    | ✅     | ❌    |
 | Update product (PUT)          | ❌    | ✅     | ✅    |
 | Delete product (DELETE)       | ❌    | ✅     | ✅    |
-| Place order (POST)            | ✅    | ❌     | ✅    |
+| Place order (POST)            | ✅    | ✅     | ❌    |
 | View own orders (GET /my)     | ✅    | ✅     | ✅    |
 | View any order by ID          | ✅    | ✅     | ✅    |
 | View all orders (GET)         | ❌    | ❌     | ✅    |
@@ -576,8 +591,11 @@ Run in this order — products must exist before orders can be placed.
 | POST `/api/products` without auth               | `401`    | Security working correctly        |
 | POST `/api/products` with wrong password        | `401`    | Security working correctly        |
 | POST `/api/products` with BUYER account         | `403`    | Role enforcement working          |
-| POST `/api/orders` with SELLER account          | `403`    | Sellers cannot place orders       |
+| POST `/api/products` with ADMIN account         | `403`    | Only SELLER can create products   |
+| POST `/api/orders` with ADMIN account           | `403`    | Admin cannot place orders         |
+| POST `/api/orders` with SELLER buying own product | `403`  | Own-product purchase is blocked   |
 | POST `/api/orders` without auth                 | `401`    | Security working correctly        |
 | GET `/api/orders` with BUYER or SELLER account  | `403`    | Only ADMIN sees all orders        |
 | GET `/api/products` without auth                | `200`    | Products are publicly browsable   |
 | GET `/api/orders/my` without auth               | `401`    | Order history requires login      |
+

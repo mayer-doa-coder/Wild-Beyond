@@ -31,8 +31,8 @@
         <div class="flex items-end justify-between mb-6">
             <h2 class="super-title text-3xl md:text-4xl">All Products</h2>
             <div class="flex items-center gap-4">
-                <a th:href="@{/cart}" class="text-sm text-emerald-800 font-semibold hover:underline">Cart</a>
-                <a th:href="@{/products}" class="text-sm text-emerald-800 font-semibold hover:underline">Refresh</a>
+                <a th:href="@{${cartBasePath}}" class="text-sm text-emerald-800 font-semibold hover:underline">Cart</a>
+                <a th:href="@{${productsBasePath}}" class="text-sm text-emerald-800 font-semibold hover:underline">Refresh</a>
             </div>
         </div>
 
@@ -43,7 +43,7 @@
             <div th:if="${productCreateError}" class="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm" th:text="${productCreateError}"></div>
             <div th:if="${productCreateSuccess}" class="mt-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 text-sm" th:text="${productCreateSuccess}"></div>
 
-            <form th:action="@{/products}" th:object="${newProduct}" method="post" enctype="multipart/form-data" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form th:action="@{${productsBasePath}}" th:object="${newProduct}" method="post" enctype="multipart/form-data" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <input type="hidden" th:field="*{sellerId}" />
 
@@ -101,16 +101,16 @@
                 <p class="text-emerald-700 font-semibold mt-2" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</p>
                 <p class="text-xs text-gray-500 mt-1" th:text="${'Stock: ' + product.stock}">Stock: 0</p>
                 <div class="mt-3 flex flex-wrap gap-2">
-                    <a th:href="@{/products/{id}(id=${product.id})}" class="inline-block bg-emerald-900 text-white px-4 py-2 text-sm font-semibold hover:bg-emerald-800 transition">View Details</a>
+                    <a th:href="@{${productsBasePath + '/' + product.id}}" class="inline-block bg-emerald-900 text-white px-4 py-2 text-sm font-semibold hover:bg-emerald-800 transition">View Details</a>
 
-                    <form th:if="${purchasableProductIds.contains(product.id)}" th:action="@{/cart/add/{id}(id=${product.id})}" method="post" class="inline">
+                    <form th:if="${purchasableProductIds.contains(product.id)}" th:action="@{${cartBasePath + '/add/' + product.id}}" method="post" class="inline">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <button type="submit" class="inline-block bg-sky-700 text-white px-4 py-2 text-sm font-semibold hover:bg-sky-600 transition">Buy</button>
                     </form>
 
                     <th:block th:if="${manageableProductIds.contains(product.id)}">
-                        <a th:href="@{/products/edit/{id}(id=${product.id})}" class="inline-block bg-amber-600 text-white px-4 py-2 text-sm font-semibold hover:bg-amber-500 transition">Edit</a>
-                        <a th:href="@{/products/delete/{id}(id=${product.id})}"
+                        <a th:href="@{${productsBasePath + '/edit/' + product.id}}" class="inline-block bg-amber-600 text-white px-4 py-2 text-sm font-semibold hover:bg-amber-500 transition">Edit</a>
+                        <a th:href="@{${productsBasePath + '/delete/' + product.id}}"
                            class="inline-block bg-red-700 text-white px-4 py-2 text-sm font-semibold hover:bg-red-600 transition"
                            onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
                     </th:block>

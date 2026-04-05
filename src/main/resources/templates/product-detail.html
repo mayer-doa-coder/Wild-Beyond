@@ -35,23 +35,23 @@
                 <p class="mt-4 text-gray-700 leading-relaxed" th:text="${product.description != null ? product.description : 'No description available.'}">Description</p>
 
                 <div class="mt-6 flex flex-wrap gap-3">
-                    <a th:href="@{/products}" class="inline-block bg-emerald-900 text-white px-4 py-2 text-sm font-semibold hover:bg-emerald-800 transition">Back to Products</a>
-                    <a th:href="@{/dashboard}" class="inline-block bg-slate-700 text-white px-4 py-2 text-sm font-semibold hover:bg-slate-600 transition">Dashboard</a>
-                    <a th:href="@{/cart}" class="inline-block bg-slate-700 text-white px-4 py-2 text-sm font-semibold hover:bg-slate-600 transition" th:if="${canBuyProduct}">Cart</a>
+                    <a th:href="@{${productsBasePath}}" class="inline-block bg-emerald-900 text-white px-4 py-2 text-sm font-semibold hover:bg-emerald-800 transition">Back to Products</a>
+                    <a th:href="@{${dashboardPath}}" class="inline-block bg-slate-700 text-white px-4 py-2 text-sm font-semibold hover:bg-slate-600 transition">Dashboard</a>
+                    <a th:href="@{${cartBasePath}}" class="inline-block bg-slate-700 text-white px-4 py-2 text-sm font-semibold hover:bg-slate-600 transition" th:if="${canBuyProduct}">Cart</a>
                 </div>
 
-                <form th:if="${canBuyProduct}" th:action="@{/cart/add/{id}(id=${product.id})}" method="post" class="mt-3 flex items-center gap-2">
+                <form th:if="${canBuyProduct}" th:action="@{${cartBasePath + '/add/' + product.id}}" method="post" class="mt-3 flex items-center gap-2">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <input type="number" name="quantity" min="1" value="1" class="w-24 border border-gray-300 px-3 py-2 text-sm" />
                     <button type="submit" class="inline-block bg-sky-700 text-white px-4 py-2 text-sm font-semibold hover:bg-sky-600 transition">Buy</button>
                 </form>
 
                 <div class="mt-3 flex flex-wrap gap-3" th:if="${canManageProduct}">
-                    <a th:href="@{/products/edit/{id}(id=${product.id})}"
+                    <a th:href="@{${productsBasePath + '/edit/' + product.id}}"
                        class="inline-block bg-amber-600 text-white px-4 py-2 text-sm font-semibold hover:bg-amber-500 transition">
                         Edit
                     </a>
-                    <a th:href="@{/products/delete/{id}(id=${product.id})}"
+                    <a th:href="@{${productsBasePath + '/delete/' + product.id}}"
                        onclick="return confirm('Delete this product?')"
                        class="inline-block bg-red-700 text-white px-4 py-2 text-sm font-semibold hover:bg-red-600 transition">
                         Delete

@@ -55,12 +55,12 @@ class OrderControllerTest {
 
         when(orderService.findMyOrders()).thenReturn(List.of(myOrder));
 
-        mockMvc.perform(get("/orders")
+        mockMvc.perform(get("/buyer/orders")
                         .with(user("buyer@example.com").roles("BUYER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("orders"))
                 .andExpect(model().attributeExists("orders"))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("/orders/1")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("/buyer/orders/1")));
 
         verify(orderService).findMyOrders();
     }
@@ -76,7 +76,7 @@ class OrderControllerTest {
 
         when(orderService.findAll()).thenReturn(List.of(order));
 
-        mockMvc.perform(get("/orders")
+        mockMvc.perform(get("/admin/orders")
                         .with(user("admin@example.com").roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("orders"))
@@ -96,7 +96,7 @@ class OrderControllerTest {
 
                 when(orderService.findOrdersForCurrentSellerProducts()).thenReturn(List.of(order));
 
-                mockMvc.perform(get("/orders")
+                mockMvc.perform(get("/seller/orders")
                                                 .param("view", "selling")
                                                 .with(user("seller@example.com").roles("SELLER")))
                                 .andExpect(status().isOk())
@@ -123,7 +123,7 @@ class OrderControllerTest {
 
         when(orderService.getOrderById(5L)).thenReturn(dto);
 
-        mockMvc.perform(get("/orders/5")
+        mockMvc.perform(get("/buyer/orders/5")
                         .with(user("buyer@example.com").roles("BUYER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("order-detail"))
@@ -135,7 +135,7 @@ class OrderControllerTest {
     void getOrderById_shouldReturn403_whenForbidden() throws Exception {
         when(orderService.getOrderById(5L)).thenThrow(new AccessDeniedException("forbidden"));
 
-        mockMvc.perform(get("/orders/5")
+                mockMvc.perform(get("/buyer/orders/5")
                         .with(user("buyer@example.com").roles("BUYER")))
                 .andExpect(status().isForbidden());
     }
@@ -144,7 +144,7 @@ class OrderControllerTest {
     void getOrderById_shouldReturn404_whenMissing() throws Exception {
         when(orderService.getOrderById(999L)).thenThrow(new RuntimeException("missing"));
 
-        mockMvc.perform(get("/orders/999")
+                mockMvc.perform(get("/buyer/orders/999")
                         .with(user("buyer@example.com").roles("BUYER")))
                 .andExpect(status().isNotFound());
     }
@@ -153,13 +153,21 @@ class OrderControllerTest {
         void updateOrderStatus_shouldRedirectToOrderDetail() throws Exception {
                 when(orderService.updateStatus(5L, "CANCELLED")).thenReturn(new Order());
 
-                mockMvc.perform(post("/orders/5/status")
+                mockMvc.perform(post("/buyer/orders/5/status")
                                                 .with(user("buyer@example.com").roles("BUYER"))
                                                 .with(csrf())
                                                 .param("status", "CANCELLED"))
                                 .andExpect(status().is3xxRedirection())
-                                .andExpect(redirectedUrl("/orders/5"));
+                                .andExpect(redirectedUrl("/buyer/orders/5"));
 
                 verify(orderService).updateStatus(5L, "CANCELLED");
         }
+
+    @Test
+    void getOrders_shouldRedirectUnscopedPath_toCanonicalRolePath() throws Exception {
+        mockMvc.perform(get("/orders")
+                        .with(user("buyer@example.com").roles("BUYER")))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/buyer/orders"));
+    }
 }

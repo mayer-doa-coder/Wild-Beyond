@@ -91,7 +91,7 @@ class OrderRestControllerTest {
         dto.setItems(List.of(itemDto));
     }
 
-    // ── POST /api/orders (BUYER / ADMIN) ─────────────────────────────────────
+        // ── POST /api/orders (BUYER / SELLER) ────────────────────────────────────
 
     @Test
     @WithMockUser(roles = "BUYER")
@@ -108,8 +108,8 @@ class OrderRestControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "BUYER")
-    void create_returns201_whenAdminPlacesOrder() throws Exception {
+        @WithMockUser(roles = "SELLER")
+        void create_returns201_whenSellerPlacesOrder() throws Exception {
         when(orderService.create(any(OrderDTO.class))).thenReturn(order);
 
         mockMvc.perform(post("/api/orders")
@@ -120,8 +120,8 @@ class OrderRestControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "SELLER")
-    void create_returns403_whenSellerTriesToPlaceOrder() throws Exception {
+        @WithMockUser(roles = "ADMIN")
+        void create_returns403_whenAdminTriesToPlaceOrder() throws Exception {
         mockMvc.perform(post("/api/orders")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
