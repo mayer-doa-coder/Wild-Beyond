@@ -13,7 +13,47 @@ It delivers:
 
 ## Features
 
-Add your screenshots in this section where needed.
+### Feature Screenshots
+
+#### Home and Public Experience
+
+- Home hero section
+
+![Home Hero](src/main/resources/static/images/Screenshot%202026-04-05%20230545.png)
+
+- Latest stories and feature highlights
+
+![Latest Stories](src/main/resources/static/images/Screenshot%202026-04-05%20230606.png)
+
+- Wildlife categories (Explore)
+
+![Explore Categories](src/main/resources/static/images/Screenshot%202026-04-05%20230554.png)
+
+- Visual story blocks
+
+![Visual Story Blocks](src/main/resources/static/images/Screenshot%202026-04-05%20230521.png)
+
+#### Product Form UI
+
+- Product creation form detail
+
+![Product Form](src/main/resources/static/images/Screenshot%202026-04-05%20230330.png)
+
+#### Marketplace and Product Management
+
+- Product listing and in-page add-product form
+
+![Marketplace Product Management](src/main/resources/static/images/Screenshot%202026-04-05%20230444.png)
+
+#### Orders and Dashboards
+
+- Seller dashboard
+
+![Seller Dashboard](src/main/resources/static/images/Screenshot%202026-04-05%20230238.png)
+
+- Orders page (buying vs seller product orders)
+
+![Orders View](src/main/resources/static/images/Screenshot%202026-04-05%20230309.png)
 
 ### Public Experience Features
 
