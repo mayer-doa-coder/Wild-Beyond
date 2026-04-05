@@ -3,9 +3,9 @@ spring:
     name: Wild-Beyond
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:wild_beyond}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${SPRING_DATASOURCE_URL:${JDBC_DATABASE_URL:jdbc:${DATABASE_URL:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:wild_beyond}}}}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:postgres}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:postgres}}
     driver-class-name: org.postgresql.Driver
     hikari:
       auto-commit: false
@@ -27,7 +27,7 @@ external:
     request-timeout-seconds: 8
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 logging:
   file:
